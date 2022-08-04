@@ -13,67 +13,109 @@ quitFunc() {
     exit
 }
 
-copyFunc() {
-    #if [ $debug = "true"]; then
-    cp -r $programVS $InstallPath/$programVS
-    #else
-        #mv $programVS $InstallPath/$programVS
-    #fi
+programVSFunc() {
+    echo
+    echo Extracting vscode.zip
+    unzip vscode.zip -q
+    mv "Visual Studio Code.app" $InstallPath/$programVS
 }
 
-portableFunc() {
+dataFunc() {
+    echo
+    echo Enabling VSCode portable mode
     mkdir $InstallPath/$data #enable portable mode
+    mv Tools $InstallPath/$programVS/Contents/
+}
+
+programGCCFunc() {
+    echo
+    echo Extracting gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2
+    tar -xf gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2
+    mv gcc-arm-none-eabi-7-2017-q4-major-mac $InstallPath/$programVS/Contents/$programGCC
 }
 
 echo "*****************************************************"
 echo "** Welcome to Visual Studio Code EPuck 2 installer **"
 echo "*****************************************************"
 echo
+echo "see https://github.com/epfl-mobots/Create_VSCode_e-puck2"
 echo "Released in 2022"
 echo
 
 echo "Proceed with the installation ?"
-read -p "Enter y for Yes or n for No: " ans
+read -p "Enter y for Yes, any word for No: " ans
 if [ $ans != y ]; then
     quitFunc
 fi
 
+echo
+echo "Installation of Homebrew by several utility programs"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+echo
+echo "Installation of wget required to download vscode and compiler"
+brew install wget
+
+echo
 echo "Make sure there are no spaces in your installation path!"
 read -p "InstallPath by default is ~/Applications" InstallPath
 InstallPath=${InstallPath:-~/Applications/}
-echo $InstallPath
 
+echo
 echo "Are you sure you want it to be installed at $InstallPath ?"
-read -p "Enter y for Yes or n for No: " ans
+read -p "Enter y for Yes, any word for No: " ans
 if [ $ans != y ]; then
     quitFunc
 fi
+
+echo
+echo "Download VSCode"
+curl -i -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
+
+echo
+echo "Download gcc-arm-none-eabi"
+curl -i "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
 
 if [ -d "$InstallPath/$programVS" ]; then 
     echo "$InstallPath/$programVS is already existing, do you want to overwrite it ?"
     read -p "Enter y for Yes or n for No: " ans
     if [ $ans = y ]; then
-        copyFunc
+        rm -rf $InstallPath/$programVS
+        programVSFunc
     fi
 else
-    copyFunc
+    programVSFunc
 fi
-portableFunc
 
+if [ -d "$InstallPath/$data" ]; then 
+    echo "$InstallPath/$data is already existing, do you want to overwrite it ?"
+    read -p "Enter y for Yes or n for No: " ans
+    if [ $ans = y ]; then
+        rm -rf $InstallPath/$data
+        dataFunc
+    fi
+else
+    dataFunc
+fi
+
+programGCCFunc
 
 #Install extensions
 cd $InstallPath/$programVS/Contents/Resources/app/bin
+echo
 echo "Installing VSCode marus25.cortex-debug extension"
 ./code --install-extension marus25.cortex-debug --force
+echo
 echo "Installing VSCode ms-vscode.cpptools extension"
 ./code --install-extension ms-vscode.cpptools --force
 
-#Working
+#Workplace
+echo
 echo "Select the workplace where you will be working on"
 echo "Make sure there are no spaces in your workingplace!"
 read -p "Workplace by default is ~/Documents/EPuck2" Workplace
 Workplace=${Workplace:-~/Documents/Workplace}
-
+echo
 echo "Are you sure you want your workplace to be at $Workplace ?"
 read -p "Enter y for Yes or n for No: " ans
 if [ $ans != y ]; then
@@ -81,11 +123,9 @@ if [ $ans != y ]; then
 fi
 mkdir $Workplace
 cd $Workplace
-#if [ $debug = "false"]; then
 #git clone https://github.com/epfl-mobots/epuck-2-libs.git
-#fi
 
-#Few important definitions
+#Important VSCode settings definitions
 cd $InstallPath/$data/user-data/User/
 SettingsPath=${InstallPath/$data//\//\/\/}
 echo "{" >> settings.json
@@ -102,5 +142,3 @@ echo "*******************************************************"
 echo
 
 quitFunc
-
-sudo adduser $USER dialout #to access serial ports

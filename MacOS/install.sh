@@ -5,7 +5,6 @@ programGCC=gcc-arm-none-eabi-7-2017-q4-major
 programTools=Tools
 
 origin_path=$PWD
-debug="true"
 
 quitFunc() {
     cd $origin_path
@@ -43,7 +42,7 @@ echo "Released in 2022"
 echo
 
 echo "Proceed with the installation ?"
-read -p "Enter y for Yes, any word for No: " ans
+read -p "Enter y for Yes or any word for No: " ans
 if [ $ans != y ]; then
     quitFunc
 fi

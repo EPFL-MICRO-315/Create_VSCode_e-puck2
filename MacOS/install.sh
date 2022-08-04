@@ -15,21 +15,21 @@ quitFunc() {
 
 programVSFunc() {
     echo
-    echo Extracting vscode.zip
+    echo "Extracting vscode.zip"
     unzip -q vscode.zip
     mv "Visual Studio Code.app" $InstallPath/$programVS
 }
 
 dataFunc() {
     echo
-    echo Enabling VSCode portable mode
+    echo "Enabling VSCode portable mode"
     mkdir $InstallPath/$data #enable portable mode
     mv Tools $InstallPath/$programVS/Contents/
 }
 
 programGCCFunc() {
     echo
-    echo Extracting gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2
+    echo "Extracting gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
     tar -xf gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2
     mv gcc-arm-none-eabi-7-2017-q4-major-mac $InstallPath/$programVS/Contents/$programGCC
 }
@@ -49,7 +49,7 @@ if [ $ans != y ]; then
 fi
 
 echo
-echo "Installation of Homebrew by several utility programs"
+echo "Installation of Homebrew required to install several utility programs"
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 echo
@@ -59,6 +59,12 @@ brew install wget
 echo
 echo "Installation of dfu-util"
 brew install dfu-util
+
+echo
+echo "Installation of git and git-crendential-manager-core"
+brew install git
+brew tap microsoft/git
+brew install --cask git-credential-manager-core
 
 echo
 echo "Make sure there are no spaces in your installation path!"
@@ -131,7 +137,9 @@ while [ $ans != y ]; do
 done
 mkdir $Workplace
 cd $Workplace
-#git clone https://github.com/epfl-mobots/epuck-2-libs.git
+echo 
+echo "Cloning the libraries into the workplace"
+git clone https://github.com/epfl-mobots/epuck-2-libs.git
 
 #Important VSCode settings definitions
 echo

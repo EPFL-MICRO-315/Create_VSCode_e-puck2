@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "DFU EPuck-2-Main_Processor (EPuck Monitor)",
+            "type": "shell",
+            "command": "sudo ${config:epuck_tools}/dfu-util -d 0483:df11 -a 0 -s 0x08000000 -D ${config:epuck_tools}/tools/e-puck2_main-processor.bin",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

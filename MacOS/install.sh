@@ -134,6 +134,8 @@ cd $Workplace
 #git clone https://github.com/epfl-mobots/epuck-2-libs.git
 
 #Important VSCode settings definitions
+echo
+echo "Configuring vscode..."
 cd $InstallPath/$data/user-data/User/
 SettingsPath=${InstallPath/$data//\//\/\/}
 echo "{" >> settings.json
@@ -142,6 +144,10 @@ echo "	\"gcc_arm_path\": \"$SettingsPath/$programVS//Contents//gcc-arm-none-eabi
 echo "	\"epuck_tools\": \"$SettingsPath/$programVS//Contents//Tools\"," >> settings.json
 echo "	\"workplace\": \"$Workplace\"" >> settings.json
 echo "}" >> settings.json
+
+echo
+echo "Adding dfu task to user level"
+mv $origin_path/task.json task.json
 
 echo
 echo "*******************************************************"

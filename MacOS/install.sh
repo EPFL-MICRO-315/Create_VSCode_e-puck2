@@ -138,13 +138,13 @@ mkdir $Workplace
 cd $Workplace
 echo 
 echo "Cloning the libraries into the workplace"
-git clone https://github.com/epfl-mobots/epuck-2-libs.git
+git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git
 
 #Important VSCode settings definitions
 echo
 echo "Configuring vscode..."
 cd $InstallPath/$data/user-data/User/
-SettingsPath=${InstallPath/$data//\//\/\/}
+SettingsPath=${InstallPath//\//\/\/}
 echo "{" >> settings.json
 echo "	\"explorer.confirmDelete\": false," >> settings.json
 echo "	\"gcc_arm_path\": \"$SettingsPath/$programVS//Contents//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
@@ -154,7 +154,7 @@ echo "}" >> settings.json
 
 echo
 echo "Adding dfu task to user level"
-mv $origin_path/task.json task.json
+mv $origin_path/tasks.json tasks.json
 
 echo
 echo "*******************************************************"

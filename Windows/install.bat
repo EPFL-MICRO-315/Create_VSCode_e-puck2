@@ -105,7 +105,7 @@ echo } >> settings.json
 
 echo.
 echo Adding dfu task to user level
-move $origin_path/task.json task.json
+move $origin_path/tasks.json tasks.json
 
 ::Shortcuts creation
 echo.

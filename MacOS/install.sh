@@ -57,6 +57,10 @@ echo "Installation of wget required to download vscode and compiler"
 brew install wget
 
 echo
+echo "Installation of dfu-util"
+brew install dfu-util
+
+echo
 echo "Make sure there are no spaces in your installation path!"
 read -p "InstallPath by default is ~/Applications" InstallPath
 InstallPath=${InstallPath:-~/Applications/}

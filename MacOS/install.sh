@@ -16,7 +16,7 @@ quitFunc() {
 programVSFunc() {
     echo
     echo Extracting vscode.zip
-    unzip vscode.zip -q
+    unzip -q vscode.zip
     mv "Visual Studio Code.app" $InstallPath/$programVS
 }
 
@@ -64,17 +64,19 @@ InstallPath=${InstallPath:-~/Applications/}
 echo
 echo "Are you sure you want it to be installed at $InstallPath ?"
 read -p "Enter y for Yes, any word for No: " ans
-if [ $ans != y ]; then
-    quitFunc
-fi
+while [ $ans != y ]; do
+    echo
+    read -p "InstallPath by default is ~/Applications" InstallPath
+    InstallPath=${InstallPath:-~/Applications/}
+done
 
 echo
 echo "Download VSCode"
-curl -i -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
+curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
 
 echo
 echo "Download gcc-arm-none-eabi"
-curl -i "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
+curl -OL "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
 
 if [ -d "$InstallPath/$programVS" ]; then 
     echo "$InstallPath/$programVS is already existing, do you want to overwrite it ?"
@@ -118,9 +120,11 @@ Workplace=${Workplace:-~/Documents/Workplace}
 echo
 echo "Are you sure you want your workplace to be at $Workplace ?"
 read -p "Enter y for Yes or n for No: " ans
-if [ $ans != y ]; then
-    quitFunc
-fi
+while [ $ans != y ]; do
+    echo
+    read -p "Workplace by default is ~/Documents/EPuck2" Workplace
+    Workplace=${Workplace:-~/Documents/Workplace}
+done
 mkdir $Workplace
 cd $Workplace
 #git clone https://github.com/epfl-mobots/epuck-2-libs.git

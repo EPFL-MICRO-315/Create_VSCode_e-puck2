@@ -2,8 +2,8 @@
 programVS=VSCode_EPuck2.app
 data="code-portable-data"
 programGCC=gcc-arm-none-eabi-7-2017-q4-major
-programTools=Tools
-
+programTools=EPuckTools
+programUtils=Utils
 origin_path=$PWD
 
 quitFunc() {
@@ -16,6 +16,7 @@ programVSFunc() {
     echo
     echo "Extracting vscode.zip"
     unzip -q vscode.zip
+    rm vscode.zip
     mv "Visual Studio Code.app" $InstallPath/$programVS
 }
 
@@ -23,14 +24,16 @@ dataFunc() {
     echo
     echo "Enabling VSCode portable mode"
     mkdir $InstallPath/$data #enable portable mode
-    mv Tools $InstallPath/$programVS/Contents/
+    cp -r Utils $InstallPath/$programTools/Utils
 }
 
 programGCCFunc() {
     echo
-    echo "Extracting gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
-    tar -xf gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2
-    mv gcc-arm-none-eabi-7-2017-q4-major-mac $InstallPath/$programVS/Contents/$programGCC
+    echo "Extracting gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+    tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
+    rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
+    mkdir $InstallPath/$programTools
+    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/$programTools/$programGCC
 }
 
 echo "*****************************************************"
@@ -81,7 +84,7 @@ curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-unive
 
 echo
 echo "Download gcc-arm-none-eabi"
-curl -OL "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
+curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
 
 if [ -d "$InstallPath/$programVS" ]; then 
     echo "$InstallPath/$programVS is already existing, do you want to overwrite it ?"
@@ -142,15 +145,19 @@ echo "Configuring vscode..."
 cd $InstallPath/$data/user-data/User/
 SettingsPath=${InstallPath//\//\/\/}
 echo "{" >> settings.json
-echo "	\"explorer.confirmDelete\": false," >> settings.json
-echo "	\"gcc_arm_path\": \"$SettingsPath/$programVS//Contents//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
-echo "	\"epuck_tools\": \"$InstallPath/$programVS/Contents/Tools\"," >> settings.json
-echo "	\"workplace\": \"$Workplace\"" >> settings.json
+#Path used by intellissense to locate lib source files
+echo "	\"gcc_arm_path\": \"$SettingsPath//$programTools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
+#Path used for debuging (.svd), dfu
+echo "	\"epuck_tools\": \"$SettingsPath//$programTools/Utils\"," >> settings.json
+echo "	\"workplace\": \"$Workplace\"," >> settings.json
+echo "	\"terminal.integrated.env.osx\": {" >> settings.json
+echo "	    \"PATH\": \"\$PATH:$SettingsPath//$programTools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
+echo "  }" >> settings.json
 echo "}" >> settings.json
 
 echo
 echo "Adding dfu task to user level"
-mv $origin_path/tasks.json tasks.json
+cp $origin_path/tasks.json tasks.json
 
 echo
 echo "*******************************************************"

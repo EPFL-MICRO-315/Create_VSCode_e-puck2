@@ -19,7 +19,7 @@ programVSFunc() {
     mv "Visual Studio Code.app" $InstallPath/VSCode_EPuck2.app
 }
 
-programGCCFunc() {
+EPuck2ToolsFunc() {
     echo
     echo "Download gcc-arm-none-eabi"
     curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
@@ -28,8 +28,10 @@ programGCCFunc() {
     echo "Extracting gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
     rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-    mkdir -p $InstallPath/Tools
-    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools
+    mkdir -p $InstallPath/EPuck2Tools
+    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
+
+    cp Utils $InstallPath/EPuck2Tools/Utils
 }
 
 echo "*****************************************************"
@@ -100,10 +102,10 @@ if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then
     read -p "Enter y for Yes or n for No: " ans
     if [ $ans = y ]; then
         rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
-        programGCCFunc
+        EPuck2ToolsFunc
     fi
 else
-    programGCCFunc
+    EPuck2ToolsFunc
 fi
 
 #####################################################

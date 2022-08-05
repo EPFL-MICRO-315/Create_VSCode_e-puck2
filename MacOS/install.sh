@@ -28,7 +28,8 @@ dataFunc() {
     echo
     echo "Enabling VSCode portable mode"
     mkdir $InstallPath/$data #enable portable mode
-    cp -r Utils $InstallPath/$programTools/
+    mkdir $InstallPath/$programTools/$programUtils
+    cp -r Utils $InstallPath/$programTools/$programUtils
 }
 
 programGCCFunc() {
@@ -129,18 +130,14 @@ echo "Installing VSCode ms-vscode.cpptools extension"
 ./code --install-extension ms-vscode.cpptools --force
 
 #Workplace
-echo
-echo "Select the workplace where you will be working on"
-echo "Make sure there are no spaces in your workingplace!"
-read -p "Workplace by default is ~/Documents/EPuck2" Workplace
-Workplace=${Workplace:-~/Documents/Workplace}
-echo
-echo "Are you sure you want your workplace to be at $Workplace ?"
-read -p "Enter y for Yes or n for No: " ans
+ans=n
 while [ $ans != y ]; do
     echo
     read -p "Workplace by default is ~/Documents/EPuck2" Workplace
     Workplace=${Workplace:-~/Documents/Workplace}
+    echo
+    echo "Are you sure you want your workplace to be at $Workplace ?"
+    read -p "Enter y for Yes or n for No: " ans
 done
 mkdir $Workplace
 cd $Workplace
@@ -157,7 +154,7 @@ echo "{" >> settings.json
 #Path used by intellissense to locate lib source files
 echo "	\"gcc_arm_path\": \"$SettingsPath//$programTools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
 #Path used for debuging (.svd), dfu
-echo "	\"epuck_tools\": \"$SettingsPath//$programTools/Utils\"," >> settings.json
+echo "	\"epuck_tools\": \"$SettingsPath//$programTools//$programUtils\"," >> settings.json
 echo "	\"workplace\": \"$Workplace\"," >> settings.json
 echo "	\"terminal.integrated.env.osx\": {" >> settings.json
 echo "	    \"PATH\": \"\$PATH:$SettingsPath//$programTools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json

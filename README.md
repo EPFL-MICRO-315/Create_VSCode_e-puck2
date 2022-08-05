@@ -1,36 +1,22 @@
-# Operating Systems
-## Windows
+# Introduction
+This repository containing the installer for Visual Studio Code EPuck2 is to be downloaded or cloned on your computer.
+MacOS, Windows and Linux are or will be in the very near future supported.  
+
+## Fully tested Operating System
+- MacOS Monterey (v12.5), should work on any MacOS not older than Cantalina, could work on older version with some very minor tweaks
+
+## Not tested Operating System / Installation script is not finished
 ### Tested on
-- Windows 10
+- Windows
+- Linux
 
-## MacOS
-### Tested on
-- Monterey v12.5
-
-## Linux
-### Tested on
-- Ubuntu one day
-
-# GOAL
-## Installation method
-The user download the zip relative to the OS used.
-zip structure:
-	- install.sh / install.bat : installation script
-
-vscode download link : https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-archive
-arm-gcc download link : https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip
-download soft :
-- wget : not installed by default on any OS
-- curl : seems to be installed on all windows >= 10 & macos & linux
-- bitsadmin : installed on windows by default
-bitsadmin /transfer mydownloadjob /download /priority FOREGROUND "http://example.com/File.zip" "C:\Downloads\File.zip"
-
-## Installation method fallback
-in case the first method doesn't work (e.g: very old OS)
-zip structure;
-	- install.sh / install.bat : installation script
-	- vscode.zip
-	- arm-gcc.zip
+# Installation method (only MacOS supported right now)
+- download/clone the repository anywhere you want (e.g: ~/Download)
+- open a terminal under Create_VSCode_e-puck2/MacOS
+- execute chmod 700 install.sh
+- execute ./install.sh 
+- follow the installation steps (caution, be very patient for the installation, it's normal if it seems "stucked" for a few minutes) 
 
 # TODO
-- support live download
+- enhances the script "look" to be more user friendly 
+- support as eclipse-epuck2 does the configuration of peripherals through some kind of .xml file

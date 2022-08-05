@@ -176,7 +176,7 @@ echo "	\"make_path\": \"make\"," >> settings.json
 echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> settings.json
 echo "	\"workplace\": \"$Workplace\"," >> settings.json
 echo "	\"terminal.integrated.env.osx\": {" >> settings.json
-echo "	    \"PATH\": \"\${env:HOME}:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> settings.json
+echo "	    \"PATH\": \"\${env:HOME}:/usr/local/bin:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> settings.json
 echo "	\"cortex-debug.armToolchainPath.osx\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
 echo "}" >> settings.json
 

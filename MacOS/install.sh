@@ -1,9 +1,4 @@
 #!/bin/bash
-programVS=VSCode_EPuck2.app
-data="code-portable-data"
-programGCC=gcc-arm-none-eabi-7-2017-q4-major
-programTools=EPuckTools
-programUtils=Utils
 origin_path=$PWD
 
 quitFunc() {
@@ -21,15 +16,7 @@ programVSFunc() {
     echo "Extracting vscode.zip"
     unzip -q vscode.zip
     rm vscode.zip
-    mv "Visual Studio Code.app" $InstallPath/$programVS
-}
-
-dataFunc() {
-    echo
-    echo "Enabling VSCode portable mode"
-    mkdir $InstallPath/$data #enable portable mode
-    mkdir $InstallPath/$programTools/$programUtils
-    cp -r Utils $InstallPath/$programTools/$programUtils
+    mv "Visual Studio Code.app" $InstallPath/VSCode_EPuck2.app
 }
 
 programGCCFunc() {
@@ -41,8 +28,8 @@ programGCCFunc() {
     echo "Extracting gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
     rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-    mkdir $InstallPath/$programTools
-    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/$programTools/$programGCC
+    mkdir -p $InstallPath/Tools
+    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools
 }
 
 echo "*****************************************************"
@@ -77,6 +64,9 @@ brew install git
 brew tap microsoft/git
 brew install --cask git-credential-manager-core
 
+#####################################################
+##              Select Install Path                ##
+#####################################################
 ans=n
 while [ $ans != y ]; do
     echo
@@ -86,42 +76,58 @@ while [ $ans != y ]; do
     echo "Are you sure you want it to be installed at $InstallPath ?"
     read -p "Enter y for Yes, any word for No: " ans
 done
+mkdir -p $InstallPath #making sure this folder exists
 
-if [ -d "$InstallPath/$programVS" ]; then 
-    echo "$InstallPath/$programVS is already existing, do you want to overwrite it ?"
+#####################################################
+##                Install VSCode                   ##
+#####################################################
+if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then 
+    echo "$InstallPath/VSCode_EPuck2.app is already existing, do you want to overwrite it ?"
     read -p "Enter y for Yes or n for No: " ans
     if [ $ans = y ]; then
-        rm -rf $InstallPath/$programVS
+        rm -rf $InstallPath/VSCode_EPuck2.app
         programVSFunc
     fi
 else
     programVSFunc
 fi
 
-if [ -d "$InstallPath/$data" ]; then 
-    echo "$InstallPath/$data is already existing, do you want to overwrite it ?"
+#####################################################
+##            Install GCC-ARM-NONE-EABI            ##
+#####################################################
+if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
+    echo "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
     read -p "Enter y for Yes or n for No: " ans
     if [ $ans = y ]; then
-        rm -rf $InstallPath/$data
-        dataFunc
-    fi
-else
-    dataFunc
-fi
-
-if [ -d "$InstallPath/$programTools/$programGCC" ]; then 
-    echo "$InstallPath/$programTools/$programGCC is already existing, do you want to overwrite it ?"
-    read -p "Enter y for Yes or n for No: " ans
-    if [ $ans = y ]; then
-        rm -rf $InstallPath/$programTools/$programGCC
+        rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
         programGCCFunc
     fi
 else
     programGCCFunc
 fi
 
-#Install extensions
-cd $InstallPath/$programVS/Contents/Resources/app/bin
+#####################################################
+##               Enable Portable Mode              ##
+#####################################################
+if [ -d "$InstallPath/code-portable-data" ]; then 
+    echo "$InstallPath/code-portable-data is already existing, do you want to overwrite it ?"
+    read -p "Enter y for Yes or n for No: " ans
+    if [ $ans = y ]; then
+        rm -rf $InstallPath/code-portable-data
+        echo
+        echo "Enabling VSCode portable mode"
+        mkdir $InstallPath/code-portable-data
+    fi
+else
+    echo
+    echo "Enabling VSCode portable mode"
+    mkdir $InstallPath/code-portable-data
+fi
+
+#####################################################
+##              Install extensions                 ##
+#####################################################
+cd $InstallPath/VSCode_EPuck2.app/Contents/Resources/app/bin
 echo
 echo "Installing VSCode marus25.cortex-debug extension"
 ./code --install-extension marus25.cortex-debug --force
@@ -129,7 +135,10 @@ echo
 echo "Installing VSCode ms-vscode.cpptools extension"
 ./code --install-extension ms-vscode.cpptools --force
 
-#Workplace
+
+#####################################################
+##                  Workplace                      ##
+#####################################################
 ans=n
 while [ $ans != y ]; do
     echo
@@ -139,28 +148,35 @@ while [ $ans != y ]; do
     echo "Are you sure you want your workplace to be at $Workplace ?"
     read -p "Enter y for Yes or n for No: " ans
 done
-mkdir $Workplace
+mkdir -p $Workplace
 cd $Workplace
 echo 
 echo "Cloning the libraries into the workplace"
 git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git
 
-#Important VSCode settings definitions
+
+#####################################################
+##               VSCode Settings                   ##
+#####################################################
 echo
 echo "Configuring vscode..."
-cd $InstallPath/$data/user-data/User/
-SettingsPath=${InstallPath//\//\/\/}
+cd $InstallPath/code-portable-data/user-data/User/
+InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //
+
 echo "{" >> settings.json
 #Path used by intellissense to locate lib source files
-echo "	\"gcc_arm_path\": \"$SettingsPath//$programTools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
+echo "	\"gcc_arm_path\": \"$InstallPathD//Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
 #Path used for debuging (.svd), dfu
-echo "	\"epuck_tools\": \"$SettingsPath//$programTools//$programUtils\"," >> settings.json
+echo "	\"epuck2_utils\": \"$InstallPathD//Tools//Utils\"," >> settings.json
 echo "	\"workplace\": \"$Workplace\"," >> settings.json
 echo "	\"terminal.integrated.env.osx\": {" >> settings.json
-echo "	    \"PATH\": \"\$PATH:$SettingsPath//$programTools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
+echo "	    \"PATH\": \"\$PATH:$InstallPathD//Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
 echo "  }" >> settings.json
 echo "}" >> settings.json
 
+#####################################################
+##               VSCode DFU Task                   ##
+#####################################################
 echo
 echo "Adding dfu task to user level"
 cp $origin_path/tasks.json tasks.json

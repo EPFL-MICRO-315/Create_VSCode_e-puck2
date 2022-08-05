@@ -14,6 +14,10 @@ quitFunc() {
 
 programVSFunc() {
     echo
+    echo "Download VSCode"
+    curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
+
+    echo
     echo "Extracting vscode.zip"
     unzip -q vscode.zip
     rm vscode.zip
@@ -24,10 +28,14 @@ dataFunc() {
     echo
     echo "Enabling VSCode portable mode"
     mkdir $InstallPath/$data #enable portable mode
-    cp -r Utils $InstallPath/$programTools/Utils
+    cp -r Utils $InstallPath/$programTools/
 }
 
 programGCCFunc() {
+    echo
+    echo "Download gcc-arm-none-eabi"
+    curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+
     echo
     echo "Extracting gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
@@ -78,14 +86,6 @@ while [ $ans != y ]; do
     read -p "Enter y for Yes, any word for No: " ans
 done
 
-echo
-echo "Download VSCode"
-curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
-
-echo
-echo "Download gcc-arm-none-eabi"
-curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
-
 if [ -d "$InstallPath/$programVS" ]; then 
     echo "$InstallPath/$programVS is already existing, do you want to overwrite it ?"
     read -p "Enter y for Yes or n for No: " ans
@@ -108,7 +108,16 @@ else
     dataFunc
 fi
 
-programGCCFunc
+if [ -d "$InstallPath/$programTools/$programGCC" ]; then 
+    echo "$InstallPath/$programTools/$programGCC is already existing, do you want to overwrite it ?"
+    read -p "Enter y for Yes or n for No: " ans
+    if [ $ans = y ]; then
+        rm -rf $InstallPath/$programTools/$programGCC
+        programGCCFunc
+    fi
+else
+    programGCCFunc
+fi
 
 #Install extensions
 cd $InstallPath/$programVS/Contents/Resources/app/bin

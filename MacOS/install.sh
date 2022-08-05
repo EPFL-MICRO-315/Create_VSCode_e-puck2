@@ -169,14 +169,14 @@ echo "{" >> settings.json
 #Path used by intellissense to locate lib source files
 echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
 #Compiler path
-echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//gcc-qrm-none-eabi\"," >> settings.json
+echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> settings.json
 #Make path
 echo "	\"make_path\": \"make\"," >> settings.json
 #Path used for debuging (.svd), dfu
 echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> settings.json
 echo "	\"workplace\": \"$Workplace\"," >> settings.json
 echo "	\"terminal.integrated.env.osx\": {" >> settings.json
-echo "	    \"PATH\": \"\$PATH:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
+echo "	    \"PATH\": \"\${env:HOME}:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"" >> settings.json
 echo "  }" >> settings.json
 echo "}" >> settings.json
 

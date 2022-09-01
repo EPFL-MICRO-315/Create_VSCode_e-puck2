@@ -19,4 +19,8 @@ MacOS, Windows and Linux are or will be in the very near future supported.
 
 # TODO
 - enhances the script "look" to be more user friendly 
+   - differentiates (color and/or polices) the requests to the user from the command's log
+   - manage case for answer like 'y' or 'Y'
 - support as eclipse-epuck2 does the configuration of peripherals through some kind of .xml file
+- modify installers in order to avoid to install anything already installed
+- documents how to configure correctly the "Get Started" configuration at the first VSCode_EPuck2 launch

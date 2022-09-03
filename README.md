@@ -24,3 +24,5 @@ MacOS, Windows and Linux are or will be in the very near future supported.
 - support as eclipse-epuck2 does the configuration of peripherals through some kind of .xml file
 - modify installers in order to avoid to install anything already installed
 - documents how to configure correctly the "Get Started" configuration at the first VSCode_EPuck2 launch
+- uses make with the right threads number (-jx) where x is determined on the fly
+  - use command "sysctl -n hw.logicalcpu" for MacOs 

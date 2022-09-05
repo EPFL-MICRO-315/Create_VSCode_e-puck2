@@ -81,60 +81,110 @@ quitFunc() {
 }
 
 programVSFunc() {
+    if test -f "vscode.zip"; then
+        echo
+        echo -e $BBlue "vscode.zip already downloaded"
+    else
+        echo
+        echo -e $BPurple "Download VSCode"
+        curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
+    fi
+    
     echo
-    echo "Download VSCode"
-    curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
+    echo -e $BBlue "Extracting vscode.zip"
+    unzip -q vscode.zip
+    
+    echo
+    echo -e $BPurple "Delete vscode.zip ?"
+    echo -n -e $BPurple "Enter y for Yes or any word for No: "
+    read ans
+    if [ $ans != y ]; then
+        rm vscode.zip
+    fi
+    mv "Visual Studio Code.app" $InstallPath/VSCode_EPuck2.app
 
     echo
-    echo "Extracting vscode.zip"
-    unzip -q vscode.zip
-    rm vscode.zip
-    mv "Visual Studio Code.app" $InstallPath/VSCode_EPuck2.app
+    echo -e $BBlue "Visual Studio Code installed"
 }
 
 EPuck2ToolsFunc() {
-    echo
-    echo "Download gcc-arm-none-eabi"
-    curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+    if test -f "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
+        echo
+        echo -e $BBlue "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
+    
+        echo
+        echo -e $BPurple "Do you want to re-download it ?"
+        echo -n -e $BPurple "Enter y for Yes or any word for No: "
+        read ans
+        if [ $ans != y ]; then
+            echo
+            echo -e $BBlue "Download gcc-arm-none-eabi"
+            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        fi
+    else
+        echo
+        echo -e $BBlue "Download gcc-arm-none-eabi"
+        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+    fi
 
     echo
-    echo "Extracting gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+    echo -e $BBlue "Extracting gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-    rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
+
+    echo
+    echo -e $BPurple "Delete vscode.zip ?"
+    echo -n -e $BPurple "Enter y for Yes or any word for No: "
+    read ans
+    if [ $ans != y ]; then
+        rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
+    fi
     mkdir -p $InstallPath/EPuck2Tools
     mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
-
     cp -r Utils $InstallPath/EPuck2Tools/Utils
+    
+    echo
+    echo -e $BBlue "EPuck2Tools installed"
 }
 
-echo -e $Yellow "*****************************************************"
-echo -e $Yellow "** Welcome to Visual Studio Code EPuck 2 installer **"
-echo -e $Yellow "*****************************************************"
+#####################################################
+## Welcome to Visual Studio Code EPuck 2 installer ##
+#####################################################
+clear
+echo -e $BRed "*****************************************************"
+echo -e $BRed "** Welcome to Visual Studio Code EPuck 2 installer **"
+echo -e $BRed "*****************************************************"
 echo
-echo -e $Blue "see https://github.com/epfl-mobots/Create_VSCode_e-puck2"
-echo -e $Yellow "Released in 2022"
+echo -e $BBlue "see https://github.com/epfl-mobots/Create_VSCode_e-puck2"
+echo -e $BBlue "Released in 2022"
 echo
 
-echo "Proceed with the installation ?"
-read -p "Enter y for Yes or any word for No: " ans
+echo -e $BPurple "Proceed with the installation ?"
+echo -n -e $BPurple "Enter y for Yes or any word for No: "
+read ans
 if [ $ans != y ]; then
     quitFunc
 fi
 
+#####################################################
+##         Installation of utility softwares       ##
+#####################################################
+echo -e $BRed "*****************************************************"
+echo -e $BRed "**         Installation of utility softwares       **"
+echo -e $BRed "*****************************************************"
 echo
-echo "Installation of Homebrew required to install several utility programs"
+echo -e $BBlue "Installation of Homebrew required to install several utility programs"
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 echo
-echo "Installation of wget required to download vscode and compiler"
+echo -e $BBlue "Installation of wget required to download vscode and compiler"
 brew install wget
 
 echo
-echo "Installation of dfu-util"
+echo -e $BBlue "Installation of dfu-util"
 brew install dfu-util
 
 echo
-echo "Installation of git and git-crendential-manager-core"
+echo -e $BBlue "Installation of git and git-crendential-manager-core"
 brew install git
 brew tap microsoft/git
 brew install --cask git-credential-manager-core
@@ -142,23 +192,35 @@ brew install --cask git-credential-manager-core
 #####################################################
 ##              Select Install Path                ##
 #####################################################
+echo -e $BRed "*****************************************************"
+echo -e $BRed "**              Select Install Path                **"
+echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ]; do
     echo
-    read -p "InstallPath by default is ~/Applications" InstallPath
+    echo -n -e $BPurple "InstallPath by default is ~/Applications"
+    read ans
     InstallPath=${InstallPath:-~/Applications}
     echo
-    echo "Are you sure you want it to be installed at $InstallPath ?"
-    read -p "Enter y for Yes, any word for No: " ans
+    echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
+    echo -n -e $BPurple "Enter y for Yes, any word for No: "
+    read ans
 done
-mkdir -p $InstallPath #making sure this folder exists
+echo
+echo -e $BBlue "Creation of install folder if not already existing"
+mkdir -p $InstallPath
 
 #####################################################
-##                Install VSCode                   ##
+##              Installation of VSCode             ##
 #####################################################
-if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then 
-    echo "$InstallPath/VSCode_EPuck2.app is already existing, do you want to overwrite it ?"
-    read -p "Enter y for Yes or n for No: " ans
+echo -e $BRed "*****************************************************"
+echo -e $BRed "**              Installation of VSCode             **"
+echo -e $BRed "*****************************************************"
+if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then
+    echo
+    echo -e $BPurple "$InstallPath/VSCode_EPuck2.app is already existing, do you want to overwrite it ?"
+    echo -n -e $BPurple "Enter y for Yes or n for No: "
+    read ans
     if [ $ans = y ]; then
         rm -rf $InstallPath/VSCode_EPuck2.app
         programVSFunc
@@ -168,11 +230,16 @@ else
 fi
 
 #####################################################
-##            Install GCC-ARM-NONE-EABI            ##
+##              Install EPuck2Tools                ##
 #####################################################
+echo -e $BRed "*****************************************************"
+echo -e $BRed "**           Installation of EPuck2Tools           **"
+echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
-    echo "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
-    read -p "Enter y for Yes or n for No: " ans
+    echo
+    echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
+    echo -n -e $BPurple "Enter y for Yes or n for No: "
+    read ans
     if [ $ans = y ]; then
         rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
         EPuck2ToolsFunc
@@ -182,40 +249,45 @@ else
 fi
 
 #####################################################
-##               Enable Portable Mode              ##
+##          VSCode Extensions Installation         ##
 #####################################################
-if [ -d "$InstallPath/code-portable-data" ]; then 
-    echo "$InstallPath/code-portable-data is already existing, do you want to overwrite it ?"
-    read -p "Enter y for Yes or n for No: " ans
+echo -e $BRed "*****************************************************"
+echo -e $BRed "**          VSCode Extensions Installation         **"
+echo -e $BRed "*****************************************************"
+if [ -d "$InstallPath/code-portable-data" ]; then
+    echo
+    echo -e $BPurple "$InstallPath/code-portable-data is already existing, do you want to clear it ?"
+    echo -n -e $BPurple "Enter y for Yes or n for No: "
+    read ans
     if [ $ans = y ]; then
         rm -rf $InstallPath/code-portable-data
         echo
-        echo "Enabling VSCode portable mode"
+        echo -e $BPurplen "Enabling VSCode portable mode"
         mkdir $InstallPath/code-portable-data
     fi
 else
     echo
-    echo "Enabling VSCode portable mode"
+    echo -e $BPurple "Enabling VSCode portable mode"
     mkdir $InstallPath/code-portable-data
 fi
 
-#####################################################
-##              Install extensions                 ##
-#####################################################
 cd $InstallPath/VSCode_EPuck2.app/Contents/Resources/app/bin
 echo
-echo "Installing VSCode marus25.cortex-debug extension"
+echo -e $BBlue "Installing VSCode marus25.cortex-debug extension, version 1.4.4"
 ./code --install-extension marus25.cortex-debug@1.4.4 --force
 echo
-echo "Installing VSCode ms-vscode.cpptools extension"
+echo -e $BBlue "Installing VSCode ms-vscode.cpptools extension"
 ./code --install-extension ms-vscode.cpptools --force
 echo
-echo "Installing VSCode SanaAjani.taskrunnercode extension"
+echo -e $BBlue "Installing VSCode SanaAjani.taskrunnercode extension"
 ./code --install-extension SanaAjani.taskrunnercode --force
 
 #####################################################
-##                  Workplace                      ##
+##               Workplace Setup                   ##
 #####################################################
+echo -e $BRed "*****************************************************"
+echo -e $BRed "**               Workplace Setup                   **"
+echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ]; do
     echo
@@ -225,18 +297,30 @@ while [ $ans != y ]; do
     echo "Are you sure you want your workplace to be at $Workplace ?"
     read -p "Enter y for Yes or n for No: " ans
 done
-mkdir -p $Workplace
+if [ -d "$Workplace" ]; then 
+    echo
+    echo -e $BPurple "$Workplace is already existing, do you want to clear it ?"
+    echo -n -e $BPurple "Enter y for Yes or n for No: "
+    read ans
+    if [ $ans = y ]; then
+        rm -rf $Workplace
+        mkdir -p $Workplace
+    fi
+fi
 cd $Workplace
 echo 
-echo "Cloning the libraries into the workplace"
+echo -$BBlue "Cloning the libraries into the workplace"
 git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git
 
 
 #####################################################
 ##               VSCode Settings                   ##
 #####################################################
+echo -e $BRed "*****************************************************"
+echo -e $BRed "**               VSCode Settings                   **"
+echo -e $BRed "*****************************************************"
 echo
-echo "Configuring vscode..."
+echo -e $BBlue "Configuring vscode..."
 cd $InstallPath/code-portable-data/user-data/User/
 InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //
 
@@ -259,13 +343,13 @@ echo "}" >> settings.json
 ##               VSCode DFU Task                   ##
 #####################################################
 echo
-echo "Adding dfu task to user level"
+echo -e $BBlue "Adding dfu task to user level"
 cp $origin_path/tasks.json tasks.json
 
 echo
-echo "*******************************************************"
-echo "** Visual Studio Code EPuck2 successfully installed! **"
-echo "*******************************************************"
+echo -e $BRed "*******************************************************"
+echo -e $BRed "** Visual Studio Code EPuck2 successfully installed! **"
+echo -e $BRed "*******************************************************"
 echo
 
 quitFunc

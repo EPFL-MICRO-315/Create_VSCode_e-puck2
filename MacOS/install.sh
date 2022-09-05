@@ -139,7 +139,7 @@ EPuck2ToolsFunc() {
     tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
 
     echo
-    echo -e $BPurple "Delete vscode.zip ?"
+    echo -e $BPurple "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 ?"
     echo -n -e $BPurple "Enter y for Yes or any word for No: "
     read ans
     echo -e -n $Color_Off
@@ -166,6 +166,8 @@ echo
 echo -e $BBlue "see https://github.com/epfl-mobots/Create_VSCode_e-puck2"
 echo -e $BBlue "Released in 2022"
 echo
+echo -e $Red "Be extremely cautious when specifying installation paths, there are risk of damaging your installation "
+echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root /"
 
 echo -e $BPurple "Proceed with the installation ?"
 echo -n -e $BPurple "Enter y for Yes or any word for No: "
@@ -213,7 +215,8 @@ echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ]; do
     echo
-    echo -e $BPurple "InstallPath by default is ~/Applications" InstallPath
+    echo -e $BPurple "InstallPath by default is ~/Applications"
+    read -p InstallPath
     InstallPath=${InstallPath:-~/Applications}
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
@@ -318,21 +321,22 @@ echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ]; do
     echo
-    echo -e $BPurple "Workplace by default is ~/Documents/EPuck2" Workplace
+    echo -e $BPurple "Workplace by default is ~/Documents/EPuck2"
+    read -p Workplace
     Workplace=${Workplace:-~/Documents/Workplace}
     echo
     echo "Are you sure you want your workplace to be at $Workplace ?"
     read -p "Enter y for Yes or n for No: " ans
 done
-if [ -d "$Workplace" ]; then 
+mkdir -p $Workplace
+if [ -d "$Workplace/Lib_VSCode_e-puck2" ]; then 
     echo
-    echo -e $BPurple "$Workplace is already existing, do you want to clear it ?"
+    echo -e $BPurple "$Workplace/Lib_VSCode_e-puck2 is already existing, do you want to clear it ?"
     echo -n -e $BPurple "Enter y for Yes or n for No: "
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ]; then
-        rm -rf $Workplace
-        mkdir -p $Workplace
+        rm -rf $Workplace/Lib_VSCode_e-puck2
     fi
 fi
 cd $Workplace

@@ -213,8 +213,7 @@ echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ]; do
     echo
-    echo -n -e $BPurple "InstallPath by default is ~/Applications"
-    read ans
+    read -p "$(echo -e $BPurple"InstallPath by default is ~/Applications")" InstallPath
     InstallPath=${InstallPath:-~/Applications}
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
@@ -319,7 +318,7 @@ echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ]; do
     echo
-    read -p "Workplace by default is ~/Documents/EPuck2" Workplace
+    read -p "$(echo -e $BPurple"Workplace by default is ~/Documents/EPuck2")" Workplace
     Workplace=${Workplace:-~/Documents/Workplace}
     echo
     echo "Are you sure you want your workplace to be at $Workplace ?"

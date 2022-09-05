@@ -84,7 +84,7 @@ quitFunc() {
 programVSFunc() {
     if test -f "vscode.zip"; then
         echo
-        echo -e $BICyan "vscode.zip already downloaded"
+        echo -e $Cyan "vscode.zip already downloaded"
         echo -e -n $Color_Off
     else
         echo
@@ -94,7 +94,7 @@ programVSFunc() {
     fi
     
     echo
-    echo -e $BICyan "Extracting vscode.zip"
+    echo -e $Cyan "Extracting vscode.zip"
     echo -e -n $Color_Off
     unzip -q vscode.zip
     
@@ -109,32 +109,32 @@ programVSFunc() {
     mv "Visual Studio Code.app" $InstallPath/VSCode_EPuck2.app
 
     echo
-    echo -e $BICyan "Visual Studio Code installed"
+    echo -e $Cyan "Visual Studio Code installed"
     echo -e -n $Color_Off
 }
 
 EPuck2ToolsFunc() {
     if test -f "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
         echo
-        echo -e $BICyan "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
+        echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
         echo -e $BPurple "Do you want to re-download it ?"
         echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
         read ans
         if [ $ans = y ] || [ $ans = Y ]; then
             echo
-            echo -e $BICyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+            echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
             echo -e -n $Color_Off
             curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         fi
     else
         echo
-        echo -e $BICyan "Download gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        echo -e $Cyan "Download gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         echo -e -n $Color_Off
         curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     fi
 
     echo
-    echo -e $BICyan "Extracting gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+    echo -e $Cyan "Extracting gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     echo -e -n $Color_Off
     tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
 
@@ -151,7 +151,7 @@ EPuck2ToolsFunc() {
     cp -r Utils $InstallPath/EPuck2Tools/Utils
     
     echo
-    echo -e $BICyan "EPuck2Tools installed"
+    echo -e $Cyan "EPuck2Tools installed"
     echo -e -n $Color_Off
 }
 
@@ -163,8 +163,8 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "** Welcome to Visual Studio Code EPuck 2 installer **"
 echo -e $BRed "*****************************************************"
 echo
-echo -e $BICyan "see https://github.com/epfl-mobots/Create_VSCode_e-puck2"
-echo -e $BICyan "Released in 2022"
+echo -e $Cyan "see https://github.com/epfl-mobots/Create_VSCode_e-puck2"
+echo -e $Cyan "Released in 2022"
 echo
 echo -e $Red "Be extremely cautious when specifying installation paths, there are risk of damaging your installation "
 echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root /"
@@ -172,7 +172,7 @@ echo
 echo -e $BPurple "Proceed with the installation ?"
 echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
 read ans
-if [ $ans != y ] || [ $ans != Y]; then
+if [ $ans != y ] && [ $ans != Y ]; then
     quitFunc
 fi
 
@@ -184,43 +184,43 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**         Installation of utility softwares       **"
 echo -e $BRed "*****************************************************"
 echo
-echo -e $BICyan "Installation of Homebrew required to install several utility programs"
+echo -e $Cyan "Installation of Homebrew required to install several utility programs"
 echo -e -n $Color_Off
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 echo
 echo -e $BPurple "Do you want to re-install the utility softwares if they are already installed ?"
 echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
 read ans
-if [ $ans = y ] || [ $ans = Y]; then
+if [ $ans = y ] || [ $ans = Y ]; then
     echo
-    echo -e $BICyan "Installation of wget required to download vscode and compiler"
+    echo -e $Cyan "Installation of wget required to download vscode and compiler"
     echo -e -n $Color_Off
     brew reinstall wget
 
     echo
-    echo -e $BICyan "Installation of dfu-util"
+    echo -e $Cyan "Installation of dfu-util"
     echo -e -n $Color_Off
     brew reinstall dfu-util
 
     echo
-    echo -e $BICyan "Installation of git and git-crendential-manager-core"
+    echo -e $Cyan "Installation of git and git-crendential-manager-core"
     echo -e -n $Color_Off
     brew reinstall git
     brew tap microsoft/git
     brew reinstall --cask git-credential-manager-core
 else
     echo
-    echo -e $BICyan "Installation of wget required to download vscode and compiler"
+    echo -e $Cyan "Installation of wget required to download vscode and compiler"
     echo -e -n $Color_Off
     brew install wget
 
     echo
-    echo -e $BICyan "Installation of dfu-util"
+    echo -e $Cyan "Installation of dfu-util"
     echo -e -n $Color_Off
     brew install dfu-util
 
     echo
-    echo -e $BICyan "Installation of git and git-crendential-manager-core"
+    echo -e $Cyan "Installation of git and git-crendential-manager-core"
     echo -e -n $Color_Off
     brew install git
     brew tap microsoft/git
@@ -235,7 +235,7 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Select Install Path                **"
 echo -e $BRed "*****************************************************"
 ans=n
-while [ $ans != y ] || [ $ans != Y]; do
+while [ $ans != y ] || [ $ans != Y ]; do
     echo
     echo -e $BPurple "InstallPath by default is ~/Applications"
     read -p InstallPath
@@ -246,7 +246,7 @@ while [ $ans != y ] || [ $ans != Y]; do
     read ans
 done
 echo
-echo -e $BICyan "Creation of install folder if not already existing"
+echo -e $Cyan "Creation of install folder if not already existing"
 echo -e -n $Color_Off
 mkdir -p $InstallPath
 
@@ -263,7 +263,7 @@ if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then
     echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
     read ans
     echo -e -n $Color_Off
-    if [ $ans = y ]; || [ $ans = Y] then
+    if [ $ans = y ]; || [ $ans = Y ] then
         rm -rf $InstallPath/VSCode_EPuck2.app
         programVSFunc
     fi
@@ -284,7 +284,7 @@ if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then
     echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
     read ans
     echo -e -n $Color_Off
-    if [ $ans = y ] || [ $ans = Y]; then
+    if [ $ans = y ] || [ $ans = Y ]; then
         rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
         EPuck2ToolsFunc
     fi
@@ -321,15 +321,15 @@ fi
 
 cd $InstallPath/VSCode_EPuck2.app/Contents/Resources/app/bin
 echo
-echo -e $BICyan "Installing VSCode marus25.cortex-debug extension, version 1.4.4"
+echo -e $Cyan "Installing VSCode marus25.cortex-debug extension, version 1.4.4"
 echo -e -n $Color_Off
 ./code --install-extension marus25.cortex-debug@1.4.4 --force
 echo
-echo -e $BICyan "Installing VSCode ms-vscode.cpptools extension"
+echo -e $Cyan "Installing VSCode ms-vscode.cpptools extension"
 echo -e -n $Color_Off
 ./code --install-extension ms-vscode.cpptools --force
 echo
-echo -e $BICyan "Installing VSCode SanaAjani.taskrunnercode extension"
+echo -e $Cyan "Installing VSCode SanaAjani.taskrunnercode extension"
 echo -e -n $Color_Off
 ./code --install-extension SanaAjani.taskrunnercode --force
 
@@ -363,7 +363,7 @@ if [ -d "$Workplace/Lib_VSCode_e-puck2" ]; then
 fi
 cd $Workplace
 echo 
-echo -$BICyan "Cloning the libraries into the workplace"
+echo -$Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
 git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git
 
@@ -376,7 +376,7 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**               VSCode Settings                   **"
 echo -e $BRed "*****************************************************"
 echo
-echo -e $BICyan "Configuring vscode..."
+echo -e $Cyan "Configuring vscode..."
 echo -e -n $Color_Off
 cd $InstallPath/code-portable-data/user-data/User/
 InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //
@@ -400,7 +400,7 @@ echo "}" >> settings.json
 ##               VSCode DFU Task                   ##
 #####################################################
 echo
-echo -e $BICyan "Adding dfu task to user level"
+echo -e $Cyan "Adding dfu task to user level"
 echo -e -n $Color_Off
 cp $origin_path/tasks.json tasks.json
 

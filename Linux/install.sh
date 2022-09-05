@@ -190,6 +190,11 @@ echo -e -n $Color_Off
 sudo apt-get install curl
 
 echo
+echo -e $Cyan "Installation of make"
+echo -e -n $Color_Off
+sudo apt-get install make
+
+echo
 echo -e $Cyan "Installation of dfu-util"
 echo -e -n $Color_Off
 sudo apt-get install dfu-util
@@ -380,6 +385,22 @@ echo
 echo -e $Cyan "Adding DFU and Library linking tasks to user level"
 echo -e -n $Color_Off
 cp $origin_path/tasks.json tasks.json
+
+#####################################################
+##               VSCode Shortcut                   ##
+#####################################################
+echo
+echo -e $BRed "*****************************************************"
+echo -e $BRed "**               VSCode Shortcut                   **"
+echo -e $BRed "*****************************************************"
+echo
+echo -e $Cyan "Create shortcut under Desktop ?"
+echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+read ans
+echo -e -n $Color_Off
+if [ $ans = y ] || [ $ans = Y ]; then
+    ln -s  $InstallPath/VSCode_EPuck2/bin/code ~/Desktop/VSCode_EPuck2
+fi
 
 echo
 echo -e $BRed "*******************************************************"

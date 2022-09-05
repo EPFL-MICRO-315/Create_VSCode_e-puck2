@@ -235,10 +235,10 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Select Install Path                **"
 echo -e $BRed "*****************************************************"
 ans=n
-while [ $ans != y ] || [ $ans != Y ]; do
+while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "InstallPath by default is ~/Applications"
-    read -p InstallPath
+    read InstallPath
     InstallPath=${InstallPath:-~/Applications}
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
@@ -246,7 +246,7 @@ while [ $ans != y ] || [ $ans != Y ]; do
     read ans
 done
 echo
-echo -e $Cyan "Creation of install folder if not already existing"
+echo -e $Cyan "Creation of installation folder if not already existing"
 echo -e -n $Color_Off
 mkdir -p $InstallPath
 
@@ -263,7 +263,7 @@ if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then
     echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
     read ans
     echo -e -n $Color_Off
-    if [ $ans = y ]; || [ $ans = Y ] then
+    if [ $ans = y ] || [ $ans = Y ]; then
         rm -rf $InstallPath/VSCode_EPuck2.app
         programVSFunc
     fi
@@ -341,14 +341,16 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**               Workplace Setup                   **"
 echo -e $BRed "*****************************************************"
 ans=n
-while [ $ans != y ] || [ $ans != Y ]; do
+while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "Workplace by default is ~/Documents/EPuck2"
-    read -p Workplace
+    read Workplace
     Workplace=${Workplace:-~/Documents/Workplace}
     echo
-    echo "Are you sure you want your workplace to be at $Workplace ?"
-    read -p "Enter y for Yes or n for No: " ans
+    echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"
+    echo -n -e $BPurple "Enter y for Yes or n for No: "
+    read ans
+    echo -e -n $Color_Off
 done
 mkdir -p $Workplace
 if [ -d "$Workplace/Lib_VSCode_e-puck2" ]; then 
@@ -363,7 +365,7 @@ if [ -d "$Workplace/Lib_VSCode_e-puck2" ]; then
 fi
 cd $Workplace
 echo 
-echo -$Cyan "Cloning the libraries into the workplace"
+echo -e $Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
 git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git
 

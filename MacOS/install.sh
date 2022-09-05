@@ -402,7 +402,7 @@ echo "}" >> settings.json
 ##               VSCode DFU Task                   ##
 #####################################################
 echo
-echo -e $Cyan "Adding dfu task to user level"
+echo -e $Cyan "Adding DFU & Librairy linking tasks to user level"
 echo -e -n $Color_Off
 cp $origin_path/tasks.json tasks.json
 

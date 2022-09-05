@@ -9,6 +9,15 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Link Librairy to workspace",
+            "type": "shell",
+            "command": "ln -s ${config:workplace}/Lib_VSCode_e-puck2/e-puck2_main-processor ${workspaceFolder}/e-puck2_main-processor",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

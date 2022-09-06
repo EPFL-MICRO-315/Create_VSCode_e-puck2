@@ -144,7 +144,7 @@ EPuck2ToolsFunc() {
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
-        rm gcc-arm-none-eabi-7-2017-q4-major-win32.exe
+        rm gcc-arm-none-eabi-7-2017-q4-major-win32.zip
     fi
     mkdir -p $InstallPath/EPuck2Tools
     mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
@@ -167,7 +167,7 @@ echo -e $Cyan "see https://github.com/epfl-mobots/Create_VSCode_e-puck2"
 echo -e $Cyan "Released in 2022"
 echo
 echo -e $Red "Be extremely cautious when specifying installation paths, there are risk of damaging your installation "
-echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root /"
+echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root C:/"
 echo
 echo -e $BPurple "Proceed with the installation ?"
 echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
@@ -187,10 +187,12 @@ echo
 
 echo
 echo -e $Cyan "Downloading of git"
+echo -e -n $Color_Off
 curl -L "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "git_setup.exe"
 echo -e $Cyan "Please install git"
 git_setup.exe
 echo -e -n $Color_Off
+rm git_setup.exe
 
 #####################################################
 ##              Select Install Path                ##
@@ -235,6 +237,7 @@ if [ -d "$InstallPath/VSCode_EPuck2" ]; then
 else
     programVSFunc
 fi
+cp shortcut.bat $InstallPath/VSCode_EPuck2/shortcut.bat
 
 #####################################################
 ##              Install EPuck2Tools                ##
@@ -264,39 +267,39 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**          VSCode Extensions Installation         **"
 echo -e $BRed "*****************************************************"
-if [ -d "$InstallPath/code-portable-data" ]; then
+if [ -d "$InstallPath/VSCode_EPuck2/data" ]; then
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2/data is already existing, do you want to clear it ?"
     echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
-        rm -rf $InstallPath/VSCode_EPuck2/code-portable-data
+        rm -rf $InstallPath/VSCode_EPuck2/data
         echo
         echo -e $BPurplen "Enabling VSCode portable mode"
         echo -e -n $Color_Off
-        mkdir $InstallPath/VSCode_EPuck2/code-portable-data
+        mkdir $InstallPath/VSCode_EPuck2/data
     fi
 else
     echo
     echo -e $BPurple "Enabling VSCode portable mode"
     echo -e -n $Color_Off
-    mkdir $InstallPath/VSCode_EPuck2/code-portable-data
+    mkdir $InstallPath/VSCode_EPuck2/data
 fi
 
-cd $InstallPath/VSCode_EPuck/bin
+cd $InstallPath/VSCode_EPuck2/
 echo
 echo -e $Cyan "Installing VSCode marus25.cortex-debug extension, version 1.4.4"
 echo -e -n $Color_Off
-cmd.exe /c "code.cmd --install-extension marus25.cortex-debug@1.4.4 --force"
+cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension marus25.cortex-debug@1.4.4 --force"
 echo
 echo -e $Cyan "Installing VSCode ms-vscode.cpptools extension"
 echo -e -n $Color_Off
-cmd.exe /c "code.cmd --install-extension ms-vscode.cpptools --force"
+cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension ms-vscode.cpptools --force"
 echo
 echo -e $Cyan "Installing VSCode SanaAjani.taskrunnercode extension"
 echo -e -n $Color_Off
-cmd.exe /c "code.cmd --install-extension SanaAjani.taskrunnercode --force"
+cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension SanaAjani.taskrunnercode --force"
 
 #####################################################
 ##               Workplace Setup                   ##
@@ -308,9 +311,9 @@ echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
-    echo -e $BPurple "Workplace by default is $USERPROFILE\Workplace"
+    echo -e $BPurple "Workplace by default is $USERPROFILE/Documents/Workplace_EPuck2"
     read Workplace
-    Workplace=${Workplace:-$USERPROFILE\Workplace}
+    Workplace=${Workplace:-$USERPROFILE/Documents/Workplace_EPuck2}
     echo
     echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"
     echo -n -e $BPurple "Enter y for Yes or n for No: "
@@ -318,21 +321,21 @@ while [ $ans != y ] && [ $ans != Y ]; do
     echo -e -n $Color_Off
 done
 mkdir -p $Workplace
-if [ -d "$Workplace/Lib_VSCode_e-puck2" ]; then 
+if [ -d "$Workplace/Lib" ]; then 
     echo
-    echo -e $BPurple "$Workplace/Lib_VSCode_e-puck2 is already existing, do you want to clear it ?"
+    echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
     echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
-        rm -rf $Workplace/Lib_VSCode_e-puck2
+        rm -rf $Workplace/Lib
     fi
 fi
 cd $Workplace
 echo 
 echo -e $Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
-git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git
+git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git Lib
 
 
 #####################################################
@@ -372,20 +375,10 @@ echo -e -n $Color_Off
 cp $origin_path/tasks.json tasks.json
 
 #####################################################
-##               VSCode Shortcut                   ##
+##                   Shortcut                      ##
 #####################################################
-echo
-echo -e $BRed "*****************************************************"
-echo -e $BRed "**               VSCode Shortcut                   **"
-echo -e $BRed "*****************************************************"
-echo
-echo -e $Cyan "Create shortcut under Desktop ?"
-echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-read ans
-echo -e -n $Color_Off
-if [ $ans = y ] || [ $ans = Y ]; then
-    ln -s  $InstallPath/VSCode_EPuck2/bin/code ~/Desktop/VSCode_EPuck2
-fi
+cd $InstallPath/VSCode_EPuck2
+cmd.exe /c "start shortcut.bat"
 
 echo
 echo -e $BRed "*******************************************************"

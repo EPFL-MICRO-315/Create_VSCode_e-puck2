@@ -9,6 +9,15 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Link Librairy to workspace",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && mklink /J e-puck2_main-processor ${config:workplace}/Lib/e-puck2_main-processor",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

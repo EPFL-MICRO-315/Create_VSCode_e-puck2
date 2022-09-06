@@ -347,6 +347,9 @@ InstallPathD=${InstallPath//\\///} #InstallPathDouble: replace \ by //
 WorkplaceD=${Workplace//\\///}
 WorkplaceAS=${WorkplaceD//\//\\}
 echo "{" >> settings.json
+#Otherwise the cortex debug extension will update which newer versions are not compatible with currently used arm-toolchain version
+echo "  \"extensions.autoCheckUpdates\": false," >> settings.json
+echo "  \"extensions.autoUpdate\": false," >> settings.json
 #Path used by intellissense to locate lib source files
 echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
 #Compiler path

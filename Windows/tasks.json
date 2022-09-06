@@ -4,7 +4,7 @@
         {
             "label": "DFU EPuck-2-Main_Processor (EPuck Monitor)",
             "type": "shell",
-            "command": "${config:epuck_tools}/dfu-util -d 0483:df11 -a 0 -s 0x08000000 -D ${config:epuck_tools}/tools/e-puck2_main-processor.bin",
+            "command": "${config:epuck2_utils}//dfu-util.exe -d 0483:df11 -a 0 -s 0x08000000 -D ${config:epuck2_utils}//e-puck2_main-processor.bin",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -13,7 +13,7 @@
         {
             "label": "Link Librairy to workspace",
             "type": "shell",
-            "command": "cd ${workspaceFolder} && mklink /J e-puck2_main-processor ${config:workplace}/Lib/e-puck2_main-processor",
+            "command": "cmd.exe /c \"mklink /J e-puck2_main-processor ${config:workplaceAS}\\Lib\\e-puck2_main-processor\"",
             "group": {
                 "kind": "build",
                 "isDefault": true

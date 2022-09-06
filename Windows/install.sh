@@ -98,14 +98,7 @@ programVSFunc() {
     echo -e -n $Color_Off
     /gnutools/7za.exe x vscode.zip -oVSCode_EPuck2
     
-    echo
-    echo -e $BPurple "Delete vscode.zip ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-    read ans
-    echo -e -n $Color_Off
-    if [ $ans = y ] || [ $ans = Y ]; then
-        rm vscode.zip
-    fi
+    rm vscode.zip
     mv "VSCode_EPuck2" $InstallPath/VSCode_EPuck2
 
     echo
@@ -138,14 +131,7 @@ EPuck2ToolsFunc() {
     echo -e -n $Color_Off
     /gnutools/7za.exe x gcc-arm-none-eabi-7-2017-q4-major-win32.zip -ogcc-arm-none-eabi-7-2017-q4-major
 
-    echo
-    echo -e $BPurple "Delete gcc-arm-none-eabi-7-2017-q4-major-win32.zip ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-    read ans
-    echo -e -n $Color_Off
-    if [ $ans = y ] || [ $ans = Y ]; then
-        rm gcc-arm-none-eabi-7-2017-q4-major-win32.zip
-    fi
+    rm gcc-arm-none-eabi-7-2017-q4-major-win32.zip
     mkdir -p $InstallPath/EPuck2Tools
     mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
     cp -r Utils $InstallPath/EPuck2Tools/Utils
@@ -185,14 +171,22 @@ echo -e $BRed "**         Installation of utility softwares       **"
 echo -e $BRed "*****************************************************"
 echo
 
+
 echo
-echo -e $Cyan "Downloading of git"
+echo -e $BPurple "Do you want to (re)install git ? (this installer have a very handy git credential manager)"
+echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+read ans
 echo -e -n $Color_Off
-curl -L "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "git_setup.exe"
-echo -e $Cyan "Please install git"
-git_setup.exe
-echo -e -n $Color_Off
-rm git_setup.exe
+if [ $ans = y ] || [ $ans = Y ]; then
+    echo
+    echo -e $Cyan "Downloading of git"
+    echo -e -n $Color_Off
+    curl -L "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "git_setup.exe"
+    echo -e $Cyan "Please install git"
+    git_setup.exe
+    echo -e -n $Color_Off
+    rm git_setup.exe
+fi
 
 #####################################################
 ##              Select Install Path                ##
@@ -311,9 +305,9 @@ echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
-    echo -e $BPurple "Workplace by default is $USERPROFILE/Documents/Workplace_EPuck2"
+    echo -e $BPurple "Workplace by default is $USERPROFILE\Documents\Workplace_EPuck2"
     read Workplace
-    Workplace=${Workplace:-$USERPROFILE/Documents/Workplace_EPuck2}
+    Workplace=${Workplace:-$USERPROFILE\\Documents\\Workplace_EPuck2}
     echo
     echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"
     echo -n -e $BPurple "Enter y for Yes or n for No: "
@@ -349,8 +343,9 @@ echo
 echo -e $Cyan "Configuring vscode..."
 echo -e -n $Color_Off
 cd $InstallPath/VSCode_EPuck2/data/user-data/User/
-InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //
-
+InstallPathD=${InstallPath//\\///} #InstallPathDouble: replace \ by //
+WorkplaceD=${Workplace//\\///}
+WorkplaceAS=${WorkplaceD//\//\\}
 echo "{" >> settings.json
 #Path used by intellissense to locate lib source files
 echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
@@ -360,7 +355,8 @@ echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eab
 echo "	\"make_path\": \"make\"," >> settings.json
 #Path used for debuging (.svd), dfu
 echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> settings.json
-echo "	\"workplace\": \"$Workplace\"," >> settings.json
+echo "	\"workplace\": \"$WorkplaceD\"," >> settings.json
+echo "	\"workplaceAS\": \"$WorkplaceAS\"," >> settings.json
 echo "	\"terminal.integrated.env.windows\": {" >> settings.json
 echo "	    \"PATH\": \"\${env:HOME}:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> settings.json
 echo "	\"cortex-debug.armToolchainPath.windows\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json

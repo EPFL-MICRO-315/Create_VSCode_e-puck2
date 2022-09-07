@@ -311,13 +311,13 @@ echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-
 #Compiler path
 echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> settings.json
 #Make path
-echo "	\"make_path\": \"make\"," >> settings.json
+echo "	\"make_path\": \"$InstallPathD//EPuck2Tools//gnutools//make\"," >> settings.json
 #Path used for debuging (.svd), dfu
 echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> settings.json
 echo "	\"workplace\": \"$WorkplaceD\"," >> settings.json
 echo "	\"workplaceAS\": \"$WorkplaceAS\"," >> settings.json
 echo "	\"terminal.integrated.env.windows\": {" >> settings.json
-echo "	    \"PATH\": \"\${env:PATH};$InstallPathD\\EPuck2Tools\\gcc-arm-none-eabi-7-2017-q4-major\\bin;$InstallPathD\\EPuck2Tools\\gnutools;\"}," >> settings.json
+echo "	    \"PATH\": \"\${env:PATH};$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin;$InstallPathD//EPuck2Tools//gnutools;\"}," >> settings.json
 echo "	\"terminal.integrated.defaultProfile.windows\": \"Command Prompt\"," >> settings.json
 echo "	\"cortex-debug.armToolchainPath.windows\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
 echo "}" >> settings.json

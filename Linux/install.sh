@@ -94,18 +94,10 @@ programVSFunc() {
     fi
     
     echo
-    echo -e $Cyan "Extracting vscode.tar.gz"
+    echo -e $Cyan "Extracting of vscode.tar.gz"
     echo -e -n $Color_Off
     tar -xf vscode.tar.gz
-    
-    echo
-    echo -e $BPurple "Delete vscode.tar.gz ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-    read ans
-    echo -e -n $Color_Off
-    if [ $ans = y ] || [ $ans = Y ]; then
-        rm vscode.tar.gz
-    fi
+    rm vscode.tar.gz
     mv "VSCode-linux-x64" $InstallPath/VSCode_EPuck2
 
     echo
@@ -134,18 +126,10 @@ EPuck2ToolsFunc() {
     fi
 
     echo
-    echo -e $Cyan "Extracting gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+    echo -e $Cyan "Installation of gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     echo -e -n $Color_Off
     tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-
-    echo
-    echo -e $BPurple "Delete gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-    read ans
-    echo -e -n $Color_Off
-    if [ $ans = y ] || [ $ans = Y ]; then
-        rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-    fi
+    rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
     mkdir -p $InstallPath/EPuck2Tools
     mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
     cp -r Utils $InstallPath/EPuck2Tools/Utils

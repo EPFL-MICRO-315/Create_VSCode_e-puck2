@@ -94,7 +94,7 @@ programVSFunc() {
     fi
     
     echo
-    echo -e $Cyan "Extracting vscode.zip"
+    echo -e $Cyan "Installation of vscode.zip"
     echo -e -n $Color_Off
     /gnutools/7za.exe x vscode.zip -oVSCode_EPuck2
     
@@ -127,7 +127,7 @@ EPuck2ToolsFunc() {
     fi
 
     echo
-    echo -e $Cyan "Executing gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
+    echo -e $Cyan "Installation of gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
     echo -e -n $Color_Off
     /gnutools/7za.exe x gcc-arm-none-eabi-7-2017-q4-major-win32.zip -ogcc-arm-none-eabi-7-2017-q4-major
 

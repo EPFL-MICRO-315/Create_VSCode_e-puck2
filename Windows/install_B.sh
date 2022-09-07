@@ -261,6 +261,7 @@ ans=n
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "Workplace by default is $USERPROFILE\Documents\Workplace_EPuck2"
+    echo -e $BPurple "If you want the Workplace_EPuck2 to be in the default location, press enter, otherwise just type your Workplace path"
     read Workplace
     Workplace=${Workplace:-$USERPROFILE\\Documents\\Workplace_EPuck2}
     echo
@@ -317,7 +318,6 @@ echo "	\"workplace\": \"$WorkplaceD\"," >> settings.json
 echo "	\"workplaceAS\": \"$WorkplaceAS\"," >> settings.json
 echo "	\"terminal.integrated.env.windows\": {" >> settings.json
 echo "	    \"PATH\": \"\${env:PATH};$InstallPathD\\EPuck2Tools\\gcc-arm-none-eabi-7-2017-q4-major\\bin;$InstallPathD\\EPuck2Tools\\gnutools;\"}," >> settings.json
-echo "	    \"PATH\": \"\${env:PATH};$InstallPathD\\EPuck2Tools\\gcc-arm-none-eabi-7-2017-q4-major\\bin;$InstallPathD\\EPuck2Tools\\gnutools;\"}," >> settings.json
 echo "	\"terminal.integrated.defaultProfile.windows\": \"Command Prompt\"," >> settings.json
 echo "	\"cortex-debug.armToolchainPath.windows\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
 echo "}" >> settings.json
@@ -341,5 +341,3 @@ echo -e $BRed "*******************************************************"
 echo -e $BRed "** Visual Studio Code EPuck2 successfully installed! **"
 echo -e $BRed "*******************************************************"
 echo
-
-quitFunc

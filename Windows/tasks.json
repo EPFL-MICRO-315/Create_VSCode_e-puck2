@@ -11,9 +11,18 @@
             }
         },
         {
-            "label": "Link Librairy to workspace",
+            "label": "Link Librairy e-puck2_main-processor to workspace",
             "type": "shell",
-            "command": "C:/Windows/System32/cmd.exe /c \"mklink /J Lib ${config:workplaceAS}\\Lib\"",
+            "command": "mklink /J e-puck2_main-processor ${config:workplaceAS}\\Lib\\e-puck2_main-processor && echo e-puck2_main-processor >> .gitignore",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Link Librairy ST to workspace",
+            "type": "shell",
+            "command": "mklink /J ST ${config:workplaceAS}\\Lib\\ST && echo ST >> .gitignore",
             "group": {
                 "kind": "build",
                 "isDefault": true

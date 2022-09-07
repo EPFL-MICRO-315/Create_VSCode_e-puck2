@@ -98,8 +98,8 @@ programVSFunc() {
     echo -e -n $Color_Off
     /gnutools/7za.exe x vscode.zip -oVSCode_EPuck2
     
-    rm vscode.zip
-    mv "VSCode_EPuck2" $InstallPath/VSCode_EPuck2
+    /gnutools/rm vscode.zip
+    /gnutools/mv "VSCode_EPuck2" $InstallPath/VSCode_EPuck2
 
     echo
     echo -e $Cyan "Visual Studio Code installed"
@@ -131,10 +131,10 @@ EPuck2ToolsFunc() {
     echo -e -n $Color_Off
     /gnutools/7za.exe x gcc-arm-none-eabi-7-2017-q4-major-win32.zip -ogcc-arm-none-eabi-7-2017-q4-major
 
-    rm gcc-arm-none-eabi-7-2017-q4-major-win32.zip
-    mkdir -p $InstallPath/EPuck2Tools
-    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
-    cp -r Utils $InstallPath/EPuck2Tools/Utils
+    /gnutools/rm gcc-arm-none-eabi-7-2017-q4-major-win32.zip
+    /gnutools/mkdir -p $InstallPath/EPuck2Tools
+    /gnutools/mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
+    /gnutools/cp -r Utils $InstallPath/EPuck2Tools/Utils
 
     echo
     echo -e $Cyan "EPuck2Tools installed"
@@ -185,7 +185,7 @@ if [ $ans = y ] || [ $ans = Y ]; then
     echo -e $Cyan "Please install git"
     git_setup.exe
     echo -e -n $Color_Off
-    rm git_setup.exe
+    /gnutools/rm git_setup.exe
 fi
 
 #####################################################
@@ -209,7 +209,7 @@ done
 echo
 echo -e $Cyan "Creation of installation folder if not already existing"
 echo -e -n $Color_Off
-mkdir -p $InstallPath
+/gnutools/mkdir -p $InstallPath
 
 #####################################################
 ##              Installation of VSCode             ##
@@ -225,13 +225,13 @@ if [ -d "$InstallPath/VSCode_EPuck2" ]; then
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
-        rm -rf $InstallPath/VSCode_EPuck2
+        /gnutools/rm -rf $InstallPath/VSCode_EPuck2
         programVSFunc
     fi
 else
     programVSFunc
 fi
-cp shortcut.bat $InstallPath/VSCode_EPuck2/shortcut.bat
+/gnutools/cp shortcut.bat $InstallPath/VSCode_EPuck2/shortcut.bat
 
 #####################################################
 ##              Install EPuck2Tools                ##
@@ -247,7 +247,7 @@ if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
-        rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
+        /gnutools/rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
         EPuck2ToolsFunc
     fi
 else
@@ -268,17 +268,17 @@ if [ -d "$InstallPath/VSCode_EPuck2/data" ]; then
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
-        rm -rf $InstallPath/VSCode_EPuck2/data
+        /gnutools/rm -rf $InstallPath/VSCode_EPuck2/data
         echo
         echo -e $BPurplen "Enabling VSCode portable mode"
         echo -e -n $Color_Off
-        mkdir $InstallPath/VSCode_EPuck2/data
+        /gnutools/mkdir $InstallPath/VSCode_EPuck2/data
     fi
 else
     echo
     echo -e $BPurple "Enabling VSCode portable mode"
     echo -e -n $Color_Off
-    mkdir $InstallPath/VSCode_EPuck2/data
+    /gnutools/mkdir $InstallPath/VSCode_EPuck2/data
 fi
 
 cd $InstallPath/VSCode_EPuck2/
@@ -314,7 +314,7 @@ while [ $ans != y ] && [ $ans != Y ]; do
     read ans
     echo -e -n $Color_Off
 done
-mkdir -p $Workplace
+/gnutools/mkdir -p $Workplace
 if [ -d "$Workplace/Lib" ]; then 
     echo
     echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
@@ -322,7 +322,7 @@ if [ -d "$Workplace/Lib" ]; then
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
-        rm -rf $Workplace/Lib
+        /gnutools/rm -rf $Workplace/Lib
     fi
 fi
 cd $Workplace

@@ -13,7 +13,7 @@
         {
             "label": "Link Librairy to workspace",
             "type": "shell",
-            "command": "cmd.exe /c \"mklink /J e-puck2_main-processor ${config:workplaceAS}\\Lib\\e-puck2_main-processor\"",
+            "command": "C:/Windows/System32/cmd.exe /c \"mklink /J e-puck2_main-processor ${config:workplaceAS}\\Lib\\e-puck2_main-processor\"",
             "group": {
                 "kind": "build",
                 "isDefault": true

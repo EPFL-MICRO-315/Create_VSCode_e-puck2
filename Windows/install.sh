@@ -135,6 +135,7 @@ EPuck2ToolsFunc() {
     /gnutools/mkdir -p $InstallPath/EPuck2Tools
     /gnutools/mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
     /gnutools/cp -r Utils $InstallPath/EPuck2Tools/Utils
+    /gnutools/cp -r gnutools $InstallPath/EPuck2Tools/gnutools
 
     echo
     echo -e $Cyan "EPuck2Tools installed"
@@ -187,6 +188,10 @@ if [ $ans = y ] || [ $ans = Y ]; then
     echo -e -n $Color_Off
     /gnutools/rm git_setup.exe
 fi
+echo
+echo -e $Cyan "Reloading the PATH variables"
+echo -e -n $Color_Off
+bash
 
 #####################################################
 ##              Select Install Path                ##
@@ -199,6 +204,7 @@ ans=n
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "InstallPath by default is $APPDATA"
+    echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, press enter, otherwise just type your InstallPath"
     read InstallPath
     InstallPath=${InstallPath:-$APPDATA}
     echo
@@ -326,7 +332,7 @@ if [ -d "$Workplace/Lib" ]; then
     fi
 fi
 cd $Workplace
-echo 
+echo
 echo -e $Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
 git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git Lib
@@ -361,7 +367,9 @@ echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> settings.jso
 echo "	\"workplace\": \"$WorkplaceD\"," >> settings.json
 echo "	\"workplaceAS\": \"$WorkplaceAS\"," >> settings.json
 echo "	\"terminal.integrated.env.windows\": {" >> settings.json
-echo "	    \"PATH\": \"\${env:HOME}:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> settings.json
+echo "	    \"PATH\": \"\${env:PATH};$InstallPathD\\EPuck2Tools\\gcc-arm-none-eabi-7-2017-q4-major\\bin;$InstallPathD\\EPuck2Tools\\gnutools;\"}," >> settings.json
+echo "	    \"PATH\": \"\${env:PATH};$InstallPathD\\EPuck2Tools\\gcc-arm-none-eabi-7-2017-q4-major\\bin;$InstallPathD\\EPuck2Tools\\gnutools;\"}," >> settings.json
+echo "	\"terminal.integrated.defaultProfile.windows\": \"Command Prompt\"," >> settings.json
 echo "	\"cortex-debug.armToolchainPath.windows\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
 echo "}" >> settings.json
 
@@ -371,7 +379,7 @@ echo "}" >> settings.json
 echo
 echo -e $Cyan "Adding DFU and Library linking tasks to user level"
 echo -e -n $Color_Off
-cp $origin_path/tasks.json tasks.json
+/gnutools/cp $origin_path/tasks.json tasks.json
 
 #####################################################
 ##                   Shortcut                      ##

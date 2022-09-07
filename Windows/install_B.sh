@@ -143,57 +143,6 @@ EPuck2ToolsFunc() {
 }
 
 #####################################################
-## Welcome to Visual Studio Code EPuck 2 installer ##
-#####################################################
-clear
-echo -e $BRed "*****************************************************"
-echo -e $BRed "** Welcome to Visual Studio Code EPuck 2 installer **"
-echo -e $BRed "*****************************************************"
-echo
-echo -e $Cyan "see https://github.com/epfl-mobots/Create_VSCode_e-puck2"
-echo -e $Cyan "Released in 2022"
-echo
-echo -e $Red "Be extremely cautious when specifying installation paths, there are risk of damaging your installation "
-echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root C:/"
-echo
-echo -e $BPurple "Proceed with the installation ?"
-echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-read ans
-if [ $ans != y ] && [ $ans != Y ]; then
-    quitFunc
-fi
-
-#####################################################
-##         Installation of utility softwares       ##
-#####################################################
-echo
-echo -e $BRed "*****************************************************"
-echo -e $BRed "**         Installation of utility softwares       **"
-echo -e $BRed "*****************************************************"
-echo
-
-
-echo
-echo -e $BPurple "Do you want to (re)install git ? (this installer have a very handy git credential manager)"
-echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-read ans
-echo -e -n $Color_Off
-if [ $ans = y ] || [ $ans = Y ]; then
-    echo
-    echo -e $Cyan "Downloading of git"
-    echo -e -n $Color_Off
-    curl -L "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "git_setup.exe"
-    echo -e $Cyan "Please install git"
-    git_setup.exe
-    echo -e -n $Color_Off
-    /gnutools/rm git_setup.exe
-fi
-echo
-echo -e $Cyan "Reloading the PATH variables"
-echo -e -n $Color_Off
-bash
-
-#####################################################
 ##              Select Install Path                ##
 #####################################################
 echo

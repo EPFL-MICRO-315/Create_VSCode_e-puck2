@@ -1,1 +1,1 @@
-gnutools\bash.exe install.sh
+gnutools\bash.exe install_A.sh

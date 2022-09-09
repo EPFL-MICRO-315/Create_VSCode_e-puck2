@@ -2,5 +2,3 @@
 Type=Application
 Terminal=false
 Name=Visual Studio Code EPuck2
-#Exec=$InstallPath/VSCode_EPuck2/code
-#Icon=$InstallPath/VSCode_EPuck2/resources/app/resources/linux/code.png

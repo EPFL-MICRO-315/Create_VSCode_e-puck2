@@ -254,6 +254,7 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Select Install Path                **"
 echo -e $BRed "*****************************************************"
+flush
 ans=n
 while [ $ans != y ]; do
     echo
@@ -263,7 +264,6 @@ while [ $ans != y ]; do
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
     yYn_ask
-    read ans
 done
 echo
 echo -e $Cyan "Creation of installation folder if not already existing"

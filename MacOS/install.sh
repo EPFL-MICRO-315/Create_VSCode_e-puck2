@@ -260,7 +260,6 @@ while [ $ans != y ]; do
     echo -e $BPurple "InstallPath by default is ~/Applications"
     read InstallPath
     InstallPath=${InstallPath:-~/Applications}
-    flush
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
     yYn_ask

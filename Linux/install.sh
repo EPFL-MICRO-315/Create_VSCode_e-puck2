@@ -108,7 +108,7 @@ programVSFunc() {
         echo -e -n $Color_Off
     else
         echo
-        echo -e $BPurple "Download VSCode"
+        echo -e $BPurple "Downloading VSCode"
         echo -e -n $Color_Off
         curl -L "https://update.code.visualstudio.com/latest/linux-x64/stable" --output vscode.tar.gz
     fi
@@ -140,7 +140,7 @@ EPuck2ToolsFunc() {
         fi
     else
         echo
-        echo -e $Cyan "Download gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        echo -e $Cyan "Downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         echo -e -n $Color_Off
         curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     fi
@@ -187,28 +187,28 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**         Installation of utility softwares       **"
 echo -e $BRed "*****************************************************"
 echo
-echo -e $Cyan "Installation of curl required to download vscode and compiler"
+echo -e $Cyan "Installing curl required to download vscode and compiler"
 echo -e -n $Color_Off
 sudo apt-get install curl
 
 echo
-echo -e $Cyan "Installation of make"
+echo -e $Cyan "Installing make"
 echo -e -n $Color_Off
 sudo apt-get install make
 
 echo
-echo -e $Cyan "Installation of dfu-util"
+echo -e $Cyan "Installing dfu-util"
 echo -e -n $Color_Off
 sudo apt-get install dfu-util
 
 echo
-echo -e $Cyan "Installation of git"
+echo -e $Cyan "Installating git"
 echo -e -n $Color_Off
 sudo apt-get install git
 
 flush
 echo
-echo -e $BPurple "Do you want to re-install the git-credential-manager-core ?"
+echo -e $BPurple "Installing git-credential-manager-core ?"
 yYn_ask
 if [ $ans = y ]; then
     curl -L "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb" --output "gcm-linux_amd64.2.0.785.deb"
@@ -229,6 +229,8 @@ ans=n
 while [ $ans != y ]; do
     echo
     echo -e $BPurple "InstallPath by default is ~/Applications"
+    echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, press enter, otherwise just type your InstallPath"
+
     read InstallPath
     InstallPath=${InstallPath:-~/Applications}
     echo
@@ -236,7 +238,7 @@ while [ $ans != y ]; do
     yYn_ask
 done
 echo
-echo -e $Cyan "Creation of installation folder if not already existing"
+echo -e $Cyan "Creating the installation folder if not already existing"
 echo -e -n $Color_Off
 mkdir -p $InstallPath
 
@@ -309,7 +311,7 @@ else
     mkdir $InstallPath/VSCode_EPuck2/data
 fi
 
-cd $InstallPath/VSCode_EPuck/bin
+cd $InstallPath/VSCode_EPuck2/bin
 echo
 echo -e $Cyan "Installing VSCode marus25.cortex-debug extension, version 1.4.4"
 echo -e -n $Color_Off

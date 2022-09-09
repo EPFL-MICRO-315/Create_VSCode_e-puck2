@@ -412,6 +412,7 @@ echo -e $Cyan "Create shortcut under Desktop ?"
 yYn_ask
 echo -e -n $Color_Off
 if [ $ans = y ]; then
+    cd $origin_path
     echo "Exec=$InstallPath/VSCode_EPuck2/code" >> vscode_epuck2.desktop
     echo "Icon=$InstallPath/VSCode_EPuck2/resources/app/resources/linux/code.png" >> vscode_epuck2.desktop
     sudo mv vscode_epuck2.desktop /usr/share/applications/vscode_epuck2.desktop

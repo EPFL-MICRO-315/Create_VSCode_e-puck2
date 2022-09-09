@@ -155,6 +155,13 @@ EPuck2ToolsFunc() {
     cp -r Utils $InstallPath/EPuck2Tools/Utils
     
     echo
+    echo -e $Cyan "Downloading epuck2 monitor"
+    echo -e -n $Color_Off
+    curl -L "https://projects.gctronic.com/epuck2/monitor_mac.zip" --output "monitor_mac.zip"
+    unzip monitor_mac.zip
+    mv EPuckMonitor.app $InstallPath/EPuck2Tools/EPuckMonitor.app
+
+    echo
     echo -e $Cyan "EPuck2Tools installed"
     echo -e -n $Color_Off
 }

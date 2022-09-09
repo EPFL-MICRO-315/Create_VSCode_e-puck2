@@ -11,6 +11,15 @@
             }
         },
         {
+            "label": "Run EPuckMonitor",
+            "type": "shell",
+            "command": "${config:epuck2_utils}//monitor_win//EPuckMonitor.exe",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "Link Librairy e-puck2_main-processor to workspace",
             "type": "shell",
             "command": "mklink /J e-puck2_main-processor ${config:workplaceAS}\\Lib\\e-puck2_main-processor && echo e-puck2_main-processor >> .gitignore",

@@ -155,6 +155,13 @@ EPuck2ToolsFunc() {
     cp -r Utils $InstallPath/EPuck2Tools/Utils
     
     echo
+    echo -e $Cyan "Downloading epuck2 monitor"
+    echo -e -n $Color_Off
+    curl -L "https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz" --output "monitor_linux64bit.tar.gz"
+    tar -xf monitor_linux64bit.tar.gz
+    mv build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release $InstallPath/EPuck2Tools/monitor_linux64bit
+
+    echo
     echo -e $Cyan "EPuck2Tools installed"
     echo -e -n $Color_Off
 }

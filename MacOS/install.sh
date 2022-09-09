@@ -231,7 +231,7 @@ else
     brew install dfu-util
 
     echo
-    echo -e $Cyan "Installation of git and git-crendential-manager-core"
+    echo -e $Cyan "Installation of git"
     echo -e -n $Color_Off
     brew install git
     
@@ -378,7 +378,6 @@ if [ -d "$Workplace/Lib" ]; then
     echo
     echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
     yYn_ask
-    read ans
     echo -e -n $Color_Off
     if [ $ans = y ]; then
         rm -rf $Workplace/Lib

@@ -75,7 +75,6 @@ On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
 yYn_ask() {
-    flush
     tmp=0
     while [ $tmp != 1 ]; do
         echo -n -e "$BPurple Enter $BGreen y $BPurple or $BGreen Y $BPurple for Yes $BPurple and $BGreen any $BPurple for No: "
@@ -90,7 +89,7 @@ yYn_ask() {
 }
 
 flush() {
-    while read -N 1 -t 0.01
+    while read -n 1 -t 1
     do :
     done
 }
@@ -128,6 +127,7 @@ programVSFunc() {
 
 EPuck2ToolsFunc() {
     if test -f "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
+        flush
         echo
         echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
         echo -e $BPurple "Do you want to re-download it ?"
@@ -209,6 +209,7 @@ if [ $ans = y ]; then
     echo -e -n $Color_Off
     brew reinstall git
 
+    flush
     echo
     echo -e $BPurple "Do you want to re-install the git-credential-manager-core ?"
     yYn_ask
@@ -234,6 +235,7 @@ else
     echo -e -n $Color_Off
     brew install git
     
+    flush
     echo
     echo -e $BPurple "Do you want to install the git-credential-manager-core ?"
     yYn_ask
@@ -258,6 +260,7 @@ while [ $ans != y ]; do
     echo -e $BPurple "InstallPath by default is ~/Applications"
     read InstallPath
     InstallPath=${InstallPath:-~/Applications}
+    flush
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
     yYn_ask
@@ -276,6 +279,7 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Installation of VSCode             **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then
+    flush
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2.app is already existing, do you want to overwrite it ?"
     yYn_ask
@@ -297,6 +301,7 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**           Installation of EPuck2Tools           **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
+    flush
     echo
     echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
     yYn_ask
@@ -317,6 +322,7 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**          VSCode Extensions Installation         **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/code-portable-data" ]; then
+    flush
     echo
     echo -e $BPurple "$InstallPath/code-portable-data is already existing, do you want to clear it ?"
     yYn_ask
@@ -356,6 +362,7 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**               Workplace Setup                   **"
 echo -e $BRed "*****************************************************"
+flush
 ans=n
 while [ $ans != y ]; do
     echo
@@ -369,6 +376,7 @@ while [ $ans != y ]; do
 done
 mkdir -p $Workplace
 if [ -d "$Workplace/Lib" ]; then 
+    flush
     echo
     echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
     yYn_ask

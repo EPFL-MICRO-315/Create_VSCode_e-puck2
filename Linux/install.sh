@@ -372,7 +372,11 @@ echo -e $BRed "*****************************************************"
 echo
 echo -e $Cyan "Configuring vscode..."
 echo -e -n $Color_Off
-cd $InstallPath/VSCode_EPuck2/data/user-data/User/
+cd $
+
+
+cd $origin_path
+/VSCode_EPuck2/data/user-data/User/
 InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //
 
 echo "{" >> settings.json
@@ -400,6 +404,15 @@ echo
 echo -e $Cyan "Adding DFU and Library linking tasks to user level"
 echo -e -n $Color_Off
 cp $origin_path/tasks.json tasks.json
+
+#####################################################
+##               Add User dialout                  ##
+#####################################################
+echo
+echo -e $Cyan "Adding the user $USER to dialout group"
+echo -e -n $Color_Off
+sudo adduser $USER dialout
+
 
 #####################################################
 ##               VSCode Shortcut                   ##

@@ -19,7 +19,7 @@ BBlack='\033[1;30m'       # Black
 BRed='\033[1;31m'         # Red
 BGreen='\033[1;32m'       # Green
 BYellow='\033[1;33m'      # Yellow
-BICyan='\033[1;34m'        # Blue
+BCyan='\033[1;34m'        # Blue
 BPurple='\033[1;35m'      # Purple
 BCyan='\033[1;36m'        # Cyan
 BWhite='\033[1;37m'       # White
@@ -74,6 +74,16 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
+function yYn_ask(){
+    echo -n -e "$BPurple Enter $BGreen y $BPurple or $BGreen Y $BPurple for Yes $BPurple and $BGreen any for No: "
+}
+
+flush(){
+    while read -N 1 -t 0.01
+    do :
+    done
+}
+
 quitFunc() {
     cd $origin_path
     echo -n -e $BRed "Press any key to quit ..."
@@ -107,10 +117,11 @@ programVSFunc() {
 
 EPuck2ToolsFunc() {
     if test -f "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
+        flush()
         echo
         echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
         echo -e $BPurple "Do you want to re-download it ?"
-        echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+        yYn_ask()
         read ans
         if [ $ans = y ] || [ $ans = Y ]; then
             echo
@@ -152,9 +163,10 @@ echo -e $Cyan "Released in 2022"
 echo
 echo -e $Red "Be extremely cautious when specifying installation paths, there are risk of damaging your installation "
 echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root /"
+flush()
 echo
 echo -e $BPurple "Proceed with the installation ?"
-echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+yYn_ask()
 read ans
 if [ $ans != y ] && [ $ans != Y ]; then
     quitFunc
@@ -171,9 +183,10 @@ echo
 echo -e $Cyan "Installation of Homebrew required to install several utility programs"
 echo -e -n $Color_Off
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+flush()
 echo
 echo -e $BPurple "Do you want to re-install the utility softwares if they are already installed ?"
-echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+yYn_ask()
 read ans
 if [ $ans = y ] || [ $ans = Y ]; then
     echo
@@ -190,8 +203,18 @@ if [ $ans = y ] || [ $ans = Y ]; then
     echo -e $Cyan "Installation of git and git-crendential-manager-core"
     echo -e -n $Color_Off
     brew reinstall git
-    brew tap microsoft/git
-    brew reinstall --cask git-credential-manager-core
+
+    flush()
+    echo
+    echo -e $BPurple "Do you want to re-install the git-credential-manager-core ?"
+    yYn_ask()
+    read ans
+    if [ $ans = y ] || [ $ans = Y ]; then
+        echo -e $Cyan "Installation of git-crendential-manager-core"
+        echo -e -n $Color_Off
+        brew tap microsoft/git
+        brew reinstall --cask git-credential-manager-core
+    fi
 else
     echo
     echo -e $Cyan "Installation of wget required to download vscode and compiler"
@@ -207,8 +230,18 @@ else
     echo -e $Cyan "Installation of git and git-crendential-manager-core"
     echo -e -n $Color_Off
     brew install git
-    brew tap microsoft/git
-    brew install --cask git-credential-manager-core
+    
+    flush()
+    echo
+    echo -e $BPurple "Do you want to install the git-credential-manager-core ?"
+    yYn_ask()
+    read ans
+    if [ $ans = y ] || [ $ans = Y ]; then
+        echo -e $Cyan "Installation of git-crendential-manager-core"
+        echo -e -n $Color_Off
+        brew tap microsoft/git
+        brew install --cask git-credential-manager-core
+    fi
 fi
 
 #####################################################
@@ -219,6 +252,7 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Select Install Path                **"
 echo -e $BRed "*****************************************************"
 ans=n
+flush()
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "InstallPath by default is ~/Applications"
@@ -226,7 +260,7 @@ while [ $ans != y ] && [ $ans != Y ]; do
     InstallPath=${InstallPath:-~/Applications}
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+    yYn_ask()
     read ans
 done
 echo
@@ -242,9 +276,10 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Installation of VSCode             **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then
+    flush()
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2.app is already existing, do you want to overwrite it ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+    yYn_ask()
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
@@ -263,9 +298,10 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**           Installation of EPuck2Tools           **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
+    flush()
     echo
     echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+    yYn_ask()
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
@@ -284,9 +320,10 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**          VSCode Extensions Installation         **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/code-portable-data" ]; then
+    flush()
     echo
     echo -e $BPurple "$InstallPath/code-portable-data is already existing, do you want to clear it ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+    yYn_ask()
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
@@ -327,31 +364,32 @@ echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
-    echo -e $BPurple "Workplace by default is ~/Documents/EPuck2"
+    echo -e $BPurple "Workplace by default is ~/Documents/Workplace_VSCode_EPuck2"
     read Workplace
-    Workplace=${Workplace:-~/Documents/Workplace}
+    Workplace=${Workplace:-~/Documents/Workplace_VSCode_EPuck2}
     echo
     echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"
-    echo -n -e $BPurple "Enter y for Yes or n for No: "
+    yYn_ask()
     read ans
     echo -e -n $Color_Off
 done
 mkdir -p $Workplace
-if [ -d "$Workplace/Lib_VSCode_e-puck2" ]; then 
+if [ -d "$Workplace/Lib" ]; then 
+    flush()
     echo
-    echo -e $BPurple "$Workplace/Lib_VSCode_e-puck2 is already existing, do you want to clear it ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+    echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
+    yYn_ask()
     read ans
     echo -e -n $Color_Off
     if [ $ans = y ] || [ $ans = Y ]; then
-        rm -rf $Workplace/Lib_VSCode_e-puck2
+        rm -rf $Workplace/Lib
     fi
 fi
 cd $Workplace
 echo 
 echo -e $Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
-git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git
+git clone https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git Lib
 
 
 #####################################################

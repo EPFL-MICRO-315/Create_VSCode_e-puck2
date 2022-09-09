@@ -282,7 +282,6 @@ if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2.app is already existing, do you want to overwrite it ?"
     yYn_ask
-    read ans
     echo -e -n $Color_Off
     if [ $ans = y ]; then
         rm -rf $InstallPath/VSCode_EPuck2.app

@@ -141,8 +141,8 @@ EPuck2ToolsFunc() {
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
     curl -L "https://projects.gctronic.com/epuck2/monitor_win.zip" --output "monitor_win.zip"
-    unzip monitor_win.zip
-    mv build-qmake-Desktop_Qt_5_10_0_MinGW_32bit-Release $InstallPath/EPuck2Tools/Utils/monitor_win
+    /gnutools/7za.exe monitor_win.zip
+    /gnutools/mv build-qmake-Desktop_Qt_5_10_0_MinGW_32bit-Release $InstallPath/EPuck2Tools/Utils/monitor_win
 
     echo
     echo -e $Cyan "EPuck2Tools installed"

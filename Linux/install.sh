@@ -125,7 +125,7 @@ programVSFunc() {
     echo -e -n $Color_Off
 }
 
-EPuck2ToolsFunc() {
+EPuck2ToolsFuncGCC() {
     if test -f "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
         flush
         echo
@@ -150,6 +150,23 @@ EPuck2ToolsFunc() {
     echo -e -n $Color_Off
     tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
     rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
+}
+
+EPuck2ToolsFunc() {
+    if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
+        flush
+        echo
+        echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
+        yYn_ask
+        echo -e -n $Color_Off
+        if [ $ans = y ]; then
+            rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
+            EPuck2ToolsFuncGCC
+        fi
+    else
+        EPuck2ToolsFuncGCC
+    fi
+
     mkdir -p $InstallPath/EPuck2Tools
     mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
     cp -r Utils $InstallPath/EPuck2Tools/Utils
@@ -216,6 +233,7 @@ sudo apt-get install git
 flush
 echo
 echo -e $BPurple "Installing git-credential-manager-core ?"
+echo -e -n $Color_Off
 yYn_ask
 if [ $ans = y ]; then
     curl -L "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb" --output "gcm-linux_amd64.2.0.785.deb"
@@ -381,9 +399,7 @@ echo -e $Cyan "Configuring vscode..."
 echo -e -n $Color_Off
 cd $
 
-
-cd $origin_path
-/VSCode_EPuck2/data/user-data/User/
+cd $InstallPath/VSCode_EPuck2/data/user-data/User/
 InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //
 
 echo "{" >> settings.json

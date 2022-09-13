@@ -74,72 +74,31 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
+yYn_ask() {
+    tmp=0
+    while [ $tmp != 1 ]; do
+        echo -n -e "$BPurple Enter $BGreen y $BPurple or $BGreen Y $BPurple for Yes $BPurple and $BGreen any $BPurple for No: "
+        read ans
+        if [ ! -z "$ans" ]; then
+            if [ $ans = y ] || [ $ans = Y ]; then
+                ans=y
+            fi
+            tmp=1
+        fi
+    done
+}
+
+flush() {
+    while read -n 1 -t 0.01
+    do :
+    done
+}
+
 quitFunc() {
     cd $origin_path
     echo -n -e $BRed "Press any key to quit ..."
     read
     exit
-}
-
-programVSFunc() {
-    if test -f "vscode.zip"; then
-        echo
-        echo -e $Cyan "vscode.zip already downloaded"
-        echo -e -n $Color_Off
-    else
-        echo
-        echo -e $BPurple "Download VSCode"
-        echo -e -n $Color_Off
-        curl -L "https://update.code.visualstudio.com/latest/win32-x64-archive/stable" --output vscode.zip
-    fi
-    
-    echo
-    echo -e $Cyan "Installation of vscode.zip"
-    echo -e -n $Color_Off
-    /gnutools/7za.exe x vscode.zip -oVSCode_EPuck2
-    
-    /gnutools/rm vscode.zip
-    /gnutools/mv "VSCode_EPuck2" $InstallPath/VSCode_EPuck2
-
-    echo
-    echo -e $Cyan "Visual Studio Code installed"
-    echo -e -n $Color_Off
-}
-
-EPuck2ToolsFunc() {
-    if test -f "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"; then
-        echo
-        echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major-win32.zip already downloaded"
-        echo -e $BPurple "Do you want to re-download it ?"
-        echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-        read ans
-        if [ $ans = y ] || [ $ans = Y ]; then
-            echo
-            echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
-            echo -e -n $Color_Off
-            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
-        fi
-    else
-        echo
-        echo -e $Cyan "Download gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
-        echo -e -n $Color_Off
-        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
-    fi
-
-    echo
-    echo -e $Cyan "Installation of gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
-    echo -e -n $Color_Off
-    /gnutools/7za.exe x gcc-arm-none-eabi-7-2017-q4-major-win32.zip -ogcc-arm-none-eabi-7-2017-q4-major
-
-    /gnutools/rm gcc-arm-none-eabi-7-2017-q4-major-win32.zip
-    /gnutools/mkdir -p $InstallPath/EPuck2Tools
-    /gnutools/mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
-    /gnutools/cp -r Utils $InstallPath/EPuck2Tools/Utils
-    /gnutools/cp -r gnutools $InstallPath/EPuck2Tools/gnutools
-
-    echo
-    echo -e $Cyan "EPuck2Tools installed"
-    echo -e -n $Color_Off
 }
 
 #####################################################
@@ -156,9 +115,8 @@ echo -e $Red "Be extremely cautious when specifying installation paths, there ar
 echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root C:/"
 echo
 echo -e $BPurple "Proceed with the installation ?"
-echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-read ans
-if [ $ans != y ] && [ $ans != Y ]; then
+yYn_ask
+if [ $ans != y ]; then
     quitFunc
 fi
 
@@ -174,10 +132,10 @@ echo
 
 echo
 echo -e $BPurple "Do you want to (re)install git ? (this installer have a very handy git credential manager)"
-echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-read ans
+flush
+yYn_ask
 echo -e -n $Color_Off
-if [ $ans = y ] || [ $ans = Y ]; then
+if [ $ans = y ]; then
     echo
     echo -e $Cyan "Downloading of git"
     echo -e -n $Color_Off

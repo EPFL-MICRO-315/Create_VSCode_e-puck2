@@ -74,6 +74,26 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
+yYn_ask() {
+    tmp=0
+    while [ $tmp != 1 ]; do
+        echo -n -e "$BPurple Enter $BGreen y $BPurple or $BGreen Y $BPurple for Yes $BPurple and $BGreen any $BPurple for No: "
+        read ans
+        if [ ! -z "$ans" ]; then
+            if [ $ans = y ] || [ $ans = Y ]; then
+                ans=y
+            fi
+            tmp=1
+        fi
+    done
+}
+
+flush() {
+    while read -n 1 -t 0.01
+    do :
+    done
+}
+
 quitFunc() {
     cd $origin_path
     echo -n -e $BRed "Press any key to quit ..."
@@ -111,9 +131,9 @@ EPuck2ToolsFuncGCC() {
         echo
         echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major-win32.zip already downloaded"
         echo -e $BPurple "Do you want to re-download it ?"
-        echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-        read ans
-        if [ $ans = y ] || [ $ans = Y ]; then
+        flush
+        yYn_ask
+        if [ $ans = y ]; then
             echo
             echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
             echo -e -n $Color_Off
@@ -139,10 +159,10 @@ EPuck2ToolsFunc() {
     if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
         echo
         echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
-        echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-        read ans
+        flush
+        yYn_ask
         echo -e -n $Color_Off
-        if [ $ans = y ] || [ $ans = Y ]; then
+        if [ $ans = y ]; then
             /gnutools/rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
             EPuck2ToolsFuncGCC
         fi
@@ -150,8 +170,6 @@ EPuck2ToolsFunc() {
         EPuck2ToolsFuncGCC
     fi
     
-
-
     /gnutools/cp -r Utils $InstallPath/EPuck2Tools/Utils
     /gnutools/cp -r gnutools $InstallPath/EPuck2Tools/gnutools
 
@@ -160,7 +178,7 @@ EPuck2ToolsFunc() {
     echo -e -n $Color_Off
     curl -L "https://projects.gctronic.com/epuck2/monitor_win.zip" --output "monitor_win.zip"
     /gnutools/7za.exe x monitor_win.zip -omonitor_win
-    /gnutools/mv monitor_win $InstallPath/EPuck2Tools/Utils/
+    /gnutools/mv monitor_win/build-qmake-Desktop_Qt_5_10_0_MinGW_32bit-Release $InstallPath/EPuck2Tools/Utils/monitor_win
 
     echo
     echo -e $Cyan "EPuck2Tools installed"
@@ -174,17 +192,18 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Select Install Path                **"
 echo -e $BRed "*****************************************************"
+flush
 ans=n
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "InstallPath by default is $APPDATA"
     echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, press enter, otherwise just type your InstallPath"
+    
     read InstallPath
     InstallPath=${InstallPath:-$APPDATA}
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-    read ans
+    yYn_ask
 done
 echo
 echo -e $Cyan "Creation of installation folder if not already existing"
@@ -199,12 +218,12 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Installation of VSCode             **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/VSCode_EPuck2" ]; then
+    flush
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2 is already existing, do you want to overwrite it ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-    read ans
+    yYn_ask
     echo -e -n $Color_Off
-    if [ $ans = y ] || [ $ans = Y ]; then
+    if [ $ans = y ]; then
         /gnutools/rm -rf $InstallPath/VSCode_EPuck2
         programVSFunc
     fi
@@ -220,19 +239,7 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**           Installation of EPuck2Tools           **"
 echo -e $BRed "*****************************************************"
-if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
-    echo
-    echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-    read ans
-    echo -e -n $Color_Off
-    if [ $ans = y ] || [ $ans = Y ]; then
-        /gnutools/rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
-        EPuck2ToolsFunc
-    fi
-else
-    EPuck2ToolsFunc
-fi
+EPuck2ToolsFunc
 
 #####################################################
 ##          VSCode Extensions Installation         ##
@@ -242,12 +249,12 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**          VSCode Extensions Installation         **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/VSCode_EPuck2/data" ]; then
+    flush
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2/data is already existing, do you want to clear it ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-    read ans
+    yYn_ask
     echo -e -n $Color_Off
-    if [ $ans = y ] || [ $ans = Y ]; then
+    if [ $ans = y ]; then
         /gnutools/rm -rf $InstallPath/VSCode_EPuck2/data
         echo
         echo -e $BPurplen "Enabling VSCode portable mode"
@@ -282,6 +289,7 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**               Workplace Setup                   **"
 echo -e $BRed "*****************************************************"
+flush
 ans=n
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
@@ -291,18 +299,17 @@ while [ $ans != y ] && [ $ans != Y ]; do
     Workplace=${Workplace:-$USERPROFILE\\Documents\\Workplace_EPuck2}
     echo
     echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"
-    echo -n -e $BPurple "Enter y for Yes or n for No: "
-    read ans
+    yYn_ask
     echo -e -n $Color_Off
 done
 /gnutools/mkdir -p $Workplace
 if [ -d "$Workplace/Lib" ]; then 
+    flush
     echo
     echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
-    echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
-    read ans
+    yYn_ask
     echo -e -n $Color_Off
-    if [ $ans = y ] || [ $ans = Y ]; then
+    if [ $ans = y ]; then
         /gnutools/rm -rf $Workplace/Lib
     fi
 fi

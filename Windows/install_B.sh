@@ -89,7 +89,7 @@ yYn_ask() {
 }
 
 flush() {
-    while read -n 1 -t 0.01
+    while read -n 1 -t1
     do :
     done
 }
@@ -198,9 +198,10 @@ while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "InstallPath by default is $APPDATA"
     echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, press enter, otherwise just type your InstallPath"
-    
-    read InstallPath
+    flush
+    read -r InstallPath
     InstallPath=${InstallPath:-$APPDATA}
+    InstallPath=${InstallPath//\\///}
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
     yYn_ask
@@ -295,8 +296,10 @@ while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "Workplace by default is $USERPROFILE\Documents\Workplace_EPuck2"
     echo -e $BPurple "If you want the Workplace_EPuck2 to be in the default location, press enter, otherwise just type your Workplace path"
-    read Workplace
+    flush
+    read -r Workplace
     Workplace=${Workplace:-$USERPROFILE\\Documents\\Workplace_EPuck2}
+    Workplace=${Workplace//\\///}
     echo
     echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"
     yYn_ask

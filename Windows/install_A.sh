@@ -89,7 +89,7 @@ yYn_ask() {
 }
 
 flush() {
-    while read -n 1 -t 0.01
+    while read -n 1 -t1
     do :
     done
 }

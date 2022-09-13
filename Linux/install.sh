@@ -114,7 +114,7 @@ programVSFunc() {
     fi
     
     echo
-    echo -e $Cyan "Extracting of vscode.tar.gz"
+    echo -e $Cyan "Extracting vscode.tar.gz"
     echo -e -n $Color_Off
     tar -xf vscode.tar.gz
     rm vscode.tar.gz
@@ -295,19 +295,7 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**           Installation of EPuck2Tools           **"
 echo -e $BRed "*****************************************************"
-if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
-    flush
-    echo
-    echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
-    yYn_ask
-    echo -e -n $Color_Off
-    if [ $ans = y ]; then
-        rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
-        EPuck2ToolsFunc
-    fi
-else
-    EPuck2ToolsFunc
-fi
+EPuck2ToolsFunc
 
 #####################################################
 ##          VSCode Extensions Installation         ##
@@ -397,7 +385,6 @@ echo -e $BRed "*****************************************************"
 echo
 echo -e $Cyan "Configuring vscode..."
 echo -e -n $Color_Off
-cd $
 
 cd $InstallPath/VSCode_EPuck2/data/user-data/User/
 InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //

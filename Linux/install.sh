@@ -150,6 +150,8 @@ EPuck2ToolsFuncGCC() {
     echo -e -n $Color_Off
     tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
     rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
+    mkdir -p $InstallPath/EPuck2Tools
+    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
 }
 
 EPuck2ToolsFunc() {
@@ -167,16 +169,13 @@ EPuck2ToolsFunc() {
         EPuck2ToolsFuncGCC
     fi
 
-    mkdir -p $InstallPath/EPuck2Tools
-    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
     cp -r Utils $InstallPath/EPuck2Tools/Utils
-    
     echo
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
     curl -L "https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz" --output "monitor_linux64bit.tar.gz"
     tar -xf monitor_linux64bit.tar.gz
-    mv build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release $InstallPath/EPuck2Tools/monitor_linux64bit
+    mv build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release $InstallPath/EPuck2Tools/Utils/monitor_linux64bit
 
     echo
     echo -e $Cyan "EPuck2Tools installed"

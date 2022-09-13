@@ -13,7 +13,7 @@
         {
             "label": "Run EPuckMonitor",
             "type": "shell",
-            "command": "./${config:epuck2_utils}//EPuckMonitor",
+            "command": "./${config:epuck2_utils}//monitor_linux64bit//EPuckMonitor",
             "group": {
                 "kind": "build",
                 "isDefault": true

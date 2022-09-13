@@ -106,7 +106,7 @@ programVSFunc() {
     echo -e -n $Color_Off
 }
 
-EPuck2ToolsFunc() {
+EPuck2ToolsFuncGCC() {
     if test -f "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"; then
         echo
         echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major-win32.zip already downloaded"
@@ -125,15 +125,33 @@ EPuck2ToolsFunc() {
         echo -e -n $Color_Off
         curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
     fi
-
+        
     echo
     echo -e $Cyan "Installation of gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
     echo -e -n $Color_Off
     /gnutools/7za.exe x gcc-arm-none-eabi-7-2017-q4-major-win32.zip -ogcc-arm-none-eabi-7-2017-q4-major
-
     /gnutools/rm gcc-arm-none-eabi-7-2017-q4-major-win32.zip
     /gnutools/mkdir -p $InstallPath/EPuck2Tools
     /gnutools/mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
+}
+
+EPuck2ToolsFunc() {
+    if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
+        echo
+        echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
+        echo -n -e $BPurple "Enter y or Y for Yes and any for No: "
+        read ans
+        echo -e -n $Color_Off
+        if [ $ans = y ] || [ $ans = Y ]; then
+            /gnutools/rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
+            EPuck2ToolsFuncGCC
+        fi
+    else
+        EPuck2ToolsFuncGCC
+    fi
+    
+
+
     /gnutools/cp -r Utils $InstallPath/EPuck2Tools/Utils
     /gnutools/cp -r gnutools $InstallPath/EPuck2Tools/gnutools
 
@@ -141,8 +159,8 @@ EPuck2ToolsFunc() {
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
     curl -L "https://projects.gctronic.com/epuck2/monitor_win.zip" --output "monitor_win.zip"
-    /gnutools/7za.exe monitor_win.zip
-    /gnutools/mv build-qmake-Desktop_Qt_5_10_0_MinGW_32bit-Release $InstallPath/EPuck2Tools/Utils/monitor_win
+    /gnutools/7za.exe x monitor_win.zip -omonitor_win
+    /gnutools/mv monitor_win $InstallPath/EPuck2Tools/Utils/
 
     echo
     echo -e $Cyan "EPuck2Tools installed"

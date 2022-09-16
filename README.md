@@ -11,18 +11,12 @@ MacOS, Windows and Linux are or will be in the very near future supported.
 - Linux
 
 # Installation method (only MacOS supported right now)
-- download/clone the repository anywhere you want (e.g: ~/Download)
+- download [here](https://github.com/EPFL-MICRO-315/Create_VSCode_e-puck2/releases/tag/v1.0)
 - open a terminal under Create_VSCode_e-puck2/MacOS
 - execute chmod 700 install.sh
 - execute ./install.sh 
 - follow the installation steps (caution, be very patient for the installation, it's normal if it seems "stucked" for a few minutes) 
 
 # TODO
-- enhances the script "look" to be more user friendly 
-   - differentiates (color and/or polices) the requests to the user from the command's log
-   - manage case for answer like 'y' or 'Y'
 - support as eclipse-epuck2 does the configuration of ChibiOS projects (board.chcfg file and dependencies) through some kind of .xml file
-- modify installers in order to avoid to install anything already installed
-- documents how to configure correctly the "Get Started" configuration at the first VSCode_EPuck2 launch
-- uses make with the right threads number (-jx) where x is determined on the fly
-  - use command "sysctl -n hw.logicalcpu" for MacOs 
+

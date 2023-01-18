@@ -213,21 +213,25 @@ echo
 echo -e $Cyan "Installing curl required to download vscode and compiler"
 echo -e -n $Color_Off
 sudo apt-get install curl
+#sudo pacman -S curl #Uncomment if on system using pacman instead of apt-get
 
 echo
 echo -e $Cyan "Installing make"
 echo -e -n $Color_Off
 sudo apt-get install make
+#sudo pacman -S make
 
 echo
 echo -e $Cyan "Installing dfu-util"
 echo -e -n $Color_Off
 sudo apt-get install dfu-util
+#sudo pacman -S dfu-util
 
 echo
 echo -e $Cyan "Installating git"
 echo -e -n $Color_Off
 sudo apt-get install git
+#sudo pacman -S git
 
 flush
 echo

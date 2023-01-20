@@ -266,6 +266,8 @@ ans=n
 while [ $ans != y ]; do
     echo
     echo -e $BPurple "InstallPath by default is ~/Applications"
+    echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, press enter, otherwise just type your InstallPath"
+    flush
     read InstallPath
     InstallPath=${InstallPath:-~/Applications}
     echo

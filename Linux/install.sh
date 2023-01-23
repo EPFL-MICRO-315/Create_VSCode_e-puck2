@@ -450,7 +450,13 @@ if [ $ans = y ]; then
     cd $origin_path
     echo "Exec=$InstallPath/VSCode_EPuck2/code" >> vscode_epuck2.desktop
     echo "Icon=$InstallPath/VSCode_EPuck2/resources/app/resources/linux/code.png" >> vscode_epuck2.desktop
-    sudo mv vscode_epuck2.desktop /usr/share/applications/vscode_epuck2.desktop
+    # Move the shortcut directly on the user desktop as the application is installed only for him
+    mv vscode_epuck2.desktop ~/Desktop/vscode_epuck2.desktop
+    # According to https://www.how2shout.com/linux/allow-launching-linux-desktop-shortcut-files-using-command-terminal/
+    # Mark the shortcut status trusted  
+    gio set ~/Desktop/vscode_epuck2.desktop metadata::trusted true
+    # Then allow execution
+    chmod u+x ~/Desktop/vscode_epuck2.desktop
 fi
 
 echo

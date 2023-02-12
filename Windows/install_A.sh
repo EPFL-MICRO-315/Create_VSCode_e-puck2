@@ -108,7 +108,7 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "** Welcome to Visual Studio Code EPuck 2 installer **"
 echo -e $BRed "*****************************************************"
 echo
-echo -e $Cyan "see https://github.com/epfl-mobots/Create_VSCode_e-puck2"
+echo -e $Cyan "see https://github.com/EPFL-MICRO-315/Create_VSCode_e-puck2"
 echo -e $Cyan "Released in 2022"
 echo
 echo -e $Red "Be extremely cautious when specifying installation paths, there are risk of damaging your installation "

@@ -325,7 +325,7 @@ cd $Workplace
 echo
 echo -e $Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
-git clone --recurse-submodules https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git Lib
+git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib
 
 
 #####################################################

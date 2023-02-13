@@ -352,11 +352,11 @@ echo -e -n $Color_Off
 echo
 echo -e $Cyan "Installing VSCode mhutchie.git-graph extension"
 echo -e -n $Color_Off
-cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension mhutchie.git-graph --force"
+./code --install-extension mhutchie.git-graph --force
 echo
 echo -e $Cyan "Installing VSCode tomoki1207.pdf extension"
 echo -e -n $Color_Off
-cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension tomoki1207.pdf --force"
+./code --install-extension tomoki1207.pdf --force
 
 #####################################################
 ##               Workplace Setup                   ##
@@ -444,6 +444,13 @@ echo -e $Cyan "Adding the user $USER to dialout group"
 echo -e -n $Color_Off
 sudo adduser $USER dialout
 
+#####################################################
+##               Copy RefTag info                  ##
+#####################################################
+echo
+echo -e $Cyan "Copy RefTag info in order to know the exact installer commit"
+echo -e -n $Color_Off
+cp $origin_path/../VERSION.md $InstallPath/VSCode_EPuck2
 
 #####################################################
 ##               VSCode Shortcut                   ##

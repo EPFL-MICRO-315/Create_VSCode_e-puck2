@@ -378,6 +378,14 @@ echo -e -n $Color_Off
 /gnutools/cp $origin_path/tasks.json tasks.json
 
 #####################################################
+##               Copy RefTag info                  ##
+#####################################################
+echo
+echo -e $Cyan "Copy RefTag info in order to know the exact installer commit"
+echo -e -n $Color_Off
+cp $origin_path/../VERSION.md $InstallPath/VSCode_EPuck2
+
+#####################################################
 ##                   Shortcut                      ##
 #####################################################
 cd $InstallPath/VSCode_EPuck2

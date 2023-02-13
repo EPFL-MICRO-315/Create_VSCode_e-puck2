@@ -11,7 +11,7 @@ MacOS, Windows and Linux are or will be in the very near future supported.
 - Linux
 
 # Installation method (only MacOS supported right now)
-- download [here](https://github.com/EPFL-MICRO-315/Create_VSCode_e-puck2/releases/tag/v1.0)
+- download [here](https://github.com/EPFL-MICRO-315/Create_VSCode_e-puck2/archive/refs/tags/RefTag.zip)
 - open a terminal under Create_VSCode_e-puck2/MacOS
 - execute chmod 700 install.sh
 - execute ./install.sh 

@@ -11,4 +11,4 @@ git checkout RefTag
 git branch -d _REFTAG
 git checkout $ActualBranch
 echo If RefTag is ok then you can push to the remote with the command:
-echo git push origin RefTag
+echo git push -f origin RefTag

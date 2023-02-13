@@ -349,15 +349,14 @@ echo
 echo -e $Cyan "Installing VSCode donjayamanne.githistory extension"
 echo -e -n $Color_Off
 ./code --install-extension donjayamanne.githistory --force
-# Show students in a TP how to add this extention and what it brings
-# echo
-# echo -e $Cyan "Installing VSCode mhutchie.git-graph extension"
-# echo -e -n $Color_Off
-# cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension mhutchie.git-graph --force"
-# echo
-# echo -e $Cyan "Installing VSCode tomoki1207.pdf extension"
-# echo -e -n $Color_Off
-# cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension tomoki1207.pdf --force"
+echo
+echo -e $Cyan "Installing VSCode mhutchie.git-graph extension"
+echo -e -n $Color_Off
+cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension mhutchie.git-graph --force"
+echo
+echo -e $Cyan "Installing VSCode tomoki1207.pdf extension"
+echo -e -n $Color_Off
+cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension tomoki1207.pdf --force"
 
 #####################################################
 ##               Workplace Setup                   ##

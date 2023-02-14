@@ -10,5 +10,9 @@ git tag -f -m "Replace RefTag" RefTag
 git checkout RefTag
 git branch -d _REFTAG
 git checkout $ActualBranch
-echo If RefTag is ok then you can push to the remote with the command:
+echo
+echo 1. Create and test locally this installer with the command:
+echo git archive --format zip --output VSCode.zip RefTag
+echo
+echo 2. Then if the installer seems ok then you can push to the remote with the command:
 echo git push -f origin RefTag

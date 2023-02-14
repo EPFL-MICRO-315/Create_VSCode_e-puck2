@@ -4,6 +4,9 @@ origin_path=$PWD
 ActualBranch=$(git symbolic-ref --short HEAD)
 git checkout -b _REFTAG
 git log -1 > VERSION.md
+cp VERSION.md Windows/VERSION.md
+cp VERSION.md Linux/VERSION.md
+cp VERSION.md MacOS/VERSION.md
 git add VERSION.md
 git commit -m "Create detached commit for RefTag"
 git tag -f -m "Replace RefTag" RefTag

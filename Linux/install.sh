@@ -452,7 +452,7 @@ sudo adduser $USER dialout
 echo
 echo -e $Cyan "Copy RefTag info in order to know the exact installer commit"
 echo -e -n $Color_Off
-cp $origin_path/../VERSION.md $InstallPath/VSCode_EPuck2
+cp $origin_path/VERSION.md $InstallPath/VSCode_EPuck2
 
 #####################################################
 ##               VSCode Shortcut                   ##

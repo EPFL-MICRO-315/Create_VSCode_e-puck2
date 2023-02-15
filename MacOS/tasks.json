@@ -13,7 +13,7 @@
         {
             "label": "Run EPuckMonitor",
             "type": "shell",
-            "command": "${config:epuck2_utils}//EPuckMonitor.app",
+            "command": "${config:epuck2_utils}//EPuckMonitor.app/Contents/MacOS/EPuckMonitor",
             "group": {
                 "kind": "build",
                 "isDefault": true

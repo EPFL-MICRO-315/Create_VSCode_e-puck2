@@ -271,6 +271,7 @@ while [ $ans != y ]; do
     flush
     read InstallPath
     InstallPath=${InstallPath:-~/Applications}
+    eval InstallPath=$InstallPath
     echo
     echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
     yYn_ask
@@ -391,6 +392,7 @@ while [ $ans != y ]; do
     flush
     read Workplace
     Workplace=${Workplace:-~/Documents/Workplace_VSCode_EPuck2}
+    eval Workplace=$Workplace
     echo
     echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"
     yYn_ask

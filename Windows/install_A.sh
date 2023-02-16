@@ -113,7 +113,7 @@ echo -e $Cyan "Released in 2022"
 echo
 echo -e $Red "Be extremely cautious when specifying installation paths, there are risk of damaging your installation "
 echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root C:/"
-echo -e $Red "AND VERY IMPORTANT: Installation path must NOT AT ALL contain any space !!"
+echo -e $BCyan "AND VERY IMPORTANT: Paths must NOT AT ALL contain any space or accented character!!"
 echo
 echo -e $BPurple "Proceed with the installation ?"
 yYn_ask

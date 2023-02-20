@@ -363,10 +363,10 @@ echo
 echo -e $Cyan "Installing VSCode SanaAjani.taskrunnercode extension"
 echo -e -n $Color_Off
 ./code --install-extension SanaAjani.taskrunnercode --force
-echo
-echo -e $Cyan "Installing VSCode donjayamanne.githistory extension"
-echo -e -n $Color_Off
-./code --install-extension donjayamanne.githistory --force
+# echo
+# echo -e $Cyan "Installing VSCode donjayamanne.githistory extension"
+# echo -e -n $Color_Off
+# ./code --install-extension donjayamanne.githistory --force
 echo
 echo -e $Cyan "Installing VSCode mhutchie.git-graph extension"
 echo -e -n $Color_Off

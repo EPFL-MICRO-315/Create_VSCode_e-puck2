@@ -194,6 +194,7 @@ echo -e $BRed "**              Select Install Path                **"
 echo -e $BRed "*****************************************************"
 flush
 ans=n
+APPDATA=${APPDATA//\\///}
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "InstallPath by default is $APPDATA"
@@ -304,6 +305,7 @@ echo -e $BRed "**               Workplace Setup                   **"
 echo -e $BRed "*****************************************************"
 flush
 ans=n
+USERPROFILE=${USERPROFILE//\\///}
 while [ $ans != y ] && [ $ans != Y ]; do
     echo
     echo -e $BPurple "Workplace by default is $USERPROFILE\Documents\Workplace_EPuck2"

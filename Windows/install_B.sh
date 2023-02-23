@@ -110,7 +110,7 @@ programVSFunc() {
         echo
         echo -e $BPurple "Download VSCode"
         echo -e -n $Color_Off
-        curl -L "https://update.code.visualstudio.com/latest/win32-x64-archive/stable" --output vscode.zip
+        curl -Lk "https://update.code.visualstudio.com/latest/win32-x64-archive/stable" --output vscode.zip
     fi
     
     echo
@@ -137,13 +137,13 @@ EPuck2ToolsFuncGCC() {
             echo
             echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
             echo -e -n $Color_Off
-            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
+            curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
         fi
     else
         echo
         echo -e $Cyan "Download gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
         echo -e -n $Color_Off
-        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
+        curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
     fi
         
     echo
@@ -176,7 +176,7 @@ EPuck2ToolsFunc() {
     echo
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
-    curl -L "https://projects.gctronic.com/epuck2/monitor_win.zip" --output "monitor_win.zip"
+    curl -Lk "https://projects.gctronic.com/epuck2/monitor_win.zip" --output "monitor_win.zip"
     /gnutools/7za.exe x monitor_win.zip -omonitor_win
     /gnutools/mv monitor_win/build-qmake-Desktop_Qt_5_10_0_MinGW_32bit-Release $InstallPath/EPuck2Tools/Utils/monitor_win
 

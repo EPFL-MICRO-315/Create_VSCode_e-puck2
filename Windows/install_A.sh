@@ -140,7 +140,7 @@ if [ $ans = y ]; then
     echo
     echo -e $Cyan "Downloading of git"
     echo -e -n $Color_Off
-    curl -L "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "git_setup.exe"
+    curl -Lk "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "git_setup.exe"
     echo -e $Cyan "Please install git"
     git_setup.exe
     echo -e -n $Color_Off

@@ -110,7 +110,7 @@ programVSFunc() {
         echo
         echo -e $BPurple "Download VSCode"
         echo -e -n $Color_Off
-        curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
+        curl -Lk "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
     fi
     
     echo
@@ -136,13 +136,13 @@ EPuck2ToolsFunc() {
             echo
             echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
             echo -e -n $Color_Off
-            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+            curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         fi
     else
         echo
         echo -e $Cyan "Download gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         echo -e -n $Color_Off
-        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     fi
 
     echo
@@ -157,7 +157,7 @@ EPuck2ToolsFunc() {
     echo
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
-    curl -L "https://projects.gctronic.com/epuck2/monitor_mac.zip" --output "monitor_mac.zip"
+    curl -Lk "https://projects.gctronic.com/epuck2/monitor_mac.zip" --output "monitor_mac.zip"
     unzip monitor_mac.zip
     mv EPuckMonitor.app $InstallPath/EPuck2Tools/Utils/EPuckMonitor.app
 

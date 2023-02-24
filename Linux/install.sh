@@ -110,7 +110,7 @@ programVSFunc() {
         echo
         echo -e $BPurple "Downloading VSCode"
         echo -e -n $Color_Off
-        curl -Lk "https://update.code.visualstudio.com/latest/linux-x64/stable" --output vscode.tar.gz
+        curl -L "https://update.code.visualstudio.com/latest/linux-x64/stable" --output vscode.tar.gz
     fi
     
     echo
@@ -136,13 +136,13 @@ EPuck2ToolsFuncGCC() {
             echo
             echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
             echo -e -n $Color_Off
-            curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         fi
     else
         echo
         echo -e $Cyan "Downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         echo -e -n $Color_Off
-        curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     fi
 
     echo
@@ -173,7 +173,7 @@ EPuck2ToolsFunc() {
     echo
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
-    curl -Lk "https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz" --output "monitor_linux64bit.tar.gz"
+    curl -L "https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz" --output "monitor_linux64bit.tar.gz"
     tar -xf monitor_linux64bit.tar.gz
     mv build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release $InstallPath/EPuck2Tools/Utils/monitor_linux64bit
 
@@ -240,7 +240,7 @@ echo -e $BPurple "Installing git-credential-manager-core ?"
 yYn_ask
 if [ $ans = y ]; then
     echo -e -n $Color_Off
-    curl -Lk "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb" --output "gcm-linux_amd64.2.0.785.deb"
+    curl -L "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb" --output "gcm-linux_amd64.2.0.785.deb"
     sudo dpkg -i "gcm-linux_amd64.2.0.785.deb"
     git-credential-manager-core configure
     echo "[credential]" >> ~/.gitconfig

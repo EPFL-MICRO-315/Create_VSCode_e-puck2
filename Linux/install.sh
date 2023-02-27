@@ -369,11 +369,11 @@ flush
 ans=n
 while [ $ans != y ]; do
     echo
-    echo -e $BPurple "Workplace by default is ~/Documents/Workplace_VSCode_EPuck2"
+    echo -e $BPurple "Workplace by default is ~/Documents/Workplace_EPuck2"
     echo -e $BPurple "If you want the Workplace_EPuck2 to be in the default location, press enter, otherwise just type your Workplace path"
     flush
     read Workplace
-    Workplace=${Workplace:-~/Documents/Workplace_VSCode_EPuck2}
+    Workplace=${Workplace:-~/Documents/Workplace_EPuck2}
     eval Workplace=$Workplace
     echo
     echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"

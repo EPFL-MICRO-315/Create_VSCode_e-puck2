@@ -1,5 +1,6 @@
 #!/bin/bash
-origin_path=$PWD
+InstallerPath=$PWD
+echo $InstallerPath
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -95,14 +96,14 @@ flush() {
 }
 
 quitFunc() {
-    cd $origin_path
+    cd $InstallerPath
     echo -n -e $BRed "Press any key to quit ..."
     read
     exit
 }
 
 programVSFunc() {
-    if test -f "vscode.zip"; then
+    if test -f "$InstallerPath/vscode.zip"; then
         echo
         echo -e $Cyan "vscode.zip already downloaded"
         echo -e -n $Color_Off
@@ -110,15 +111,18 @@ programVSFunc() {
         echo
         echo -e $BPurple "Download VSCode"
         echo -e -n $Color_Off
-        curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output vscode.zip
+        curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output $InstallerPath/vscode.zip
     fi
     
     echo
     echo -e $Cyan "Installation of vscode.zip"
     echo -e -n $Color_Off
-    unzip -q vscode.zip
-    rm vscode.zip
-    mv "Visual Studio Code.app" $InstallPath/VSCode_EPuck2.app
+    unzip -q $InstallerPath/vscode.zip -d $InstallPath/VSCode_EPuck2.app
+
+    echo check where vscode.zip has been decompressed
+    read
+
+    rm $InstallerPath/vscode.zip
 
     echo
     echo -e $Cyan "Visual Studio Code installed"
@@ -126,7 +130,7 @@ programVSFunc() {
 }
 
 EPuck2ToolsFunc() {
-    if test -f "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
+    if test -f "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
         flush
         echo
         echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
@@ -136,30 +140,35 @@ EPuck2ToolsFunc() {
             echo
             echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
             echo -e -n $Color_Off
-            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         fi
     else
         echo
         echo -e $Cyan "Download gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         echo -e -n $Color_Off
-        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     fi
 
     echo
     echo -e $Cyan "Installation of gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     echo -e -n $Color_Off
-    tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-    rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
     mkdir -p $InstallPath/EPuck2Tools
-    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
-    cp -r Utils $InstallPath/EPuck2Tools/Utils
+    tar -xf $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 -C $InstallPath/EPuck2Tools/
+    rm $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
+    cp -r $InstallerPath/Utils $InstallPath/EPuck2Tools/Utils
     
+    echo check where gcc-arm-none-eabi-7-2017-q4-major.zip has been decompressed
+    read
+
     echo
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
-    curl -L "https://projects.gctronic.com/epuck2/monitor_mac.zip" --output "monitor_mac.zip"
-    unzip monitor_mac.zip
-    mv EPuckMonitor.app $InstallPath/EPuck2Tools/Utils/EPuckMonitor.app
+    curl -L "https://projects.gctronic.com/epuck2/monitor_mac.zip" --output "$InstallerPath/monitor_mac.zip"
+    unzip -q $InstallerPath/monitor_mac.zip -d $InstallPath/EPuck2Tools/Utils/EPuckMonitor.app
+    rm $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
+    
+    echo check where monitor_mac.zip has been decompressed (EPuckMonitor.app)
+    read
 
     echo
     echo -e $Cyan "EPuck2Tools installed"
@@ -391,7 +400,7 @@ while [ $ans != y ]; do
     echo -e $BPurple "If you want the Workplace_EPuck2 to be in the default location, press enter, otherwise just type your Workplace path"
     flush
     read Workplace
-    Workplace=${Workplace:-~/Documents/Workplace_VSCode_EPuck2}
+    Workplace=${Workplace:-~/Documents/Workplace_EPuck2}
     eval Workplace=$Workplace
     echo
     echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"
@@ -413,7 +422,7 @@ cd $Workplace
 echo 
 echo -e $Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
-git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib
+git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
 
 
 #####################################################
@@ -426,26 +435,27 @@ echo -e $BRed "*****************************************************"
 echo
 echo -e $Cyan "Configuring vscode..."
 echo -e -n $Color_Off
-cd $InstallPath/code-portable-data/user-data/User/
-InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //
 
-echo "{" >> settings.json
+InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //
+FOLDER=$InstallPath/code-portable-data/user-data/User
+FILE=$FOLDER/settings.json
+echo "{" >> $FILE
 #Otherwise the cortex debug extension will update which newer versions are not compatible with currently used arm-toolchain version
-echo "  \"extensions.autoCheckUpdates\": false," >> settings.json
-echo "  \"extensions.autoUpdate\": false," >> settings.json
+echo "  \"extensions.autoCheckUpdates\": false," >> $FILE
+echo "  \"extensions.autoUpdate\": false," >> $FILE
 #Path used by intellissense to locate lib source files
-echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
+echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> $FILE
 #Compiler path
-echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> settings.json
+echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> $FILE
 #Make path
-echo "	\"make_path\": \"make\"," >> settings.json
+echo "	\"make_path\": \"make\"," >> $FILE
 #Path used for debuging (.svd), dfu
-echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> settings.json
-echo "	\"workplace\": \"$Workplace\"," >> settings.json
-echo "	\"terminal.integrated.env.osx\": {" >> settings.json
-echo "	    \"PATH\": \"\${env:HOME}:/usr/local/bin:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> settings.json
-echo "	\"cortex-debug.armToolchainPath.osx\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
-echo "}" >> settings.json
+echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> $FILE
+echo "	\"workplace\": \"$Workplace\"," >> $FILE
+echo "	\"terminal.integrated.env.osx\": {" >> $FILE
+echo "	    \"PATH\": \"\${env:HOME}:/usr/local/bin:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> $FILE
+echo "	\"cortex-debug.armToolchainPath.osx\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> $FILE
+echo "}" >> $FILE
 
 #####################################################
 ##               VSCode DFU Task                   ##
@@ -453,7 +463,7 @@ echo "}" >> settings.json
 echo
 echo -e $Cyan "Adding DFU & Librairy linking tasks to user level"
 echo -e -n $Color_Off
-cp $origin_path/tasks.json tasks.json
+cp $InstallerPath/tasks.json $FOLDER/tasks.json
 
 echo
 echo -e $BRed "*******************************************************"
@@ -467,6 +477,6 @@ echo
 echo
 echo -e $Cyan "Copy RefTag info in order to know the exact installer commit"
 echo -e -n $Color_Off
-cp $origin_path/VERSION.md $InstallPath/VSCode_EPuck2
+cp $InstallerPath/VERSION.md $InstallPath/VSCode_EPuck2
 
 quitFunc

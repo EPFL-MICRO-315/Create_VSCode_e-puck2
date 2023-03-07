@@ -1,5 +1,7 @@
 #!/gnutools/bash
-origin_path=$PWD
+
+InstallerPath=$1
+InstallerPath=${InstallerPath//\\///}
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -95,7 +97,7 @@ flush() {
 }
 
 quitFunc() {
-    cd $origin_path
+    cd $InstallerPath
     echo -n -e $BRed "Press any key to quit ..."
     read
     exit
@@ -140,15 +142,15 @@ if [ $ans = y ]; then
     echo
     echo -e $Cyan "Downloading of git"
     echo -e -n $Color_Off
-    curl -Lk "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "$origin/git_setup.exe"
+    curl -Lk "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "$InstallerPath/git_setup.exe"
     echo -e $Cyan "Please install git"
-    $origin/git_setup.exe
+    $InstallerPath/git_setup.exe
     echo -e -n $Color_Off
-    /gnutools/rm $origin/git_setup.exe
+    /gnutools/rm $InstallerPath/git_setup.exe
 fi
 echo
 echo -e $Cyan "Reloading the PATH variables"
 echo -e -n $Color_Off
-./install_B.sh
+$InstallerPath/install_B.sh $InstallerPath
 
 quitFunc

@@ -18,24 +18,6 @@
                 "kind": "build",
                 "isDefault": true
             }
-        },
-        {
-            "label": "Link Librairy e-puck2_main-processor to workspace",
-            "type": "shell",
-            "command": "ln -s ${config:workplace}/Lib/e-puck2_main-processor ${workspaceFolder}/e-puck2_main-processor",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "label": "Link Librairy ST to workspace",
-            "type": "shell",
-            "command": "ln -s ${config:workplace}/Lib/ST ${workspaceFolder}/ST",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
         }
     ]
 }

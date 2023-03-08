@@ -1,5 +1,7 @@
 #!/gnutools/bash
-origin_path=$PWD
+
+InstallerPath=$1
+InstallerPath=${InstallerPath//\\///}
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -95,14 +97,14 @@ flush() {
 }
 
 quitFunc() {
-    cd $origin_path
+    cd $InstallerPath
     echo -n -e $BRed "Press any key to quit ..."
     read
     exit
 }
 
 programVSFunc() {
-    if test -f "vscode.zip"; then
+    if test -f "$InstallerPath/vscode.zip"; then
         echo
         echo -e $Cyan "vscode.zip already downloaded"
         echo -e -n $Color_Off
@@ -110,16 +112,15 @@ programVSFunc() {
         echo
         echo -e $BPurple "Download VSCode"
         echo -e -n $Color_Off
-        curl -Lk "https://update.code.visualstudio.com/latest/win32-x64-archive/stable" --output vscode.zip
+        curl -Lk "https://update.code.visualstudio.com/latest/win32-x64-archive/stable" --output $InstallerPath/vscode.zip
     fi
     
     echo
     echo -e $Cyan "Installation of vscode.zip"
     echo -e -n $Color_Off
-    /gnutools/7za.exe x vscode.zip -oVSCode_EPuck2
+    /gnutools/7za.exe x $InstallerPath/vscode.zip -o$InstallPath/VSCode_EPuck2
     
-    /gnutools/rm vscode.zip
-    /gnutools/mv "VSCode_EPuck2" $InstallPath/VSCode_EPuck2
+    /gnutools/rm $InstallerPath/vscode.zip
 
     echo
     echo -e $Cyan "Visual Studio Code installed"
@@ -127,7 +128,7 @@ programVSFunc() {
 }
 
 EPuck2ToolsFuncGCC() {
-    if test -f "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"; then
+    if test -f "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"; then
         echo
         echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major-win32.zip already downloaded"
         echo -e $BPurple "Do you want to re-download it ?"
@@ -137,22 +138,21 @@ EPuck2ToolsFuncGCC() {
             echo
             echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
             echo -e -n $Color_Off
-            curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
+            curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
         fi
     else
         echo
         echo -e $Cyan "Download gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
         echo -e -n $Color_Off
-        curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
+        curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
     fi
         
     echo
     echo -e $Cyan "Installation of gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
     echo -e -n $Color_Off
-    /gnutools/7za.exe x gcc-arm-none-eabi-7-2017-q4-major-win32.zip -ogcc-arm-none-eabi-7-2017-q4-major
-    /gnutools/rm gcc-arm-none-eabi-7-2017-q4-major-win32.zip
     /gnutools/mkdir -p $InstallPath/EPuck2Tools
-    /gnutools/mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
+    /gnutools/7za.exe x $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip -o$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
+    /gnutools/rm $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip
 }
 
 EPuck2ToolsFunc() {
@@ -170,15 +170,14 @@ EPuck2ToolsFunc() {
         EPuck2ToolsFuncGCC
     fi
     
-    /gnutools/cp -r Utils $InstallPath/EPuck2Tools/Utils
-    /gnutools/cp -r gnutools $InstallPath/EPuck2Tools/gnutools
+    /gnutools/cp -r $InstallerPath/Utils $InstallPath/EPuck2Tools/Utils
+    /gnutools/cp -r $InstallerPath/gnutools $InstallPath/EPuck2Tools/gnutools
 
     echo
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
-    curl -Lk "https://projects.gctronic.com/epuck2/monitor_win.zip" --output "monitor_win.zip"
-    /gnutools/7za.exe x monitor_win.zip -omonitor_win
-    /gnutools/mv monitor_win/build-qmake-Desktop_Qt_5_10_0_MinGW_32bit-Release $InstallPath/EPuck2Tools/Utils/monitor_win
+    curl -Lk "https://projects.gctronic.com/epuck2/monitor_win.zip" --output "$InstallerPath/monitor_win.zip"
+    /gnutools/7za.exe x $InstallerPath/monitor_win.zip -o$InstallPath/EPuck2Tools/Utils/monitor_win
 
     echo
     echo -e $Cyan "EPuck2Tools installed"
@@ -232,7 +231,7 @@ if [ -d "$InstallPath/VSCode_EPuck2" ]; then
 else
     programVSFunc
 fi
-/gnutools/cp shortcut.bat $InstallPath/VSCode_EPuck2/shortcut.bat
+/gnutools/cp $InstallerPath/shortcut.bat $InstallPath/VSCode_EPuck2/shortcut.bat
 
 #####################################################
 ##              Install EPuck2Tools                ##
@@ -330,12 +329,13 @@ if [ -d "$Workplace/Lib" ]; then
         /gnutools/rm -rf $Workplace/Lib
     fi
 fi
-cd $Workplace
 echo
 echo -e $Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
-git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib
+git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
 
+FOLDER=$Workplace/Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly
+mv $FOLDER/package.json $FOLDER/package.json-renamed-to-avoid-been-as-task-4-vscode
 
 #####################################################
 ##               VSCode Settings                   ##
@@ -347,29 +347,30 @@ echo -e $BRed "*****************************************************"
 echo
 echo -e $Cyan "Configuring vscode..."
 echo -e -n $Color_Off
-cd $InstallPath/VSCode_EPuck2/data/user-data/User/
 InstallPathD=${InstallPath//\\///} #InstallPathDouble: replace \ by //
 WorkplaceD=${Workplace//\\///}
 WorkplaceAS=${WorkplaceD//\//\\}
-echo "{" >> settings.json
+FOLDER=$InstallPath/VSCode_EPuck2/data/user-data/User
+FILE=$FOLDER/settings.json
+echo "{" >> $FILE
 #Otherwise the cortex debug extension will update which newer versions are not compatible with currently used arm-toolchain version
-echo "  \"extensions.autoCheckUpdates\": false," >> settings.json
-echo "  \"extensions.autoUpdate\": false," >> settings.json
+echo "  \"extensions.autoCheckUpdates\": false," >> $FILE
+echo "  \"extensions.autoUpdate\": false," >> $FILE
 #Path used by intellissense to locate lib source files
-echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
+echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> $FILE
 #Compiler path
-echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> settings.json
+echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> $FILE
 #Make path
-echo "	\"make_path\": \"$InstallPathD//EPuck2Tools//gnutools//make\"," >> settings.json
+echo "	\"make_path\": \"$InstallPathD//EPuck2Tools//gnutools//make\"," >> $FILE
 #Path used for debuging (.svd), dfu
-echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> settings.json
-echo "	\"workplace\": \"$WorkplaceD\"," >> settings.json
-echo "	\"workplaceAS\": \"$WorkplaceAS\"," >> settings.json
-echo "	\"terminal.integrated.env.windows\": {" >> settings.json
-echo "	    \"PATH\": \"\${env:PATH};$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin;$InstallPathD//EPuck2Tools//gnutools;\"}," >> settings.json
-echo "	\"terminal.integrated.defaultProfile.windows\": \"Command Prompt\"," >> settings.json
-echo "	\"cortex-debug.armToolchainPath.windows\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
-echo "}" >> settings.json
+echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> $FILE
+echo "	\"workplace\": \"$WorkplaceD\"," >> $FILE
+echo "	\"workplaceAS\": \"$WorkplaceAS\"," >> $FILE
+echo "	\"terminal.integrated.env.windows\": {" >> $FILE
+echo "	    \"PATH\": \"\${env:PATH};$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin;$InstallPathD//EPuck2Tools//gnutools;\"}," >> $FILE
+echo "	\"terminal.integrated.defaultProfile.windows\": \"Command Prompt\"," >> $FILE
+echo "	\"cortex-debug.armToolchainPath.windows\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> $FILE
+echo "}" >> $FILE
 
 #####################################################
 ##               VSCode DFU Task                   ##
@@ -377,7 +378,7 @@ echo "}" >> settings.json
 echo
 echo -e $Cyan "Adding DFU and Library linking tasks to user level"
 echo -e -n $Color_Off
-/gnutools/cp $origin_path/tasks.json tasks.json
+/gnutools/cp $InstallerPath/tasks.json $FOLDER/tasks.json
 
 #####################################################
 ##               Copy RefTag info                  ##
@@ -385,13 +386,13 @@ echo -e -n $Color_Off
 echo
 echo -e $Cyan "Copy RefTag info in order to know the exact installer commit"
 echo -e -n $Color_Off
-/gnutools/cp $origin_path/VERSION.md $InstallPath/VSCode_EPuck2
+/gnutools/cp $InstallerPath/VERSION.md $InstallPath/VSCode_EPuck2
 
 #####################################################
 ##                   Shortcut                      ##
 #####################################################
 cd $InstallPath/VSCode_EPuck2
-cmd.exe /c "start shortcut.bat"
+cmd.exe /c "start $InstallerPath/shortcut.bat"
 
 echo
 echo -e $BRed "*******************************************************"

@@ -1,5 +1,7 @@
 #!/bin/bash
-origin_path=$PWD
+InstallerPath=$(dirname "$0")
+echo Installer path : $InstallerPath
+
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -95,30 +97,35 @@ flush() {
 }
 
 quitFunc() {
-    cd $origin_path
+    cd $InstallerPath
     echo -n -e $BRed "Press any key to quit ..."
     read
     exit
 }
 
 programVSFunc() {
-    if test -f "vscode.zip"; then
+    if test -f "$InstallerPath/vscode.tar.gz"; then
         echo
-        echo -e $Cyan "vscode.zip already downloaded"
+        echo -e $Cyan "$InstallerPath/vscode.tar.gz already downloaded"
         echo -e -n $Color_Off
     else
         echo
         echo -e $BPurple "Downloading VSCode"
         echo -e -n $Color_Off
-        curl -L "https://update.code.visualstudio.com/latest/linux-x64/stable" --output vscode.tar.gz
+        echo curl -L "https://update.code.visualstudio.com/latest/linux-x64/stable" --output $InstallerPath/vscode.tar.gz
+        curl -L "https://update.code.visualstudio.com/latest/linux-x64/stable" --output $InstallerPath/vscode.tar.gz
     fi
     
     echo
-    echo -e $Cyan "Extracting vscode.tar.gz"
+    echo -e $Cyan "Extracting $InstallerPath/vscode.tar.gz"
     echo -e -n $Color_Off
-    tar -xf vscode.tar.gz
-    rm vscode.tar.gz
-    mv "VSCode-linux-x64" $InstallPath/VSCode_EPuck2
+    tar -xf $InstallerPath/vscode.tar.gz -C $InstallPath
+    mv $InstallPath/VSCode-linux-x64 $InstallPath/VSCode_EPuck2
+
+    echo check where vscode.tar.gz has been decompressed
+    read
+
+    rm $InstallerPath/vscode.tar.gz
 
     echo
     echo -e $Cyan "Visual Studio Code installed"
@@ -126,32 +133,37 @@ programVSFunc() {
 }
 
 EPuck2ToolsFuncGCC() {
-    if test -f "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
+    if test -f "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
         flush
         echo
-        echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
+        echo -e $Cyan "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
         echo -e $BPurple "Do you want to re-download it ?"
         yYn_ask
         if [ $ans = y ]; then
             echo
             echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
             echo -e -n $Color_Off
-            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+            echo curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         fi
     else
         echo
         echo -e $Cyan "Downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
         echo -e -n $Color_Off
-        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        echo curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     fi
 
     echo
-    echo -e $Cyan "Installation of gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+    echo -e $Cyan "Installation of $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
     echo -e -n $Color_Off
-    tar -xf gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-    rm gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
     mkdir -p $InstallPath/EPuck2Tools
-    mv gcc-arm-none-eabi-7-2017-q4-major $InstallPath/EPuck2Tools/
+    tar -xf $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 -C $InstallPath/EPuck2Tools/
+
+    echo check where gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 has been decompressed
+    read
+
+    rm $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
 }
 
 EPuck2ToolsFunc() {
@@ -169,13 +181,19 @@ EPuck2ToolsFunc() {
         EPuck2ToolsFuncGCC
     fi
 
-    cp -r Utils $InstallPath/EPuck2Tools/Utils
+    cp -r $InstallerPath/Utils $InstallPath/EPuck2Tools/Utils
     echo
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
-    curl -L "https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz" --output "monitor_linux64bit.tar.gz"
-    tar -xf monitor_linux64bit.tar.gz
-    mv build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release $InstallPath/EPuck2Tools/Utils/monitor_linux64bit
+    echo curl -L "https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz" --output "$InstallerPath/monitor_linux64bit.tar.gz"
+    curl -L "https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz" --output "$InstallerPath/monitor_linux64bit.tar.gz"
+    tar -xf $InstallerPath/monitor_linux64bit.tar.gz -C $InstallPath/EPuck2Tools/Utils
+    mv $InstallPath/EPuck2Tools/Utils/build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release $InstallPath/EPuck2Tools/Utils/monitor_linux64bit
+
+    echo check where monitor_linux64bit.tar.gz or monitor_linux64bit has been decompressed
+    read
+
+    rm $InstallerPath/monitor_linux64bit.tar.gz
 
     echo
     echo -e $Cyan "EPuck2Tools installed"
@@ -240,12 +258,13 @@ echo -e $BPurple "Installing git-credential-manager-core ?"
 yYn_ask
 if [ $ans = y ]; then
     echo -e -n $Color_Off
-    curl -L "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb" --output "gcm-linux_amd64.2.0.785.deb"
-    sudo dpkg -i "gcm-linux_amd64.2.0.785.deb"
+    echo curl -L "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb" --output "$InstallerPath/gcm-linux_amd64.2.0.785.deb"
+    curl -L "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb" --output "$InstallerPath/gcm-linux_amd64.2.0.785.deb"
+    sudo dpkg -i "$InstallerPath/gcm-linux_amd64.2.0.785.deb"
     git-credential-manager-core configure
     echo "[credential]" >> ~/.gitconfig
     echo "        credentialStore = secretservice" >> ~/.gitconfig
-    
+    rm $InstallerPath/gcm-linux_amd64.2.0.785.deb    
 fi
 
 
@@ -312,7 +331,7 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**          VSCode Extensions Installation         **"
 echo -e $BRed "*****************************************************"
-if [ -d "$InstallPath/code-portable-data" ]; then
+if [ -d "$InstallPath/VSCode_EPuck2/data" ]; then
     flush
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2/data is already existing, do you want to clear it ?"
@@ -395,7 +414,10 @@ cd $Workplace
 echo 
 echo -e $Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
-git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib
+git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
+
+FOLDER=$Workplace/Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly
+mv $FOLDER/package.json $FOLDER/package.json-renamed-to-avoid-been-as-task-4-vscode
 
 
 #####################################################
@@ -409,26 +431,26 @@ echo
 echo -e $Cyan "Configuring vscode..."
 echo -e -n $Color_Off
 
-cd $InstallPath/VSCode_EPuck2/data/user-data/User/
 InstallPathD=${InstallPath//\//\/\/} #InstallPathDouble: replace / by //
-
-echo "{" >> settings.json
+FOLDER=$InstallPath/VSCode_EPuck2/data/user-data/User
+FILE=$FOLDER/settings.json
+echo "{" >> $FILE
 #Otherwise the cortex debug extension will update which newer versions are not compatible with currently used arm-toolchain version
-echo "  \"extensions.autoCheckUpdates\": false," >> settings.json
-echo "  \"extensions.autoUpdate\": false," >> settings.json
+echo "  \"extensions.autoCheckUpdates\": false," >> $FILE
+echo "  \"extensions.autoUpdate\": false," >> $FILE
 #Path used by intellissense to locate lib source files
-echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> settings.json
+echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> $FILE
 #Compiler path
-echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> settings.json
+echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> $FILE
 #Make path
-echo "	\"make_path\": \"make\"," >> settings.json
+echo "	\"make_path\": \"make\"," >> $FILE
 #Path used for debuging (.svd), dfu
-echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> settings.json
-echo "	\"workplace\": \"$Workplace\"," >> settings.json
-echo "	\"terminal.integrated.env.linux\": {" >> settings.json
-echo "	    \"PATH\": \"\${env:HOME}:/usr/local/bin:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> settings.json
-echo "	\"cortex-debug.armToolchainPath.linux\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> settings.json
-echo "}" >> settings.json
+echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> $FILE
+echo "	\"workplace\": \"$Workplace\"," >> $FILE
+echo "	\"terminal.integrated.env.linux\": {" >> $FILE
+echo "	    \"PATH\": \"\${env:HOME}:/usr/local/bin:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> $FILE
+echo "	\"cortex-debug.armToolchainPath.linux\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> $FILE
+echo "}" >> $FILE
 
 #####################################################
 ##               VSCode DFU Task                   ##
@@ -436,7 +458,7 @@ echo "}" >> settings.json
 echo
 echo -e $Cyan "Adding DFU and Library linking tasks to user level"
 echo -e -n $Color_Off
-cp $origin_path/tasks.json tasks.json
+cp $InstallerPath/tasks.json $FOLDER/tasks.json
 
 #####################################################
 ##               Add User dialout                  ##
@@ -452,7 +474,7 @@ sudo adduser $USER dialout
 echo
 echo -e $Cyan "Copy RefTag info in order to know the exact installer commit"
 echo -e -n $Color_Off
-cp $origin_path/VERSION.md $InstallPath/VSCode_EPuck2
+cp $InstallerPath/VERSION.md $InstallPath/VSCode_EPuck2
 
 #####################################################
 ##               VSCode Shortcut                   ##
@@ -467,16 +489,17 @@ echo -e $Cyan "Create shortcut under Desktop ?"
 yYn_ask
 echo -e -n $Color_Off
 if [ $ans = y ]; then
-    cd $origin_path
-    echo "Exec=$InstallPath/VSCode_EPuck2/code" >> vscode_epuck2.desktop
-    echo "Icon=$InstallPath/VSCode_EPuck2/resources/app/resources/linux/code.png" >> vscode_epuck2.desktop
-    # Move the shortcut directly on the user desktop as the application is installed only for him
-    mv vscode_epuck2.desktop ~/Desktop/vscode_epuck2.desktop
+    # Create the shortcut directly on the user desktop as the application is installed only for him
+    FOLDER=~/Desktop
+    FILE=$FOLDER/vscode_epuck2.desktop
+    cd $InstallerPath
+    echo "Exec=$InstallPath/VSCode_EPuck2/code" >> $FILE
+    echo "Icon=$InstallPath/VSCode_EPuck2/resources/app/resources/linux/code.png" >> $FILE
     # According to https://www.how2shout.com/linux/allow-launching-linux-desktop-shortcut-files-using-command-terminal/
     # Mark the shortcut status trusted  
-    gio set ~/Desktop/vscode_epuck2.desktop metadata::trusted true
+    gio set $FILE metadata::trusted true
     # Then allow execution
-    chmod u+x ~/Desktop/vscode_epuck2.desktop
+    chmod u+x $FILE
 fi
 
 echo

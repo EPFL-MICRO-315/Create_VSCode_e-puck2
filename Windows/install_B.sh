@@ -334,6 +334,8 @@ echo -e $Cyan "Cloning the libraries into the workplace"
 echo -e -n $Color_Off
 git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
 
+FOLDER=$Workplace/Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly
+mv $FOLDER/package.json $FOLDER/package.json-renamed-to-avoid-been-as-task-4-vscode
 
 #####################################################
 ##               VSCode Settings                   ##

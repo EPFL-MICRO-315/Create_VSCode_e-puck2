@@ -1,6 +1,12 @@
 #!/bin/bash
 InstallerPath=$(dirname "$0")
+# If the script is runned from is folder, the folder name will be "." and all "cd" inside the script will be the reference "."
+if [ "$InstallerPath"=="." ]; then
+    InstallerPath=$(pwd)
+fi
+
 echo Installer path : $InstallerPath
+
 
 if [ "$1" == "debug" ]; then
     Debug=true
@@ -12,7 +18,6 @@ if [ $Debug ]; then
     echo Press any key to continue
     read
 fi
-read
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -468,13 +473,14 @@ echo "	\"make_path\": \"make\"," >> $FILE
 echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> $FILE
 echo "	\"workplace\": \"$Workplace\"," >> $FILE
 echo "	\"terminal.integrated.env.osx\": {" >> $FILE
-echo "	    \"PATH\": \"\${env:HOME}:/usr/local/bin:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> $FILE
+echo "	    \"PATH\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> $FILE
 echo "	\"cortex-debug.armToolchainPath.osx\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> $FILE
 echo "}" >> $FILE
 
 #####################################################
 ##               VSCode DFU Task                   ##
 #####################################################
+
 echo
 echo -e $Cyan "Adding DFU & Librairy linking tasks to user level"
 echo -e -n $Color_Off

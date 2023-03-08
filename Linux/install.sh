@@ -1,8 +1,7 @@
 #!/bin/bash
 InstallerPath=$(dirname "$0")
-echo $InstallerPath
+echo Installer path : $InstallerPath
 
-read
 
 # Reset
 Color_Off='\033[0m'       # Text Reset

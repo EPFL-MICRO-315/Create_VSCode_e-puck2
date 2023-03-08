@@ -1,6 +1,18 @@
 #!/bin/bash
-InstallerPath=$PWD
-echo $InstallerPath
+InstallerPath=$(dirname "$0")
+echo Installer path : $InstallerPath
+
+if [ "$1" == "debug" ]; then
+    Debug=true
+else
+    Debug=false
+fi
+
+if [ $Debug ]; then
+    echo Press any key to continue
+    read
+fi
+read
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -75,9 +87,16 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
+flush() {
+    while read -n 1 -t 1
+    do :
+    done
+}
+
 yYn_ask() {
     tmp=0
     while [ $tmp != 1 ]; do
+        flush
         echo -n -e "$BPurple Enter $BGreen y $BPurple or $BGreen Y $BPurple for Yes $BPurple and $BGreen any $BPurple for No: "
         read ans
         if [ ! -z "$ans" ]; then
@@ -86,12 +105,6 @@ yYn_ask() {
             fi
             tmp=1
         fi
-    done
-}
-
-flush() {
-    while read -n 1 -t 1
-    do :
     done
 }
 
@@ -117,10 +130,13 @@ programVSFunc() {
     echo
     echo -e $Cyan "Installation of vscode.zip"
     echo -e -n $Color_Off
-    unzip -q $InstallerPath/vscode.zip -d $InstallPath/VSCode_EPuck2.app
+    unzip -q $InstallerPath/vscode.zip -d $InstallPath
+    mv $InstallPath/Visual\ Studio\ Code.app $InstallPath/VSCode_EPuck2.app
 
+if [ $Debug ]; then
     echo check where vscode.zip has been decompressed
     read
+fi
 
     rm $InstallerPath/vscode.zip
 
@@ -131,7 +147,6 @@ programVSFunc() {
 
 EPuck2ToolsFunc() {
     if test -f "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
-        flush
         echo
         echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
         echo -e $BPurple "Do you want to re-download it ?"
@@ -154,22 +169,28 @@ EPuck2ToolsFunc() {
     echo -e -n $Color_Off
     mkdir -p $InstallPath/EPuck2Tools
     tar -xf $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 -C $InstallPath/EPuck2Tools/
-    rm $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-    cp -r $InstallerPath/Utils $InstallPath/EPuck2Tools/Utils
     
+if [ $Debug ]; then
     echo check where gcc-arm-none-eabi-7-2017-q4-major.zip has been decompressed
     read
+fi
 
-    echo
-    echo -e $Cyan "Downloading epuck2 monitor"
-    echo -e -n $Color_Off
-    curl -L "https://projects.gctronic.com/epuck2/monitor_mac.zip" --output "$InstallerPath/monitor_mac.zip"
-    unzip -q $InstallerPath/monitor_mac.zip -d $InstallPath/EPuck2Tools/Utils/EPuckMonitor.app
     rm $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-    
-    echo check where monitor_mac.zip has been decompressed (EPuckMonitor.app)
-    read
+    cp -r $InstallerPath/Utils $InstallPath/EPuck2Tools/Utils
 
+    # EPuckMonitor.app is included with the installer in order to control its version
+    echo
+    echo -e $Cyan "Install epuck2 monitor"
+    echo -e -n $Color_Off
+    cp -r $InstallerPath/EPuckMonitor.app $InstallPath/EPuck2Tools/Utils
+
+if [ $Debug ]; then
+    echo check if EPuckMonitor.app has been copied
+    read
+fi
+
+    # rm $InstallerPath/EPuckMonitor.app
+    
     echo
     echo -e $Cyan "EPuck2Tools installed"
     echo -e -n $Color_Off
@@ -226,7 +247,6 @@ if [ $ans = y ]; then
     echo -e -n $Color_Off
     brew reinstall git
 
-    flush
     echo
     echo -e $BPurple "Do you want to re-install the git-credential-manager-core ?"
     yYn_ask
@@ -252,7 +272,6 @@ else
     echo -e -n $Color_Off
     brew install git
     
-    flush
     echo
     echo -e $BPurple "Do you want to install the git-credential-manager-core ?"
     yYn_ask
@@ -271,13 +290,12 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Select Install Path                **"
 echo -e $BRed "*****************************************************"
-flush
 ans=n
 while [ $ans != y ]; do
     echo
-    echo -e $BPurple "InstallPath by default is ~/Applications"
-    echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, press enter, otherwise just type your InstallPath"
     flush
+    echo -e $BPurple "InstallPath by default is ~/Applications"
+    echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, " $BGreen "press enter, otherwise just type your InstallPath"
     read InstallPath
     InstallPath=${InstallPath:-~/Applications}
     eval InstallPath=$InstallPath
@@ -298,7 +316,6 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Installation of VSCode             **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then
-    flush
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2.app is already existing, do you want to overwrite it ?"
     yYn_ask
@@ -319,7 +336,6 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**           Installation of EPuck2Tools           **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
-    flush
     echo
     echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
     yYn_ask
@@ -340,7 +356,6 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**          VSCode Extensions Installation         **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/code-portable-data" ]; then
-    flush
     echo
     echo -e $BPurple "$InstallPath/code-portable-data is already existing, do you want to clear it ?"
     yYn_ask
@@ -392,13 +407,12 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**               Workplace Setup                   **"
 echo -e $BRed "*****************************************************"
-flush
 ans=n
 while [ $ans != y ]; do
     echo
-    echo -e $BPurple "Workplace by default is ~/Documents/Workplace_VSCode_EPuck2"
-    echo -e $BPurple "If you want the Workplace_EPuck2 to be in the default location, press enter, otherwise just type your Workplace path"
     flush
+    echo -e $BPurple "Workplace by default is ~/Documents/Workplace_VSCode_EPuck2"
+    echo -e $BPurple "If you want the Workplace_EPuck2 to be in the default location, " $BGreen "press enter, otherwise just type your Workplace path"
     read Workplace
     Workplace=${Workplace:-~/Documents/Workplace_EPuck2}
     eval Workplace=$Workplace
@@ -409,7 +423,6 @@ while [ $ans != y ]; do
 done
 mkdir -p $Workplace
 if [ -d "$Workplace/Lib" ]; then 
-    flush
     echo
     echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
     yYn_ask

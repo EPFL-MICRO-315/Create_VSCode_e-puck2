@@ -2,40 +2,28 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "DFU EPuck-2-Main_Processor (EPuck Monitor)",
+            "label": "User:DFU EPuck-2-Main_Processor (EPuck Monitor)",
             "type": "shell",
             "command": "${config:epuck2_utils}//dfu-util.exe -d 0483:df11 -a 0 -s 0x08000000 -D ${config:epuck2_utils}//e-puck2_main-processor.bin",
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "presentation": {
+                "echo": false,
             }
         },
         {
-            "label": "Run EPuckMonitor",
+            "label": "User:Run EPuckMonitor",
             "type": "shell",
             "command": "${config:epuck2_utils}//monitor_win//EPuckMonitor.exe",
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "presentation": {
+                "echo": false,
             }
-        // },
-        // {
-        //     "label": "Link Librairy e-puck2_main-processor to workspace",
-        //     "type": "shell",
-        //     "command": "mklink /J e-puck2_main-processor ${config:workplaceAS}\\Lib\\e-puck2_main-processor && echo e-puck2_main-processor >> .gitignore",
-        //     "group": {
-        //         "kind": "build",
-        //         "isDefault": true
-        //     }
-        // },
-        // {
-        //     "label": "Link Librairy ST to workspace",
-        //     "type": "shell",
-        //     "command": "mklink /J ST ${config:workplaceAS}\\Lib\\ST && echo ST >> .gitignore",
-        //     "group": {
-        //         "kind": "build",
-        //         "isDefault": true
-        //     }
         }
     ]
 }

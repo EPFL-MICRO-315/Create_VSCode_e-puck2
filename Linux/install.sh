@@ -361,9 +361,9 @@ echo -e $Cyan "Installing VSCode ms-vscode.cpptools extension"
 echo -e -n $Color_Off
 ./code --install-extension ms-vscode.cpptools --force
 echo
-echo -e $Cyan "Installing VSCode SanaAjani.taskrunnercode extension"
+echo -e $Cyan "Installing VSCode forbeslindesay.forbeslindesay-taskrunner extension"
 echo -e -n $Color_Off
-./code --install-extension SanaAjani.taskrunnercode --force
+./code --install-extension forbeslindesay.forbeslindesay-taskrunner --force
 # echo
 # echo -e $Cyan "Installing VSCode donjayamanne.githistory extension"
 # echo -e -n $Color_Off

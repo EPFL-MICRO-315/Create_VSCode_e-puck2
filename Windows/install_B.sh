@@ -279,9 +279,9 @@ echo -e $Cyan "Installing VSCode ms-vscode.cpptools extension"
 echo -e -n $Color_Off
 cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension ms-vscode.cpptools --force"
 echo
-echo -e $Cyan "Installing VSCode SanaAjani.taskrunnercode extension"
+echo -e $Cyan "Installing VSCode forbeslindesay.forbeslindesay-taskrunner extension"
 echo -e -n $Color_Off
-cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension SanaAjani.taskrunnercode --force"
+cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension forbeslindesay.forbeslindesay-taskrunner --force"
 # echo
 # echo -e $Cyan "Installing VSCode donjayamanne.githistory extension"
 # echo -e -n $Color_Off

@@ -367,8 +367,8 @@ echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> $FILE
 echo "	\"workplace\": \"$WorkplaceD\"," >> $FILE
 echo "	\"workplaceAS\": \"$WorkplaceAS\"," >> $FILE
 echo "	\"terminal.integrated.env.windows\": {" >> $FILE
-echo "	    \"PATH\": \"\${env:PATH};$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin;$InstallPathD//EPuck2Tools//gnutools;\"}," >> $FILE
-echo "	\"terminal.integrated.defaultProfile.windows\": \"Command Prompt\"," >> $FILE
+echo "	    \"PATH\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin;$InstallPathD//EPuck2Tools//gnutools;${env:PATH}\"}," >> $FILE
+echo "	\"terminal.integrated.defaultProfile.windows\": \"Git Bash\"," >> $FILE
 echo "	\"cortex-debug.armToolchainPath.windows\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> $FILE
 echo "}" >> $FILE
 

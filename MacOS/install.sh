@@ -482,7 +482,7 @@ echo "}" >> $FILE
 #####################################################
 
 echo
-echo -e $Cyan "Adding DFU & Librairy linking tasks to user level"
+echo -e $Cyan "Adding DFU & Library linking tasks to user level"
 echo -e -n $Color_Off
 cp $InstallerPath/tasks.json $FOLDER/tasks.json
 

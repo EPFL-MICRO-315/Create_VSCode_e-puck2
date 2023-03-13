@@ -448,7 +448,7 @@ echo "	\"make_path\": \"make\"," >> $FILE
 echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> $FILE
 echo "	\"workplace\": \"$Workplace\"," >> $FILE
 echo "	\"terminal.integrated.env.linux\": {" >> $FILE
-echo "	    \"PATH\": \"\${env:HOME}:/usr/local/bin:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> $FILE
+echo "	    \"PATH\": \"/usr/local/bin:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> $FILE
 echo "	\"cortex-debug.armToolchainPath.linux\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> $FILE
 echo "}" >> $FILE
 

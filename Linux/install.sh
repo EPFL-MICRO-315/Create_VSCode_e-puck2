@@ -1,7 +1,4 @@
 #!/bin/bash
-InstallerPath=$(dirname "$0")
-echo Installer path : $InstallerPath
-
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -76,9 +73,16 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
+flush() {
+    while read -n 1 -t 0
+    do :
+    done
+}
+
 yYn_ask() {
     tmp=0
     while [ $tmp != 1 ]; do
+        flush
         echo -n -e "$BPurple Enter $BGreen y $BPurple or $BGreen Y $BPurple for Yes $BPurple and $BGreen any $BPurple for No: "
         read ans
         if [ ! -z "$ans" ]; then
@@ -90,15 +94,18 @@ yYn_ask() {
     done
 }
 
-flush() {
-    while read -n 1 -t 0.01
-    do :
-    done
+continueFunc() {
+    flush
+    echo -n -e $BPurple "Press any key to continue ..."
+    read
+    echo
 }
 
 quitFunc() {
     cd $InstallerPath
+    flush
     echo -n -e $BRed "Press any key to quit ..."
+    echo -e -n $Color_Off
     read
     exit
 }
@@ -123,7 +130,6 @@ programVSFunc() {
     mv $InstallPath/VSCode-linux-x64 $InstallPath/VSCode_EPuck2
 
     echo check where vscode.tar.gz has been decompressed
-    read
 
     rm $InstallerPath/vscode.tar.gz
 
@@ -134,7 +140,6 @@ programVSFunc() {
 
 EPuck2ToolsFuncGCC() {
     if test -f "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
-        flush
         echo
         echo -e $Cyan "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
         echo -e $BPurple "Do you want to re-download it ?"
@@ -161,14 +166,12 @@ EPuck2ToolsFuncGCC() {
     tar -xf $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 -C $InstallPath/EPuck2Tools/
 
     echo check where gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 has been decompressed
-    read
 
     rm $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
 }
 
 EPuck2ToolsFunc() {
     if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
-        flush
         echo
         echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
         yYn_ask
@@ -190,8 +193,10 @@ EPuck2ToolsFunc() {
     tar -xf $InstallerPath/monitor_linux64bit.tar.gz -C $InstallPath/EPuck2Tools/Utils
     mv $InstallPath/EPuck2Tools/Utils/build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release $InstallPath/EPuck2Tools/Utils/monitor_linux64bit
 
-    echo check where monitor_linux64bit.tar.gz or monitor_linux64bit has been decompressed
-    read
+    if [ "$1"=="Debug" ]; then
+        echo check where monitor_linux64bit.tar.gz or monitor_linux64bit has been decompressed
+        continueFunc
+    fi
 
     rm $InstallerPath/monitor_linux64bit.tar.gz
 
@@ -199,6 +204,25 @@ EPuck2ToolsFunc() {
     echo -e $Cyan "EPuck2Tools installed"
     echo -e -n $Color_Off
 }
+
+#####################################################
+##              BEGINNING OF SCRIPT               ##
+#####################################################
+
+InstallerPath=$(dirname "$0")
+# If the script is runned from its folder, the folder name will be "." and all "cd" inside the script will be the reference "."
+if [ "$InstallerPath"=="." ]; then
+    InstallerPath=$(pwd)
+fi
+
+if [ "$1"=="Debug" ]; then
+    echo -e -n $Color_Off
+    echo 
+    echo "  Beginninig of $0"
+    echo
+    echo "    InstallerPath = $InstallerPath"
+    continueFunc
+fi
 
 #####################################################
 ## Welcome to Visual Studio Code EPuck 2 installer ##
@@ -252,7 +276,6 @@ echo -e -n $Color_Off
 sudo apt-get install git
 #sudo pacman -S git
 
-flush
 echo
 echo -e $BPurple "Installing git-credential-manager-core ?"
 yYn_ask
@@ -275,7 +298,6 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Select Install Path                **"
 echo -e $BRed "*****************************************************"
-flush
 ans=n
 while [ $ans != y ]; do
     echo
@@ -302,7 +324,6 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Installation of VSCode             **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/VSCode_EPuck2" ]; then
-    flush
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2 is already existing, do you want to overwrite it ?"
     yYn_ask
@@ -332,7 +353,6 @@ echo -e $BRed "*****************************************************"
 echo -e $BRed "**          VSCode Extensions Installation         **"
 echo -e $BRed "*****************************************************"
 if [ -d "$InstallPath/VSCode_EPuck2/data" ]; then
-    flush
     echo
     echo -e $BPurple "$InstallPath/VSCode_EPuck2/data is already existing, do you want to clear it ?"
     yYn_ask
@@ -384,7 +404,6 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**               Workplace Setup                   **"
 echo -e $BRed "*****************************************************"
-flush
 ans=n
 while [ $ans != y ]; do
     echo
@@ -401,24 +420,26 @@ while [ $ans != y ]; do
 done
 mkdir -p $Workplace
 if [ -d "$Workplace/Lib" ]; then 
-    flush
     echo
-    echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
+    echo -e $BPurple "$Workplace/Lib is already existing. Nothing else the Lib folder will be touched."
+    echo -e $BPurple "  Do you want to clear the Lib folder and recreate it with the last version?"
     yYn_ask
     echo -e -n $Color_Off
     if [ $ans = y ]; then
         rm -rf $Workplace/Lib
+        echo 
+        echo -e $Cyan "Cloning the libraries into the workplace"
+        echo -e -n $Color_Off
+        git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
+
     fi
 fi
-cd $Workplace
-echo 
-echo -e $Cyan "Cloning the libraries into the workplace"
-echo -e -n $Color_Off
-git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
+# cd $Workplace
 
 FOLDER=$Workplace/Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly
-mv $FOLDER/package.json $FOLDER/package.json-renamed-to-avoid-been-as-task-4-vscode
-
+if [ -f $FOLDER//package.json ]; then
+    mv $FOLDER/package.json $FOLDER/package.json-renamed-to-avoid-been-as-task-4-vscode
+fi
 
 #####################################################
 ##               VSCode Settings                   ##
@@ -446,9 +467,11 @@ echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eab
 echo "	\"make_path\": \"make\"," >> $FILE
 #Path used for debuging (.svd), dfu
 echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> $FILE
+echo "	\"InstallPath\": \"$InstallPath_D\"," >> $FILE
+echo "	\"Version\": \"$InstallPath_D//VSCode_EPuck2//VERSION.md\"," >> $FILE
 echo "	\"workplace\": \"$Workplace\"," >> $FILE
 echo "	\"terminal.integrated.env.linux\": {" >> $FILE
-echo "	    \"PATH\": \"/usr/local/bin:$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> $FILE
+echo "	    \"PATH\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> $FILE
 echo "	\"cortex-debug.armToolchainPath.linux\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> $FILE
 echo "}" >> $FILE
 
@@ -483,7 +506,6 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**               VSCode Shortcut                   **"
 echo -e $BRed "*****************************************************"
-flush
 echo
 echo -e $Cyan "Create shortcut under Desktop ?"
 yYn_ask

@@ -1,8 +1,5 @@
 #!/gnutools/bash
 
-InstallerPath=$1
-InstallerPath=${InstallerPath//\\///}
-
 # Reset
 Color_Off='\033[0m'       # Text Reset
 
@@ -76,9 +73,16 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
+flush() {
+    while read -n 1 -t 0
+    do :
+    done
+}
+
 yYn_ask() {
     tmp=0
     while [ $tmp != 1 ]; do
+        flush
         echo -n -e "$BPurple Enter $BGreen y $BPurple or $BGreen Y $BPurple for Yes $BPurple and $BGreen any $BPurple for No: "
         read ans
         if [ ! -z "$ans" ]; then
@@ -90,21 +94,24 @@ yYn_ask() {
     done
 }
 
-flush() {
-    while read -n 1 -t1
-    do :
-    done
+continueFunc() {
+    flush
+    echo -n -e $BPurple "Press any key to continue ..."
+    read
+    echo
 }
 
 quitFunc() {
-    cd $InstallerPath
+    cd $InstallerPath_D
+    flush
     echo -n -e $BRed "Press any key to quit ..."
+    echo -e -n $Color_Off
     read
     exit
 }
 
 programVSFunc() {
-    if test -f "$InstallerPath/vscode.zip"; then
+    if test -f "$InstallerPath_D//vscode.zip"; then
         echo
         echo -e $Cyan "vscode.zip already downloaded"
         echo -e -n $Color_Off
@@ -112,15 +119,15 @@ programVSFunc() {
         echo
         echo -e $BPurple "Download VSCode"
         echo -e -n $Color_Off
-        curl -Lk "https://update.code.visualstudio.com/latest/win32-x64-archive/stable" --output $InstallerPath/vscode.zip
+        curl -Lk "https://update.code.visualstudio.com/latest/win32-x64-archive/stable" --output $InstallerPath_D//vscode.zip
     fi
     
     echo
     echo -e $Cyan "Installation of vscode.zip"
     echo -e -n $Color_Off
-    /gnutools/7za.exe x $InstallerPath/vscode.zip -o$InstallPath/VSCode_EPuck2
+    /gnutools/7za.exe x $InstallerPath_D//vscode.zip -o$InstallPath_D/VSCode_EPuck2
     
-    /gnutools/rm $InstallerPath/vscode.zip
+    /gnutools/rm $InstallerPath_D//vscode.zip
 
     echo
     echo -e $Cyan "Visual Studio Code installed"
@@ -128,61 +135,79 @@ programVSFunc() {
 }
 
 EPuck2ToolsFuncGCC() {
-    if test -f "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"; then
+    if test -f "$InstallerPath_D//gcc-arm-none-eabi-7-2017-q4-major-win32.zip"; then
         echo
         echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major-win32.zip already downloaded"
         echo -e $BPurple "Do you want to re-download it ?"
-        flush
         yYn_ask
         if [ $ans = y ]; then
             echo
             echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
             echo -e -n $Color_Off
-            curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
+            curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "$InstallerPath_D//gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
         fi
     else
         echo
         echo -e $Cyan "Download gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
         echo -e -n $Color_Off
-        curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
+        curl -Lk "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip" --output "$InstallerPath_D//gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
     fi
         
     echo
     echo -e $Cyan "Installation of gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
     echo -e -n $Color_Off
-    /gnutools/mkdir -p $InstallPath/EPuck2Tools
-    /gnutools/7za.exe x $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip -o$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
-    /gnutools/rm $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major-win32.zip
+    /gnutools/mkdir -p $InstallPath_D/EPuck2Tools
+    /gnutools/7za.exe x $InstallerPath_D//gcc-arm-none-eabi-7-2017-q4-major-win32.zip -o$InstallPath_D//EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
+    /gnutools/rm $InstallerPath_D//gcc-arm-none-eabi-7-2017-q4-major-win32.zip
 }
 
 EPuck2ToolsFunc() {
-    if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
+    if [ -d "$InstallPath_D//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major" ]; then 
         echo
-        echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
-        flush
+        echo -e $BPurple "$InstallPath_D//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
         yYn_ask
         echo -e -n $Color_Off
         if [ $ans = y ]; then
-            /gnutools/rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
+            /gnutools/rm -rf $InstallPath_D//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major
             EPuck2ToolsFuncGCC
         fi
     else
         EPuck2ToolsFuncGCC
     fi
     
-    /gnutools/cp -r $InstallerPath/Utils $InstallPath/EPuck2Tools/Utils
-    /gnutools/cp -r $InstallerPath/gnutools $InstallPath/EPuck2Tools/gnutools
+    /gnutools/cp -r $InstallerPath_D//Utils $InstallPath_D//EPuck2Tools//Utils
+    /gnutools/cp -r $InstallerPath_D//gnutools $InstallPath_D//EPuck2Tools//gnutools
 
     echo
     echo -e $Cyan "Downloading epuck2 monitor"
     echo -e -n $Color_Off
-    curl -Lk "https://projects.gctronic.com/epuck2/monitor_win.zip" --output "$InstallerPath/monitor_win.zip"
-    /gnutools/7za.exe x $InstallerPath/monitor_win.zip -o$InstallPath/EPuck2Tools/Utils/monitor_win
+    curl -Lk "https://projects.gctronic.com/epuck2/monitor_win.zip" --output "$InstallerPath_D//monitor_win.zip"
+    /gnutools/7za.exe x $InstallerPath_D//monitor_win.zip -o$InstallPath_D//EPuck2Tools//Utils//
+    /gnutools/mv $InstallPath_D//EPuck2Tools//Utils//build-qmake-Desktop_Qt_5_10_0_MinGW_32bit-Release $InstallPath_D//EPuck2Tools//Utils//monitor_win
 
     echo
     echo -e $Cyan "EPuck2Tools installed"
     echo -e -n $Color_Off
 }
+
+#####################################################
+##              BEGINNING OF SCRIPT               ##
+#####################################################
+
+InstallerPath=$1
+InstallerPath_D=${InstallerPath//\\///}
+InstallerPath_AS=${InstallerPath_D//\//\\}
+
+if [ "$2"=="Debug" ]; then
+    echo -e -n $Color_Off
+    echo 
+    echo "  Beginninig of $0"
+    echo
+    echo "    InstallerPath = $InstallerPath"
+    echo "    InstallerPath_D = $InstallerPath_D"
+    echo "    InstallerPath_AS = $InstallerPath_AS"
+    continueFunc
+fi
 
 #####################################################
 ##              Select Install Path                ##
@@ -191,25 +216,24 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Select Install Path                **"
 echo -e $BRed "*****************************************************"
-flush
 ans=n
-APPDATA=${APPDATA//\\///}
-while [ $ans != y ] && [ $ans != Y ]; do
+APPDATA_D=${APPDATA//\\///}
+while [ $ans != y ]; do
     echo
-    echo -e $BPurple "InstallPath by default is $APPDATA"
+    echo -e $BPurple "InstallPath by default is $APPDATA_D"
     echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, press enter, otherwise just type your InstallPath"
     flush
     read -r InstallPath
-    InstallPath=${InstallPath:-$APPDATA}
-    InstallPath=${InstallPath//\\///}
+    InstallPath=${InstallPath:-$APPDATA_D}
+    InstallPath_D=${InstallPath//\\///}
     echo
-    echo -e $BPurple "Are you sure you want it to be installed at $InstallPath ?"
+    echo -e $BPurple "Are you sure you want it to be installed at $InstallPath_D ?"
     yYn_ask
 done
 echo
 echo -e $Cyan "Creation of installation folder if not already existing"
 echo -e -n $Color_Off
-/gnutools/mkdir -p $InstallPath
+/gnutools/mkdir -p $InstallPath_D
 
 #####################################################
 ##              Installation of VSCode             ##
@@ -218,20 +242,19 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Installation of VSCode             **"
 echo -e $BRed "*****************************************************"
-if [ -d "$InstallPath/VSCode_EPuck2" ]; then
-    flush
+if [ -d "$InstallPath_D/VSCode_EPuck2" ]; then
     echo
-    echo -e $BPurple "$InstallPath/VSCode_EPuck2 is already existing, do you want to overwrite it ?"
+    echo -e $BPurple "$InstallPath_D//VSCode_EPuck2 is already existing, do you want to overwrite it ?"
     yYn_ask
     echo -e -n $Color_Off
     if [ $ans = y ]; then
-        /gnutools/rm -rf $InstallPath/VSCode_EPuck2
+        /gnutools/rm -rf $InstallPath_D//VSCode_EPuck2
         programVSFunc
     fi
 else
     programVSFunc
 fi
-/gnutools/cp $InstallerPath/shortcut.bat $InstallPath/VSCode_EPuck2/shortcut.bat
+/gnutools/cp $InstallerPath_D//shortcut.bat $InstallPath_D//VSCode_EPuck2//shortcut.bat
 
 #####################################################
 ##              Install EPuck2Tools                ##
@@ -249,51 +272,50 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**          VSCode Extensions Installation         **"
 echo -e $BRed "*****************************************************"
-if [ -d "$InstallPath/VSCode_EPuck2/data" ]; then
-    flush
+if [ -d "$InstallPath_D//VSCode_EPuck2/data" ]; then
     echo
-    echo -e $BPurple "$InstallPath/VSCode_EPuck2/data is already existing, do you want to clear it ?"
+    echo -e $BPurple "$InstallPath_D/VSCode_EPuck2/data is already existing, do you want to clear it ?"
     yYn_ask
     echo -e -n $Color_Off
     if [ $ans = y ]; then
-        /gnutools/rm -rf $InstallPath/VSCode_EPuck2/data
+        /gnutools/rm -rf $InstallPath_D//VSCode_EPuck2/data
         echo
         echo -e $BPurplen "Enabling VSCode portable mode"
         echo -e -n $Color_Off
-        /gnutools/mkdir $InstallPath/VSCode_EPuck2/data
+        /gnutools/mkdir $InstallPat_D//VSCode_EPuck2//data
     fi
 else
     echo
     echo -e $BPurple "Enabling VSCode portable mode"
     echo -e -n $Color_Off
-    /gnutools/mkdir $InstallPath/VSCode_EPuck2/data
+    /gnutools/mkdir $InstallPath_D//VSCode_EPuck2//data
 fi
 
-cd $InstallPath/VSCode_EPuck2/
+cd $InstallPath_D//VSCode_EPuck2//
 echo
 echo -e $Cyan "Installing VSCode marus25.cortex-debug extension, version 1.4.4"
 echo -e -n $Color_Off
-cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension marus25.cortex-debug@1.4.4 --force"
+cmd.exe /c "$InstallPath_D//VSCode_EPuck2//bin//code.cmd --install-extension marus25.cortex-debug@1.4.4 --force"
 echo
 echo -e $Cyan "Installing VSCode ms-vscode.cpptools extension"
 echo -e -n $Color_Off
-cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension ms-vscode.cpptools --force"
+cmd.exe /c "$InstallPath_D//VSCode_EPuck2//bin//code.cmd --install-extension ms-vscode.cpptools --force"
 echo
 echo -e $Cyan "Installing VSCode forbeslindesay.forbeslindesay-taskrunner extension"
 echo -e -n $Color_Off
-cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension forbeslindesay.forbeslindesay-taskrunner --force"
+cmd.exe /c "$InstallPath_D//VSCode_EPuck2//bin//code.cmd --install-extension forbeslindesay.forbeslindesay-taskrunner --force"
 # echo
 # echo -e $Cyan "Installing VSCode donjayamanne.githistory extension"
 # echo -e -n $Color_Off
-# cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension donjayamanne.githistory --force"
+# cmd.exe /c "$InstallPath_D//VSCode_EPuck2//bin//code.cmd --install-extension donjayamanne.githistory --force"
 echo
 echo -e $Cyan "Installing VSCode mhutchie.git-graph extension"
 echo -e -n $Color_Off
-cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension mhutchie.git-graph --force"
+cmd.exe /c "$InstallPath_D//VSCode_EPuck2//bin//code.cmd --install-extension mhutchie.git-graph --force"
 echo
 echo -e $Cyan "Installing VSCode tomoki1207.pdf extension"
 echo -e -n $Color_Off
-cmd.exe /c "$InstallPath/VSCode_EPuck2/bin/code.cmd --install-extension tomoki1207.pdf --force"
+cmd.exe /c "$InstallPath_D//VSCode_EPuck2//bin//code.cmd --install-extension tomoki1207.pdf --force"
 
 #####################################################
 ##               Workplace Setup                   ##
@@ -302,40 +324,45 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**               Workplace Setup                   **"
 echo -e $BRed "*****************************************************"
-flush
 ans=n
-USERPROFILE=${USERPROFILE//\\///}
-while [ $ans != y ] && [ $ans != Y ]; do
+USERPROFILE_D=${USERPROFILE//\\///}
+while [ $ans != y ]; do
     echo
-    echo -e $BPurple "Workplace by default is $USERPROFILE\Documents\Workplace_EPuck2"
+    echo -e $BPurple "Workplace by default is $USERPROFILE_D//Documents//Workplace_EPuck2"
     echo -e $BPurple "If you want the Workplace_EPuck2 to be in the default location, press enter, otherwise just type your Workplace path"
     flush
     read -r Workplace
-    Workplace=${Workplace:-$USERPROFILE\\Documents\\Workplace_EPuck2}
-    Workplace=${Workplace//\\///}
+    Workplace=${Workplace:-$USERPROFILE_D//Documents//Workplace_EPuck2}
+    Workplace_D=${Workplace//\\///}
+    Workplace_AS=${Workplace_D//\//\\}
     echo
-    echo -e $BPurple "Are you sure you want your workplace to be at $Workplace ?"
+    echo -e $BPurple "Are you sure you want your workplace to be at $Workplace_D ?"
     yYn_ask
     echo -e -n $Color_Off
 done
-/gnutools/mkdir -p $Workplace
-if [ -d "$Workplace/Lib" ]; then 
-    flush
+/gnutools/mkdir -p $Workplace_D
+if [ -d "$Workplace_D//Lib" ]; then 
     echo
-    echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
+    echo -e $BPurple "$Workplace_D//Lib is already existing. Nothing else the Lib folder will be touched."
+    echo -e $BPurple "  Do you want to clear the Lib folder and recreate it with the last version?"
     yYn_ask
     echo -e -n $Color_Off
     if [ $ans = y ]; then
-        /gnutools/rm -rf $Workplace/Lib
+        /gnutools/rm -rf $Workplace_D//Lib
+        echo
+        echo -e $Cyan "Cloning the libraries into the workplace"
+        echo -e -n $Color_Off
+        git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace_D//Lib
     fi
 fi
-echo
-echo -e $Cyan "Cloning the libraries into the workplace"
-echo -e -n $Color_Off
-git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
 
-FOLDER=$Workplace/Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly
-mv $FOLDER/package.json $FOLDER/package.json-renamed-to-avoid-been-as-task-4-vscode
+echo
+echo -e $BPurple "Rename an Aseba package.json file in the Lib in order to avoid to have bad tasks."
+
+FOLDER_D=$Workplace_D//Lib//e-puck2_main-processor//aseba//clients//studio//plugins//ThymioBlockly//blockly
+if [ -f $FOLDER_D//package.json ]; then
+    /gnutools/mv $FOLDER_D//package.json $FOLDER_D//package.json-renamed-to-avoid-been-as-task-4-vscode
+fi
 
 #####################################################
 ##               VSCode Settings                   ##
@@ -347,29 +374,34 @@ echo -e $BRed "*****************************************************"
 echo
 echo -e $Cyan "Configuring vscode..."
 echo -e -n $Color_Off
-InstallPathD=${InstallPath//\\///} #InstallPathDouble: replace \ by //
-WorkplaceD=${Workplace//\\///}
-WorkplaceAS=${WorkplaceD//\//\\}
-FOLDER=$InstallPath/VSCode_EPuck2/data/user-data/User
-FILE=$FOLDER/settings.json
+
+# Allready done
+# InstallPathD=${InstallPath//\\///} #InstallPathDouble: replace \ by //
+# WorkplaceD=${Workplace//\\///}
+# WorkplaceAS=${WorkplaceD//\//\\}
+FOLDER_D=$InstallPath_D//VSCode_EPuck2//data//user-data//User
+FILE=$FOLDER_D//settings.json
 echo "{" >> $FILE
 #Otherwise the cortex debug extension will update which newer versions are not compatible with currently used arm-toolchain version
 echo "  \"extensions.autoCheckUpdates\": false," >> $FILE
 echo "  \"extensions.autoUpdate\": false," >> $FILE
 #Path used by intellissense to locate lib source files
-echo "	\"gcc_arm_path\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> $FILE
+echo "	\"gcc_arm_path\": \"$InstallPath_D//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major\"," >> $FILE
 #Compiler path
-echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> $FILE
+echo "	\"gcc_arm_path_compiler\": \"$InstallPath_D//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin//arm-none-eabi-gcc\"," >> $FILE
 #Make path
-echo "	\"make_path\": \"$InstallPathD//EPuck2Tools//gnutools//make\"," >> $FILE
+echo "	\"make_path\": \"$InstallPath_D//EPuck2Tools//gnutools//make\"," >> $FILE
 #Path used for debuging (.svd), dfu
-echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> $FILE
-echo "	\"workplace\": \"$WorkplaceD\"," >> $FILE
-echo "	\"workplaceAS\": \"$WorkplaceAS\"," >> $FILE
+echo "	\"epuck2_utils\": \"$InstallPath_D//EPuck2Tools//Utils\"," >> $FILE
+echo "	\"InstallPath\": \"$InstallPath_D\"," >> $FILE
+echo "	\"InstallPathAS\": \"$InstallPath_AS\"," >> $FILE
+echo "	\"Version\": \"$InstallPath_D//VSCode_EPuck2//VERSION.md\"," >> $FILE
+echo "	\"workplace\": \"$Workplace_D\"," >> $FILE
+echo "	\"workplaceAS\": \"$Workplace_AS\"," >> $FILE
 echo "	\"terminal.integrated.env.windows\": {" >> $FILE
-echo "	    \"PATH\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin;$InstallPathD//EPuck2Tools//gnutools;${env:PATH}\"}," >> $FILE
+echo "	    \"PATH\": \"$InstallPath_D//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin;$InstallPath_D//EPuck2Tools//gnutools;${env:PATH}\"}," >> $FILE
 echo "	\"terminal.integrated.defaultProfile.windows\": \"Git Bash\"," >> $FILE
-echo "	\"cortex-debug.armToolchainPath.windows\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> $FILE
+echo "	\"cortex-debug.armToolchainPath.windows\": \"$InstallPath_D//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin\"" >> $FILE
 echo "}" >> $FILE
 
 #####################################################
@@ -378,7 +410,7 @@ echo "}" >> $FILE
 echo
 echo -e $Cyan "Adding DFU and Library linking tasks to user level"
 echo -e -n $Color_Off
-/gnutools/cp $InstallerPath/tasks.json $FOLDER/tasks.json
+/gnutools/cp $InstallerPath_D//tasks.json $FOLDER_D//tasks.json
 
 #####################################################
 ##               Copy RefTag info                  ##
@@ -386,16 +418,18 @@ echo -e -n $Color_Off
 echo
 echo -e $Cyan "Copy RefTag info in order to know the exact installer commit"
 echo -e -n $Color_Off
-/gnutools/cp $InstallerPath/VERSION.md $InstallPath/VSCode_EPuck2
+/gnutools/cp $InstallerPath_D//VERSION.md $InstallPath_D//VSCode_EPuck2
 
 #####################################################
 ##                   Shortcut                      ##
 #####################################################
-cd $InstallPath/VSCode_EPuck2
-cmd.exe /c "start $InstallerPath/shortcut.bat"
+cd $InstallPath_D/VSCode_EPuck2
+cmd.exe /c "start $InstallerPath_D//shortcut.bat"
 
 echo
 echo -e $BRed "*******************************************************"
 echo -e $BRed "** Visual Studio Code EPuck2 successfully installed! **"
 echo -e $BRed "*******************************************************"
 echo
+
+quitFunc

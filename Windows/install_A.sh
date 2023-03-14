@@ -1,8 +1,5 @@
 #!/gnutools/bash
 
-InstallerPath=$1
-InstallerPath=${InstallerPath//\\///}
-
 # Reset
 Color_Off='\033[0m'       # Text Reset
 
@@ -76,9 +73,16 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
+flush() {
+    while read -n 1 -t 0
+    do :
+    done
+}
+
 yYn_ask() {
     tmp=0
     while [ $tmp != 1 ]; do
+        flush
         echo -n -e "$BPurple Enter $BGreen y $BPurple or $BGreen Y $BPurple for Yes $BPurple and $BGreen any $BPurple for No: "
         read ans
         if [ ! -z "$ans" ]; then
@@ -90,18 +94,41 @@ yYn_ask() {
     done
 }
 
-flush() {
-    while read -n 1 -t1
-    do :
-    done
+continueFunc() {
+    flush
+    echo -n -e $BPurple "Press any key to continue ..."
+    read
+    echo
 }
 
 quitFunc() {
-    cd $InstallerPath
+    cd $InstallerPath_D
+    flush
     echo -n -e $BRed "Press any key to quit ..."
+    echo -e -n $Color_Off
     read
     exit
 }
+
+#####################################################
+##              BEGINNING OF SCRIPT               ##
+#####################################################
+
+InstallerPath=$1
+InstallerPath_D=${InstallerPath//\\///}
+InstallerPath_AS=${InstallerPath_D//\//\\}
+
+if [ "$2"=="Debug" ]; then
+    echo -e -n $Color_Off
+    echo 
+    echo "  Beginninig of $0"
+    echo
+    echo "    InstallerPath = $InstallerPath"
+    echo "    InstallerPath_D = $InstallerPath_D"
+    echo "    InstallerPath_AS = $InstallerPath_AS"
+    echo
+    continueFunc
+fi
 
 #####################################################
 ## Welcome to Visual Studio Code EPuck 2 installer ##
@@ -114,7 +141,7 @@ echo -e $Cyan "see https://github.com/EPFL-MICRO-315/Create_VSCode_e-puck2"
 echo -e $Cyan "Released in 2022"
 echo
 echo -e $Red "Be extremely cautious when specifying installation paths, there are risk of damaging your installation "
-echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root C:/"
+echo -e $Red "For instance, do not directly install VSCode EPuck 2 under root C:/ but use instead C:/EPuck2 for example."
 echo -e $BCyan "AND VERY IMPORTANT: Paths must NOT AT ALL contain any space or accented character!!"
 echo
 echo -e $BPurple "Proceed with the installation ?"
@@ -132,25 +159,40 @@ echo -e $BRed "**         Installation of utility softwares       **"
 echo -e $BRed "*****************************************************"
 echo
 
-
 echo
 echo -e $BPurple "Do you want to (re)install git ? (this installer have a very handy git credential manager)"
-flush
 yYn_ask
 echo -e -n $Color_Off
+
 if [ $ans = y ]; then
     echo
     echo -e $Cyan "Downloading of git"
     echo -e -n $Color_Off
-    curl -Lk "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "$InstallerPath/git_setup.exe"
-    echo -e $Cyan "Please install git"
-    $InstallerPath/git_setup.exe
+    
+    curl -Lk "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe" --output "$InstallerPath_D//git_setup.exe"
+    echo
+    echo -e $Cyan "Please Install git from the external dialog that opens right now."
+    echo
+    echo -e $BPurple "  It could take some seconds to be displayed and it could be hidden behind this terminal window"
+    cmd //c "$InstallerPath_AS\\git_setup.exe /SILENT"
+    echo
+
+    FILE=/C/Program\ Files/Git/bin/git.exe
+    if [ -f "$FILE" ]; then
+        echo -e $Green "Installation of utility softwares well done"
+        /gnutools/rm -r -f $InstallerPath_D//git_setup.exe
+    else
+        echo -e $Red "Installation of utility softwares not well done"
+        echo
+        echo -e $BRed "  If you would like support then do not touch anything, copy all messages on this screen and submit it for support"
+        quitFunc
+    fi
     echo -e -n $Color_Off
-    /gnutools/rm $InstallerPath/git_setup.exe
 fi
+
 echo
 echo -e $Cyan "Reloading the PATH variables"
 echo -e -n $Color_Off
-$InstallerPath/install_B.sh $InstallerPath
+$InstallerPath_D//install_B.sh $InstallerPath_D $2
 
 quitFunc

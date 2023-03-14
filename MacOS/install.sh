@@ -1,23 +1,4 @@
 #!/bin/bash
-InstallerPath=$(dirname "$0")
-# If the script is runned from is folder, the folder name will be "." and all "cd" inside the script will be the reference "."
-if [ "$InstallerPath"=="." ]; then
-    InstallerPath=$(pwd)
-fi
-
-echo Installer path : $InstallerPath
-
-
-if [ "$1" == "debug" ]; then
-    Debug=true
-else
-    Debug=false
-fi
-
-if [ $Debug ]; then
-    echo Press any key to continue
-    read
-fi
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -93,7 +74,7 @@ On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
 flush() {
-    while read -n 1 -t 1
+    while read -n 1 -t 0
     do :
     done
 }
@@ -113,9 +94,17 @@ yYn_ask() {
     done
 }
 
+continueFunc() {
+    flush
+    echo -n -e $BPurple "Press any key to continue ..."
+    read
+    echo
+}
+
 quitFunc() {
     cd $InstallerPath
     echo -n -e $BRed "Press any key to quit ..."
+    echo -e -n $Color_Off
     read
     exit
 }
@@ -200,6 +189,25 @@ fi
     echo -e $Cyan "EPuck2Tools installed"
     echo -e -n $Color_Off
 }
+
+#####################################################
+##              BEGINNING OF SCRIPT               ##
+#####################################################
+
+InstallerPath=$(dirname "$0")
+# If the script is runned from its folder, the folder name will be "." and all "cd" inside the script will be the reference "."
+if [ "$InstallerPath"=="." ]; then
+    InstallerPath=$(pwd)
+fi
+
+if [ "$1"=="Debug" ]; then
+    echo -e -n $Color_Off
+    echo 
+    echo "  Beginninig of $0"
+    echo
+    echo "    InstallerPath = $InstallerPath"
+    continueFunc
+fi
 
 #####################################################
 ## Welcome to Visual Studio Code EPuck 2 installer ##
@@ -301,6 +309,7 @@ while [ $ans != y ]; do
     flush
     echo -e $BPurple "InstallPath by default is ~/Applications"
     echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, " $BGreen "press enter, otherwise just type your InstallPath"
+    flush
     read InstallPath
     InstallPath=${InstallPath:-~/Applications}
     eval InstallPath=$InstallPath
@@ -429,21 +438,24 @@ done
 mkdir -p $Workplace
 if [ -d "$Workplace/Lib" ]; then 
     echo
-    echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
+    echo -e $BPurple "$Workplace/Lib is already existing. Nothing else the Lib folder will be touched."
+    echo -e $BPurple "  Do you want to clear the Lib folder and recreate it with the last version?"
     yYn_ask
     echo -e -n $Color_Off
     if [ $ans = y ]; then
         rm -rf $Workplace/Lib
+        echo 
+        echo -e $Cyan "Cloning the libraries into the workplace"
+        echo -e -n $Color_Off
+        git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
     fi
 fi
-cd $Workplace
-echo 
-echo -e $Cyan "Cloning the libraries into the workplace"
-echo -e -n $Color_Off
-git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
+# cd $Workplace
 
 FOLDER=$Workplace/Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly
-mv $FOLDER/package.json $FOLDER/package.json-renamed-to-avoid-been-as-task-4-vscode
+if [ -f $FOLDER//package.json ]; then
+    mv $FOLDER/package.json $FOLDER/package.json-renamed-to-avoid-been-as-task-4-vscode
+fi
 
 #####################################################
 ##               VSCode Settings                   ##
@@ -471,6 +483,8 @@ echo "	\"gcc_arm_path_compiler\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eab
 echo "	\"make_path\": \"make\"," >> $FILE
 #Path used for debuging (.svd), dfu
 echo "	\"epuck2_utils\": \"$InstallPathD//EPuck2Tools//Utils\"," >> $FILE
+echo "	\"InstallPath\": \"$InstallPath_D\"," >> $FILE
+echo "	\"Version\": \"$InstallPath_D//VSCode_EPuck2.app//Content//VERSION.md\"," >> $FILE
 echo "	\"workplace\": \"$Workplace\"," >> $FILE
 echo "	\"terminal.integrated.env.osx\": {" >> $FILE
 echo "	    \"PATH\": \"$InstallPathD//EPuck2Tools//gcc-arm-none-eabi-7-2017-q4-major//bin:\${env:PATH}\"}," >> $FILE
@@ -486,18 +500,18 @@ echo -e $Cyan "Adding DFU & Library linking tasks to user level"
 echo -e -n $Color_Off
 cp $InstallerPath/tasks.json $FOLDER/tasks.json
 
-echo
-echo -e $BRed "*******************************************************"
-echo -e $BRed "** Visual Studio Code EPuck2 successfully installed! **"
-echo -e $BRed "*******************************************************"
-echo
-
 #####################################################
 ##               Copy RefTag info                  ##
 #####################################################
 echo
 echo -e $Cyan "Copy RefTag info in order to know the exact installer commit"
 echo -e -n $Color_Off
-cp $InstallerPath/VERSION.md $InstallPath/VSCode_EPuck2
+cp $InstallerPath/VERSION.md $InstallPath//VSCode_EPuck2.app//Content
+
+echo
+echo -e $BRed "*******************************************************"
+echo -e $BRed "** Visual Studio Code EPuck2 successfully installed! **"
+echo -e $BRed "*******************************************************"
+echo
 
 quitFunc

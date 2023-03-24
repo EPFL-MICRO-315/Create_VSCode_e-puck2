@@ -193,7 +193,7 @@ EPuck2ToolsFunc() {
     tar -xf $InstallerPath/monitor_linux64bit.tar.gz -C $InstallPath/EPuck2Tools/Utils
     mv $InstallPath/EPuck2Tools/Utils/build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release $InstallPath/EPuck2Tools/Utils/monitor_linux64bit
 
-    if [ "$1"=="Debug" ]; then
+    if [ "$1" == "Debug" ]; then
         echo check where monitor_linux64bit.tar.gz or monitor_linux64bit has been decompressed
         continueFunc
     fi
@@ -211,7 +211,7 @@ EPuck2ToolsFunc() {
 
 InstallerPath=$(dirname "$0")
 # If the script is runned from its folder, the folder name will be "." and all "cd" inside the script will be the reference "."
-if [ "$InstallerPath"=="." ]; then
+if [ "$InstallerPath" == "." ]; then
     InstallerPath=$(pwd)
 fi
 

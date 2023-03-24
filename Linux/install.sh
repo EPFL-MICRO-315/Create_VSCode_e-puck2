@@ -215,7 +215,7 @@ if [ "$InstallerPath"=="." ]; then
     InstallerPath=$(pwd)
 fi
 
-if [ "$1"=="Debug" ]; then
+if [ "$1" == "Debug" ]; then
     echo -e -n $Color_Off
     echo 
     echo "  Beginninig of $0"

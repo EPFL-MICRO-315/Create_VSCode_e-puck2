@@ -419,22 +419,27 @@ while [ $ans != y ]; do
     echo -e -n $Color_Off
 done
 mkdir -p $Workplace
+
 if [ -d "$Workplace/Lib" ]; then 
+    flush
     echo
-    echo -e $BPurple "$Workplace/Lib is already existing. Nothing else the Lib folder will be touched."
-    echo -e $BPurple "  Do you want to clear the Lib folder and recreate it with the last version?"
+    echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
+    echo -e $BPurple "$Workplace/Lib is already existing, nothing else other than the Lib folder will be touched"
     yYn_ask
     echo -e -n $Color_Off
     if [ $ans = y ]; then
         rm -rf $Workplace/Lib
-        echo 
-        echo -e $Cyan "Cloning the libraries into the workplace"
-        echo -e -n $Color_Off
-        git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
-
+	echo 
+	echo -e $Cyan "Cloning the libraries into the workplace"
+	echo -e -n $Color_Off
+	git clone --recurse-submodules https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git $Workplace/Lib
     fi
+else
+    echo
+    echo -e $Cyan "Cloning the libraries into the workplace"
+    echo -e -n $Color_Off
+    git clone --recurse-submodules https://github.com/epfl-mobots/Lib_VSCode_e-puck2.git $Workplace/Lib
 fi
-# cd $Workplace
 
 FOLDER=$Workplace/Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly
 if [ -f $FOLDER//package.json ]; then

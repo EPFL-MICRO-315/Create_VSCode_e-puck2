@@ -103,6 +103,7 @@ continueFunc() {
 
 quitFunc() {
     cd $InstallerPath
+    flush
     echo -n -e $BRed "Press any key to quit ..."
     echo -e -n $Color_Off
     read
@@ -112,7 +113,7 @@ quitFunc() {
 programVSFunc() {
     if test -f "$InstallerPath/vscode.zip"; then
         echo
-        echo -e $Cyan "vscode.zip already downloaded"
+        echo -e $Cyan "$InstallerPath/vscode.zip already downloaded"
         echo -e -n $Color_Off
     else
         echo

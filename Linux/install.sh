@@ -119,7 +119,6 @@ programVSFunc() {
         echo
         echo -e $BPurple "Downloading VSCode"
         echo -e -n $Color_Off
-        echo curl -L "https://update.code.visualstudio.com/latest/linux-x64/stable" --output $InstallerPath/vscode.tar.gz
         curl -L "https://update.code.visualstudio.com/latest/linux-x64/stable" --output $InstallerPath/vscode.tar.gz
     fi
     
@@ -421,7 +420,6 @@ done
 mkdir -p $Workplace
 
 if [ -d "$Workplace/Lib" ]; then 
-    flush
     echo
     echo -e $BPurple "$Workplace/Lib is already existing, do you want to clear it ?"
     echo -e $BPurple "$Workplace/Lib is already existing, nothing else other than the Lib folder will be touched"

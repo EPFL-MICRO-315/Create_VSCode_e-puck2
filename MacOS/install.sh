@@ -104,78 +104,84 @@ continueFunc() {
 quitFunc() {
     cd $InstallerPath
     flush
-    echo -n -e $BRed "Press any key to quit ..."
+    echo -n -e $BPurple "Press any key to quit ..."
     echo -e -n $Color_Off
     read
     exit
 }
 
 programVSFunc() {
-    if test -f "$InstallerPath/vscode.zip"; then
+    FILE=$InstallerPath/vscode.zip
+    LINK="https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
+    if [ -f $FILE ]; then
         echo
-        echo -e $Cyan "$InstallerPath/vscode.zip already downloaded"
+        echo -e $BCyan "$FILE already downloaded"
         echo -e -n $Color_Off
     else
         echo
-        echo -e $BPurple "Download VSCode"
+        echo -e $Purple "Downloading VSCode"
         echo -e -n $Color_Off
-        curl -L "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal" --output $InstallerPath/vscode.zip
+        curl -L $LINK --output $FILE
     fi
     
     echo
-    echo -e $Cyan "Installation of vscode.zip"
+    echo -e $Purple "Extracting $FILE"
     echo -e -n $Color_Off
-    unzip -q $InstallerPath/vscode.zip -d $InstallPath
+    unzip -q $FILE -d $InstallPath
     mv $InstallPath/Visual\ Studio\ Code.app $InstallPath/VSCode_EPuck2.app
 
-if [ $Debug ]; then
-    echo check where vscode.zip has been decompressed
-    read
-fi
+    if [ "$1" == "Debug" ]; then
+        echo
+        echo -e $BCyan "check if $FILE has been well decompressed in $InstallPath/VSCode_EPuck2.app"
+        continueFunc
+    fi
 
-    rm $InstallerPath/vscode.zip
+    rm $FILE
 
     echo
-    echo -e $Cyan "Visual Studio Code installed"
+    echo -e $Green "Visual Studio Code installed"
     echo -e -n $Color_Off
 }
 
 EPuck2ToolsFunc() {
-    if test -f "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"; then
+    FILE=$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
+    LINK="https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
+    if [ -f $FILE ]; then
         echo
-        echo -e $Cyan "gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 already downloaded"
-        echo -e $BPurple "Do you want to re-download it ?"
+        echo -e $BCyan "$FILE already downloaded"
+        echo -e $BCyan "Do you want to re-download it ?"
         yYn_ask
         if [ $ans = y ]; then
             echo
-            echo -e $Cyan "Re-downloading gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+            echo -e $Purple "Re-downloading $FILE"
             echo -e -n $Color_Off
-            curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+            curl -L $LINK --output $FILE
         fi
     else
         echo
-        echo -e $Cyan "Download gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        echo -e $Purple "Downloading $FILE"
         echo -e -n $Color_Off
-        curl -L "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2" --output "$InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+        curl -L $LINK --output $FILE
     fi
 
     echo
-    echo -e $Cyan "Installation of gcc-arm-none-eabi-7-2017-q4-major.tar.bz2"
+    echo -e $Cyan "Extracting $FILE"
     echo -e -n $Color_Off
     mkdir -p $InstallPath/EPuck2Tools
-    tar -xf $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2 -C $InstallPath/EPuck2Tools/
-    
-if [ $Debug ]; then
-    echo check where gcc-arm-none-eabi-7-2017-q4-major.zip has been decompressed
-    read
-fi
+    tar -xf $FILE -C $InstallPath/EPuck2Tools/
 
-    rm $InstallerPath/gcc-arm-none-eabi-7-2017-q4-major.tar.bz2
-    cp -r $InstallerPath/Utils $InstallPath/EPuck2Tools/Utils
+    if [ "$1" == "Debug" ]; then
+        echo
+        echo -e $BCyan "check if $FILE has been well decompressed in $InstallPath/EPuck2Tools"
+        continueFunc
+    fi
+
+    rm $FILE
+    cp -r $InstallerPath/Utils $InstallPath/EPuck2Tools/.
 
     # EPuckMonitor.app is included with the installer in order to control its version
     echo
-    echo -e $Cyan "Install epuck2 monitor"
+    echo -e $Purple "Install epuck2 monitor"
     echo -e -n $Color_Off
     cp -r $InstallerPath/EPuckMonitor.app $InstallPath/EPuck2Tools/Utils
 
@@ -197,11 +203,11 @@ fi
 
 InstallerPath=$(dirname "$0")
 # If the script is runned from its folder, the folder name will be "." and all "cd" inside the script will be the reference "."
-if [ "$InstallerPath"=="." ]; then
+if [ "$InstallerPath" == "." ]; then
     InstallerPath=$(pwd)
 fi
 
-if [ "$1"=="Debug" ]; then
+if [ "$1" == "Debug" ]; then
     echo -e -n $Color_Off
     echo 
     echo "  Beginninig of $0"
@@ -307,7 +313,6 @@ echo -e $BRed "*****************************************************"
 ans=n
 while [ $ans != y ]; do
     echo
-    flush
     echo -e $BPurple "InstallPath by default is ~/Applications"
     echo -e $BPurple "If you want the IDE to be installed in the default InstallPath, " $BGreen "press enter, otherwise just type your InstallPath"
     flush
@@ -319,7 +324,7 @@ while [ $ans != y ]; do
     yYn_ask
 done
 echo
-echo -e $Cyan "Creation of installation folder if not already existing"
+echo -e $Cyan "Creating the installation folder if not already existing"
 echo -e -n $Color_Off
 mkdir -p $InstallPath
 
@@ -330,13 +335,14 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**              Installation of VSCode             **"
 echo -e $BRed "*****************************************************"
-if [ -d "$InstallPath/VSCode_EPuck2.app" ]; then
+FILE=$InstallPath/VSCode_EPuck2.app
+if [ -d $FILE ]; then
     echo
-    echo -e $BPurple "$InstallPath/VSCode_EPuck2.app is already existing, do you want to overwrite it ?"
+    echo -e $BPurple "$FILE is already existing, do you want to overwrite it ?"
     yYn_ask
     echo -e -n $Color_Off
     if [ $ans = y ]; then
-        rm -rf $InstallPath/VSCode_EPuck2.app
+        rm -rf $FILE
         programVSFunc
     fi
 else
@@ -350,13 +356,14 @@ echo
 echo -e $BRed "*****************************************************"
 echo -e $BRed "**           Installation of EPuck2Tools           **"
 echo -e $BRed "*****************************************************"
-if [ -d "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major" ]; then 
+FOLDER=$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
+if [ -d $FOLDER ]; then 
     echo
-    echo -e $BPurple "$InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major is already existing, do you want to overwrite it ?"
+    echo -e $BPurple "$FOLDER is already existing, do you want to overwrite it ?"
     yYn_ask
     echo -e -n $Color_Off
     if [ $ans = y ]; then
-        rm -rf $InstallPath/EPuck2Tools/gcc-arm-none-eabi-7-2017-q4-major
+        rm -rf $FOLDER
         EPuck2ToolsFunc
     fi
 else
@@ -450,6 +457,11 @@ if [ -d "$Workplace/Lib" ]; then
         echo -e -n $Color_Off
         git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
     fi
+else
+    echo 
+    echo -e $Cyan "Cloning the libraries into the workplace"
+    echo -e -n $Color_Off
+    git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git $Workplace/Lib
 fi
 # cd $Workplace
 

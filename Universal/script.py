@@ -4,6 +4,7 @@ import time
 from termcolor import colored
 import traceback
 import requests
+import tarfile
 
 def prompt(text, max_try=10):
     """
@@ -64,6 +65,7 @@ def downloadTo(url, filename, max_try=5):
                         done = int(50 * dl / total_length)
                         sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )    
                         sys.stdout.flush()
+                    print('\n')
                     break
             except Exception:
                 i += 1
@@ -78,7 +80,10 @@ if __name__ == "__main__":
 
     if answer:
         try:
-            downloadTo("https://update.code.visualstudio.com/latest/linux-x64/stable", "vscode.tar.gz")
+#            downloadTo("https://update.code.visualstudio.com/latest/linux-x64/stable", "vscode.tar.gz")
+            file = tarfile.open("vscode.tar.gz")
+            file.extractall("./")
+            file.close()
             os.mkdir("./folder1")
         except FileExistsError:
             print("folder1 already existing")

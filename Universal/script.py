@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
     if answer:
         try:
-#            downloadTo("https://update.code.visualstudio.com/latest/linux-x64/stable", "vscode.tar.gz")
+            downloadTo("https://update.code.visualstudio.com/latest/linux-x64/stable", "vscode.tar.gz")
             file = tarfile.open("vscode.tar.gz")
             file.extractall("./")
             file.close()

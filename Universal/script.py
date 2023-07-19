@@ -18,21 +18,21 @@ def prompt(text, max_try=10):
     @param max_try: max number of times the user can try answering the prompt
     """
     i = 0
-    answer = False
+    choice = False
     while i < max_try:
         answer = input(colored(text, "yellow"))
         if answer.lower() in ["yes", "y"]:
-            answer = True
+            choice = True
             break
         elif answer.lower() in ["no", "n"]:
-            answer = False
+            choice = False
             break
         print(colored("unexpected input, retry", "red"))
         i += 1
     if i == max_try:
-        print(colored("max number of try reached, default answer selected: ", "red"),
-              "yes" if answer == True else "no")
-    return answer 
+        print(colored("max number of try reached, default choice selected: ", "red"),
+            "yes" if choice == True else "no")
+    return choice 
    
 def downloadTo(url, filename, max_try=5):
     """

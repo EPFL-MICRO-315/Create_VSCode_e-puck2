@@ -48,3 +48,44 @@
             - vscode configuration
             - arm gcc
             - other tools (epuck-monitor, ...)
+
+
+## GUI look and feel
+### Welcome page
+***********************************
+*|-------------------------------|*
+*| Install VSCode EPuck2 Tools   |*
+*|-------------------------------|*
+*| Uninstall VSCode EPuck2 Tools |*
+*|-------------------------------|*
+*|           Settings            |*
+*|-------------------------------|*
+***********************************
+
+### Install / Uninstall page
+*****************************
+*|-------------------------|*
+*| > pacman install gcc    |*
+*|   [//////----------]    |*
+*|                         |*
+*|                         |*
+*|                         |*
+*|-------------------------|*
+*****************************
+
+### Settings
+**********************************
+*|------------------------------|*
+*| Install folder         | C:/ |*
+*| Workspace folder       | C:/ |*
+*| (re)install git        | [ ] |*
+*| (re)install arm        | [ ] |*
+*| (re)install vscode     | [ ] |*
+*| (re)install extensions | [ ] |*
+*| (re)configure vscode   | [ ] |*
+*| (re)install library    | [ ] |*
+*| create shortcut        | [ ] |*
+*|------------------------------|*
+**********************************
+
+

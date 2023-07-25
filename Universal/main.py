@@ -1,25 +1,34 @@
 from kivy.app import App
 from kivy.uix.settings import SettingsWithTabbedPanel
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.progressbar import ProgressBar
+from kivy.uix.scrollview import ScrollView
 from kivy.logger import Logger, ColoredFormatter
 from kivy.lang import Builder
 from kivy.config import Config
-from kivy.modules.console import Console
 
+Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 Config.set('kivy', 'exit_on_escape', '0')
 import logging
 
-kv = '''
-AnchorLayout:
-    id: container
-    AnchorLayout:
-        anchor_x: 'center'
-        anchor_y: 'center'
-        size_hint: 0.75, 0.4
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+long_text = 'yay moo cow foo bar moo baa\n ' * 10
 
+kv = '''
+BoxLayout:
+    orientation: 'vertical'
+    id: pages
+    BoxLayout:
+        orientation: 'horizontal'
         BoxLayout:
+            id: page1
+            canvas:
+                Color:
+                    rgb: 0, 0, 0, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
             orientation: 'vertical'
             Button:
                 text: 'Install VSCode EPuck2'
@@ -30,11 +39,32 @@ AnchorLayout:
             Button:
                 text: 'Settings (or press F1)'
                 on_release: app.open_settings()
-            Button:
-                text: 'Exit'
-                on_release: app.stop()
+        BoxLayout:
+            id: page2
+            disabled: True
+            canvas:
+                Color:
+                    rgb: 0, 0, 0, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            orientation: 'vertical'
+            ScrollView:
+                Label:
+                    id: console
+                    size_hint: 1, None
+                    size: self.texture_size
+            ProgressBar:
+                id: progressbar
+                size_hint: 1, 0.1
+                opacity: 0
+                max: 1000
+                value: 0
+    Button
+        size_hint: 1, 0.2
+        text: 'Exit'
+        on_release: app.stop()
 '''
-
 
 settings_json = '''
 [
@@ -104,15 +134,12 @@ settings_json = '''
 ]
 '''
 
-
 class MyApp(App):
     use_kivy_settings = False # otherwise polluted by useless GUI settings
 
     def build(self):
         root = Builder.load_string(kv)
-        #label = root.ids.label
-        #label.text = self.config.get('My Label', 'text')
-        #label.font_size = float(self.config.get('My Label', 'font_size'))
+        root.ids.console.text = long_text
         return root
 
     def build_config(self, config):
@@ -160,16 +187,15 @@ class MyApp(App):
 
     def install(self):
         Logger.info("Install")
-        layout = BoxLayout(orientation='vertical')
-        button1 = Button(text='My first button')
-        button2 = Button(text='My second button', size_hint=(1,.1))
-        layout.add_widget(button1)
-        layout.add_widget(button2)
-        self.root.clear_widgets()
-        self.root.add_widget(layout)
+        self.root.ids.page1.disabled = True
+        self.root.ids.page2.disabled = False
+        self.root.ids.progressbar.opacity = 1
 
     def uninstall(self):
         Logger.info("Uninstall")
+        self.root.ids.page1.disabled = True
+        self.root.ids.page2.disabled = False
+        self.root.ids.progressbar.opacity = 1
 
 class MySettingsWithTabbedPanel(SettingsWithTabbedPanel):
     """

@@ -1,13 +1,18 @@
 from kivy.app import App
 from kivy.uix.settings import SettingsWithTabbedPanel
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
 from kivy.logger import Logger, ColoredFormatter
 from kivy.lang import Builder
 from kivy.config import Config
+from kivy.modules.console import Console
+
 Config.set('kivy', 'exit_on_escape', '0')
 import logging
-# We first define our GUI
+
 kv = '''
 AnchorLayout:
+    id: container
     AnchorLayout:
         anchor_x: 'center'
         anchor_y: 'center'
@@ -30,8 +35,8 @@ AnchorLayout:
                 on_release: app.stop()
 '''
 
-# This JSON defines entries we want to appear in our App configuration screen
-json = '''
+
+settings_json = '''
 [
     {
         "type": "path",
@@ -104,15 +109,6 @@ class MyApp(App):
     use_kivy_settings = False # otherwise polluted by useless GUI settings
 
     def build(self):
-        """
-        Build and return the root widget.
-        """
-        # The line below is optional. You could leave it out or use one of the
-        # standard options, such as SettingsWithSidebar, SettingsWithSpinner
-        # etc.
-        #self.settings_cls = MySettingsWithTabbedPanel
-
-        # We apply the saved configuration settings or the defaults
         root = Builder.load_string(kv)
         #label = root.ids.label
         #label.text = self.config.get('My Label', 'text')
@@ -139,7 +135,7 @@ class MyApp(App):
         """
         Add our custom section to the default configuration object.
         """
-        settings.add_json_panel('VSCode EPuck2 settings', self.config, data=json)
+        settings.add_json_panel('VSCode EPuck2 settings', self.config, data=settings_json)
 
 
     def on_config_change(self, config, section, key, value):
@@ -164,6 +160,13 @@ class MyApp(App):
 
     def install(self):
         Logger.info("Install")
+        layout = BoxLayout(orientation='vertical')
+        button1 = Button(text='My first button')
+        button2 = Button(text='My second button', size_hint=(1,.1))
+        layout.add_widget(button1)
+        layout.add_widget(button2)
+        self.root.clear_widgets()
+        self.root.add_widget(layout)
 
     def uninstall(self):
         Logger.info("Uninstall")

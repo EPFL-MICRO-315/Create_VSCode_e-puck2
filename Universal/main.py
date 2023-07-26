@@ -79,10 +79,10 @@ settings_json = '''
     },
     {
         "type": "path",
-        "title": "Workspace path",
+        "title": "Workplace path",
         "desc": "Choose where to store the libraries and your projects",
         "section": "settings",
-        "key": "workspace_path"
+        "key": "workplace_path"
     },
     {
         "type": "bool",
@@ -114,10 +114,10 @@ settings_json = '''
     },
     {
         "type": "bool",
-        "title": "(re)install workspace",
-        "desc": "If checked,the workspace will be overwritten",
+        "title": "(re)install workplace",
+        "desc": "If checked,the workplace will be overwritten",
         "section": "settings",
-        "key": "workspace_reinstall"
+        "key": "workplace_reinstall"
     },
     {
         "type": "bool",
@@ -176,8 +176,11 @@ class MyApp(App):
         self.root.ids.page2.disabled = False
         self.root.ids.progressbar.opacity = 1
         installer.print_settings()
-        #installer.step1()
-        self.root.ids.progressbar.value = 200
+        installer.step1()
+        installer.step2()
+        installer.step3()
+        installer.step4()
+        installer.step5()
 
     def uninstall(self):
         Logger.info("Uninstall")

@@ -12,6 +12,7 @@
           pkgs.python311
 	  pkgs.python311Packages.kivy
 	  pkgs.python311Packages.tkinter
+          pkgs.python311Packages.termcolor
         ];
         shellHook = ''echo "hello world!"'';
       };

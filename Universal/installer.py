@@ -36,8 +36,8 @@ class Settings:
             self.dict["vscode_url"] = "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
         elif os_name == "Windows":
-            self.dict["install_path"] = "%APPDATA%/"
-            self.dict["workplace_path"] = "%HOMEPATH%/Documents/EPuck2_Workplace/"
+            self.dict["install_path"] = os.popen("echo %APPDATA%").read().rstrip()
+            self.dict["workplace_path"] = "{}\\Documents\\".format(os.popen("echo %USERPROFILE%").read().rstrip())
             self.dict["vscode_url"] = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
             self.dict["gcm_url"] = "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe"

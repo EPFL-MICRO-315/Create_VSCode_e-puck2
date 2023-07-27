@@ -153,7 +153,7 @@ class MyApp(App):
 
     def build_config(self, config):
         config.setdefaults('settings', installer.settings.dict)
-        
+
     def build_settings(self, settings):
         settings.add_json_panel('VSCode EPuck2 settings', self.config, data=settings_json)
 
@@ -175,13 +175,16 @@ class MyApp(App):
         self.root.ids.page1.disabled = True
         self.root.ids.page2.disabled = False
         self.root.ids.progressbar.opacity = 1
-        installer.print_settings()
-        installer.init()
-        installer.step1()
-        installer.step2()
-        installer.step3()
-        installer.step4()
-        installer.step5()
+        for key in installer.settings.dict:
+            print(key, self.config.get('settings', key)) 
+            installer.settings.dict[key] = self.config.get('settings', key)
+        print(installer.settings)
+        #installer.init()
+        #installer.step1()
+        #installer.step2()
+        #installer.step3()
+        #installer.step4()
+        #installer.step5()
 
     def uninstall(self):
         Logger.info("Uninstall")

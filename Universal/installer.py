@@ -229,7 +229,7 @@ def step4():
         #TODO: verification step (.json successfully written)
 
 def step5():
-    if settings.dict["workspace_reinstall"]):
+    if settings.dict["workspace_reinstall"]:
         shutil.rmtree(settings.dict["workspace_path"])
         os.mkdir(settings.dict["workspace_path"])
         os.chdir(settings.dict["workspace_path"])

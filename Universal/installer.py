@@ -35,6 +35,7 @@ class Settings:
             self.dict["workplace_path"] = os.popen("echo $HOME/Documents/EPuck2_Workplace/").read().rstrip()
             self.dict["vscode_url"] = "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
+            self.dict["gcm"] = "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
         elif os_name == "Windows":
             self.dict["install_path"] = os.popen("echo %APPDATA%").read().rstrip()
             self.dict["workplace_path"] = os.popen("echo %USERPROFILE%\\Documents\\").read().rstrip()
@@ -55,17 +56,20 @@ settings = Settings()
 
 def init():
     if os_name == "Darwin":
-        os.chdir("$TMPDIR/")
+        os.chdir(os.popen("echo $TMPDIR/").read().rstrip())
     elif os_name == "Windows":
-        os.chdir("%HOMEDRIVE%/Temp/")
+        os.chdir(os.popen("echo %HOMEDRIVE%/Temp/").read().rstrip())
     elif os_name == "Linux":
-        os.chdir("$HOME/.cache/")
+        os.chdir(os.popen("echo $HOME/.cache/").read().rstrip())
+    os.mkdir(settings.dict["install_path"])
+    os.mkdir(settings.dict["install_path"] + "/EPuck2_Utils/")
+    os.mkdir(settings.dict["workplace_path"])
      
 # Utils installation
 def step1():
     if os_name == "Darwin":    
         print(colored("Installation of brew, dfu-util, git and git-credential-manager-core", "green"))
-        os.system("curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")
+        os.system(settings.dict["gcm_url"]) )
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
         if settings.dict["gcm"]:
@@ -139,7 +143,7 @@ json_settings = '''
     "make_path": {},
     "epuck2_utils": {},
     "install_path": {},
-    "workspace": {},
+    "workplace": {},
     "terminal.integrated.env.{}": {
         "PATH": "{settings.dict["install_path"]}//EPuck_Utils//gcc-arm_toolchain//bin:$\{env:PATH}"
     },
@@ -199,14 +203,14 @@ def step4():
         data_dir = ""
         bin_dir = ""
         if os_name == "Darwin":
-            data_dir = settings.dict["install_path"] + "/code-portable-data"
+            data_dir = settings.dict["install_path"] + "/code-portable-data/"
             shutil.rmtree(data_dir)
-            bin_dir = settings.dict["install_path"] + "EPuck2_VSCode.app/Contents/Resources/app/bin"
+            bin_dir = settings.dict["install_path"] + "EPuck2_VSCode.app/Contents/Resources/app/bin/"
         elif os_name == "Windows" or os_name == "Linux":
             shutil.rmtree(settings.dict["install_path"] + "/EPuck2_VSCode/data")
-            data_dir = settings.dict["install_path"] + "/EPuck2_VSCode/data"
+            data_dir = settings.dict["install_path"] + "/EPuck2_VSCode/data/"
             shutil.rmtree(data_dir)
-            bin_dir = settings.dict["install_path"] + "EPuck2_VSCode/bin"
+            bin_dir = settings.dict["install_path"] + "EPuck2_VSCode/bin/"
             if os_name == "Windows":
                 exe = "code.exe "
         os.mkdir(data_dir)
@@ -229,10 +233,10 @@ def step4():
         #TODO: verification step (.json successfully written)
 
 def step5():
-    if settings.dict["workspace_reinstall"]:
-        shutil.rmtree(settings.dict["workspace_path"])
-        os.mkdir(settings.dict["workspace_path"])
-        os.chdir(settings.dict["workspace_path"])
+    if settings.dict["workplace_reinstall"]:
+        shutil.rmtree(settings.dict["workplace_path"])
+        os.mkdir(settings.dict["workplace_path"])
+        os.chdir(settings.dict["workplace_path"])
         os.system("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
         #TODO: tyhmio blocky package json
         #TODO: verification step (Lib actually cloned)

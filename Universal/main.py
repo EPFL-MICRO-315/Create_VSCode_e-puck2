@@ -5,7 +5,7 @@ from kivy.uix.label import Label
 #from kivy.uix.boxlayout import BoxLayout
 #from kivy.uix.progressbar import ProgressBar
 #from kivy.uix.scrollview import ScrollView
-from kivy.logger import Logger, ColoredFormatter
+from kivy.logger import Logger
 from kivy.lang import Builder
 from kivy.config import Config
 
@@ -176,6 +176,7 @@ class MyApp(App):
         self.root.ids.page2.disabled = False
         self.root.ids.progressbar.opacity = 1
         installer.print_settings()
+        installer.init()
         installer.step1()
         installer.step2()
         installer.step3()
@@ -187,11 +188,5 @@ class MyApp(App):
         self.root.ids.page1.disabled = True
         self.root.ids.page2.disabled = False
         self.root.ids.progressbar.opacity = 1
-
-logging.Formatter.default_msec_format = '%s.%01d'
-# Add timestamp to log file
-Logger.handlers[1].setFormatter(logging.Formatter('%(asctime)s %(message)s'))
-# Add timestampt to console output
-Logger.handlers[2].setFormatter(ColoredFormatter('[%(levelname)-18s] %(asctime)s %(message)s'))
 
 MyApp().run()

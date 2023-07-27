@@ -27,7 +27,7 @@ class Settings:
             "workplace_reinstall": 1,
             "shortcut": 1,
             "vscode_url": "",
-            "arm_gcc_toolchain_url": ""
+            "arm_gcc_toolchain_url": "",
             "gcm_url": ""
         }
         if os_name == "Darwin":
@@ -116,7 +116,7 @@ def step3():
         if os_name == "Darwin":
             utils.downloadTo(settings.dict["arm_gcc_toolchain_url"], "arm_gcc_toolchain.tar.bz2")
             with zipfile.ZipFile("arm_gcc_toolchain.tar.bz2", "r") as file:
-                file.extractall(settings.dict["install_path"] "/EPuck2_Utils")
+                file.extractall(settings.dict["install_path"] + "/EPuck2_Utils")
         elif os_name == "Windows":
             utils.downloadTo(settings.dict["arm_gcc_toolchain_url"], "arm_gcc_toolchain.zip")
             with zipfile.ZipFile("arm_gcc_toolchain.zip", "r") as file:
@@ -129,7 +129,8 @@ def step3():
         #TODO: verification step
         print(colored("arm_gcc_toolchain installed", "green"))
 
-json_settings = f'''
+#TODO: f
+json_settings = '''
 {
     "extensions.autoCheckUpdates": false,
     "extensions.autoUpdate": false,

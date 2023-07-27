@@ -31,19 +31,19 @@ class Settings:
             "gcm_url": ""
         }
         if os_name == "Darwin":
-            self.dict["install_path"] = "$HOME/Applications/"
-            self.dict["workplace_path"] = "$HOME/Documents/EPuck2_Workplace/"
+            self.dict["install_path"] = os.popen("echo $HOME/Applications/").read().rstrip()
+            self.dict["workplace_path"] = os.popen("echo $HOME/Documents/EPuck2_Workplace/").read().rstrip()
             self.dict["vscode_url"] = "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
         elif os_name == "Windows":
             self.dict["install_path"] = os.popen("echo %APPDATA%").read().rstrip()
-            self.dict["workplace_path"] = "{}\\Documents\\".format(os.popen("echo %USERPROFILE%").read().rstrip())
+            self.dict["workplace_path"] = os.popen("echo %USERPROFILE%\\Documents\\").read().rstrip()
             self.dict["vscode_url"] = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
             self.dict["gcm_url"] = "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe"
         elif os_name == "Linux":
-            self.dict["install_path"] = "$HOME/.local/bin/"
-            self.dict["workplace_path"] = "$HOME/Documents/EPuck2_Workplace/"
+            self.dict["install_path"] = os.popen("echo $HOME/.local/bin/").read().rstrip()
+            self.dict["workplace_path"] = os.popen("echo $HOME/Documents/").read().rstrip()
             self.dict["vscode_url"] = "https://update.code.visualstudio.com/latest/linux-x64/stable"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2"
             self.dict["gcm_url"] = "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb"

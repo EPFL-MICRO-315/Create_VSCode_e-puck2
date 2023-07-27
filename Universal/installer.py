@@ -31,19 +31,19 @@ class Settings:
             "gcm_url": ""
         }
         if os_name == "Darwin":
-            self.dict["install_path"] = ""
-            self.dict["workplace_path"] = ""
+            self.dict["install_path"] = "$HOME/Applications/"
+            self.dict["workplace_path"] = "$HOME/Documents/EPuck2_Workplace/"
             self.dict["vscode_url"] = "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
         elif os_name == "Windows":
-            self.dict["install_path"] = ""
-            self.dict["workplace_path"] = ""
+            self.dict["install_path"] = "%APPDATA%/"
+            self.dict["workplace_path"] = "%HOMEPATH%/Documents/EPuck2_Workplace/"
             self.dict["vscode_url"] = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
             self.dict["gcm_url"] = "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe"
         elif os_name == "Linux":
-            self.dict["install_path"] = ""
-            self.dict["workplace_path"] = ""
+            self.dict["install_path"] = "$HOME/.local/bin/"
+            self.dict["workplace_path"] = "$HOME/Documents/EPuck2_Workplace/"
             self.dict["vscode_url"] = "https://update.code.visualstudio.com/latest/linux-x64/stable"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2"
             self.dict["gcm_url"] = "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb"
@@ -53,6 +53,14 @@ class Settings:
 
 settings = Settings()
 
+def init():
+    if os_name == "Darwin":
+        os.chdir("$TMPDIR/")
+    elif os_name == "Windows":
+        os.chdir("%HOMEDRIVE%/Temp/")
+    elif os_name == "Linux":
+        os.chdir("$HOME/.cache/")
+     
 # Utils installation
 def step1():
     if os_name == "Darwin":    
@@ -69,8 +77,7 @@ def step1():
             utils.downloadTo(settings.dict["gcm_url"], "git_setup.exe")
             print(colored("Please install git from the external dialog that opens right now", "yellow"))
             os.system("cmd git_setup.exe /SILENT")
-        #TODO: verification step
-    elif os_name == "Linux":
+        #TODO: verification step elif os_name == "Linux":
         print(colored("Installation of make, dfu-util and git", "green"))
         os.system("sudo apt-get install make dfu-util git")
         if settings.dict["gcm"]:

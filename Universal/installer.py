@@ -292,9 +292,12 @@ def step5():
         #TODO: verification step (Lib actually cloned)
 
 def step6():
+    os.chdir(origin)
+
     if settings.dict["shortcut"]:
-        if os_name == "Darwin":
-        elif os_name == "Windows":
+        print(colored("shortcut creation selected, proceeding", "green"))
+        if os_name == "Windows":
+            os.popen("cmd.exe /c \"start shortcut.bat\"")
         elif os_name == "Linux":
             desktop_file = f'''
             [Desktop Entry]

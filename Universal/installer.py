@@ -6,12 +6,14 @@ import shutil
 from termcolor import colored
 import utils
 
+
 os_name = platform.system()
 if os_name == "Darwin":
     import zipfile
     import tarfile
 elif os_name == "Windows":
     import zipfile
+    import subprocess
 elif os_name == "Linux":
     import tarfile
 
@@ -50,7 +52,7 @@ class Settings:
             self.dict["gcm_url"] = "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb"
         
     def __str__(self):
-        return self.dict
+        return str(self.dict)
 
 settings = Settings()
 
@@ -61,9 +63,12 @@ def init():
         os.chdir(os.popen("echo %HOMEDRIVE%/Temp/").read().rstrip())
     elif os_name == "Linux":
         os.chdir(os.popen("echo $HOME/.cache/").read().rstrip())
-    os.mkdir(settings.dict["install_path"])
-    os.mkdir(settings.dict["install_path"] + "/EPuck2_Utils/")
-    os.mkdir(settings.dict["workplace_path"])
+    if not os.path.exists(settings.dict["install_path"]):
+        os.makedirs(settings.dict["install_path"])
+    if not os.path.exists(settings.dict["install_path"] + "/EPuck2_Utils/"):
+        os.makedirs(settings.dict["install_path"] + "/EPuck2_Utils/")
+    if not os.path.exists(settings.dict["workplace_path"]):
+        os.makedirs(settings.dict["workplace_path"])
      
 # Utils installation
 def step1():
@@ -72,19 +77,20 @@ def step1():
         os.system(settings.dict["gcm_url"])
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
-        if settings.dict["gcm"]:
+        if settings.dict["gcm"] == 1:
             os.system("brew --cask git-credential-amanger-core")
         #TODO: verification step
     elif os_name == "Windows":
-        if settings.dict["gcm"]:
+        if settings.dict["gcm"] == 1:
             print(colored("Installation of Git for Windows", "green"))
             utils.downloadTo(settings.dict["gcm_url"], "git_setup.exe")
             print(colored("Please install git from the external dialog that opens right now", "yellow"))
-            os.system("cmd git_setup.exe /SILENT")
-        #TODO: verification step elif os_name == "Linux":
+            subprocess.run("git_setup.exe")
+        #TODO: verification step
+    elif os_name == "Linux":
         print(colored("Installation of make, dfu-util and git", "green"))
         os.system("sudo apt-get install make dfu-util git")
-        if settings.dict["gcm"]:
+        if settings.dict["gcm"] == 1:
             print(colored("Installation of git-credential-manager", "green"))
             utils.downloadTo(settings.dict["gcm_url"], "gcm.deb")
             os.system("sudo dpkg -i gcm.deb")
@@ -100,23 +106,23 @@ def step2():
         if os_name == "Darwin":
             utils.downloadTo(settings.dict["vscode_url"], "vscode.zip")
             with zipfile.ZipFile("vscode.zip", "r") as file:
-                file.extractall(settings.dict["install_path"] + "/EPuck2_VSCode.app")
+                file.extractall("EPuck2_VSCode.app")
         elif os_name == "Windows":
             utils.downloadTo(settings.dict["vscode_url"], "vscode.zip")
             with zipfile.ZipFile("vscode.zip", "r") as file:
-                file.extractall(settings.dict["install_path"] + "/EPuck2_VSCode")
+                file.extractall("EPuck2_VSCode")
         elif os_name == "Linux":
             utils.downloadTo(settings.dict["vscode_url"], "vscode.tar.gz")
             file = tarfile.open("vscode.tar.gz")
-            file.extractall(settings.dict["install_path"] + "/EPuck2_VSCode")
-            file.close()
+            file.extractall("EPuck2_VSCode")
+        file.close()
         #TODO: verification step
         print(colored("Visual Studio Code installed", "green"))
 
 # arm_gcc_toolchain installation
 def step3():
     file = None
-    if settings.arm_gcc_toolchain:
+    if settings.dict["arm_gcc_toolchain"]:
         if os_name == "Darwin":
             utils.downloadTo(settings.dict["arm_gcc_toolchain_url"], "arm_gcc_toolchain.tar.bz2")
             with zipfile.ZipFile("arm_gcc_toolchain.tar.bz2", "r") as file:
@@ -198,7 +204,7 @@ json_tasks = '''
 
 # VSCode configuration
 def step4():
-    if settings.vscode_settings:
+    if settings.dict["vscode_settings"]:
         exe = "./code "
         data_dir = ""
         bin_dir = ""

@@ -1,3 +1,15 @@
+version = "V2.0 alpha"
+f"""
+Description: This script performs data preprocessing tasks for a machine learning project.
+Authors: Antoine Vincent Martin, Daniel Burnier
+Date Created: August, 2022
+Date Modified: July 31, 2023
+Version: {version}
+Python Version: 3.10.12
+Dependencies: kivy, termcolor
+License: WTFPL
+"""
+
 import os
 import sys
 import time
@@ -69,9 +81,10 @@ def step1():
     os.chdir(settings.dict["install_path"])
 
     if os_name == "Darwin":    
-        #TODO: check if brew installed
-        print(colored("Installation of brew, dfu-util, git and git-credential-manager-core", "green"))
-        os.system(settings.dict["gcm_url"])
+        print(colored("Installation of Homebrew required to install several utility programs", "green"))
+        os_cli("/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")
+
+        print(colored("Installation of dfu-util, git and git-credential-manager-core", "green"))
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
         if settings.dict["gcm"] == 1:
@@ -98,6 +111,8 @@ def step1():
             os_cli("echo \"[credential]\" >> ~/.gitconfig")
             os_cli("echo \"        credentialStore = secretservice\" >> ~/.gitconfig")
         os_copy(origin + "/Utils", "EPuck2_Utils/Utils") # VSCode installation
+        os_cli("sudo adduser $USER dialout")
+
 def step2():
     os.chdir(settings.dict["install_path"])
 
@@ -142,21 +157,33 @@ def step3():
         print(colored("arm_gcc_toolchain installed", "green"))
 
 #TODO:
+
+if os_name == "Windows":
+    make_path = settings.dict["install_path"] + "/EPuck2_Utils/gnutools/make"
+else:
+    make_path = "make"
 json_settings = f'''
 {
     "extensions.autoCheckUpdates": false,
     "extensions.autoUpdate": false,
     "gcc_arm_path": {settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major,
     "gcc_arm_path_compiler": {settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gcc,
-    "make_path": {settings.dict["install_path"]}/EPuck2_Utils/gnutools/make,
+    "make_path": {make_path},
     "epuck2_utils": {settings.dict["install_path"]}/EPuck2_Utils/Utils,
     "install_path": {settings.dict["install_path"]},
     "workplace": {settings.dict["workplace_path"]},
-    "terminal.integrated.env.{}": {
-        "PATH": "{settings.dict["install_path"]}/EPuck_Utils/gcc-arm_toolchain/bin:$\{env:PATH}"
+    "terminal.integrated.env ": {
+        "osx.PATH": "{settings.dict["install_path"]}/EPuck_Utils/gcc-arm_toolchain/bin:$\{env:PATH}",
+        "linux.PATH": "{settings.dict["install_path"]}/EPuck_Utils/gcc-arm_toolchain/bin:$\{env:PATH}",
+        "windows.PATH": "{settings.dict["install_path"]}/EPuck_Utils/gcc-arm_toolchain/bin;{settings.dict["install_path"]}//EPuck2_Utils//gnutools;$\{env:PATH}"
     },
-    "version": {}
-}
+    "cortex-debug.armToolchainPath": {
+        "osx": "{settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major/bin",
+        "windows": "{settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major/bin",
+        "linux": "{settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major/bin"
+    },
+    "version": {version}
+,}
 '''
 
 if os_name == "Windows":
@@ -195,7 +222,7 @@ json_tasks = f'''
         {
             "label": "User:Run EPuckMonitor",
             "type": "shell",
-            "command": "python {settings.dict["install_path"]}EPuck2_Utils/Utils/monitor.py",
+            "command": "python {settings.dict["install_path"]}/EPuck2_Utils/Utils/monitor.py",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -220,14 +247,13 @@ def step4():
         bin_dir = ""
         if os_name == "Darwin":
             data_dir = "code-portable-data/"
-            shutil.rmtree(data_dir)
             bin_dir = "EPuck2_VSCode.app/Contents/Resources/app/bin/"
         elif os_name == "Windows" or os_name == "Linux":
             data_dir = "EPuck2_VSCode/data/"
-            shutil.rmtree(data_dir)
             bin_dir = "EPuck2_VSCode/bin/"
             if os_name == "Windows":
                 exe = "code.exe "
+        shutil.rmtree(data_dir)
         os.mkdir(data_dir)
         #TODO: verifshutilication step (data_dir successfully created)
 
@@ -240,7 +266,7 @@ def step4():
         #TODO: verification step (extensions successfully installed)
 
         print(colored("writting settings.json", "green"))
-        os.chdir(settings.dict["install_path"] + data_dir + "data/user-data/User/")
+        os.chdir(settings.dict["install_path"] + data_dir + "/user-data/User/")
         file = open("settings.json")
         file.write(settings_json)
         file.close()

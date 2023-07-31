@@ -6,14 +6,17 @@ import shutil
 from termcolor import colored
 from utils import *
 
-os_name = platform.system()
+origin = os.getcwd()
+cs_name = platform.system()
 if os_name == "Darwin":
     import zipfile
     import tarfile
 elif os_name == "Windows":
     import zipfile
     import subprocess
-elif os_name == "Linux": import tarfile
+elif os_name == "Linux":
+    import tarfile
+
 class Settings:
     def __init__(self):
         self.dict = {
@@ -85,17 +88,16 @@ def step1():
 
     elif os_name == "Linux":
         print(colored("Installation of make, dfu-util and git", "green"))
-        os.system("sudo apt-get install make dfu-util git")
+        os_cli("sudo apt-get install make dfu-util git")
         if settings.dict["gcm"] == 1:
             print(colored("Installation of git-credential-manager", "green"))
             downloadTo(settings.dict["gcm_url"], "gcm.deb")
+            print(colored("configuring git credential manager", "green"))
             os_cli("sudo dpkg -i gcm.deb")
             os_cli("git-credential-manager-core configure")
             os_cli("echo \"[credential]\" >> ~/.gitconfig")
             os_cli("echo \"        credentialStore = secretservice\" >> ~/.gitconfig")
-        os_copy(origin + "/Utils", "EPuck2_Utils/Utils")
-
-# VSCode installation
+        os_copy(origin + "/Utils", "EPuck2_Utils/Utils") # VSCode installation
 def step2():
     os.chdir(settings.dict["install_path"])
 
@@ -157,14 +159,19 @@ json_settings = f'''
 }
 '''
 
-json_tasks = '''
+if os_name == "Windows":
+    dfu-util = settings.dict["install_path"] + "EPuck2_Utils/dfu-util.exe"
+else:
+    dfu-util = "dfu-util"
+
+json_tasks = f'''
 {
     "version": "2.0.0",
     "tasks": [
         {
             "label": "User:List EPuck2 ports",
             "type": "shell",
-            "command": "cd ${config:epuck2_utils} && ./epuck2_port_check.sh",
+            "command": "cd {settings.dict["install_path"]}/EPuck2_Utils/Utils && ./epuck2_port_check.sh",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -176,7 +183,7 @@ json_tasks = '''
        {
             "label": "User:DFU EPuck-2-Main_Processor",
             "type": "shell",
-            "command": "dfu-util -d 0483:df11 -a 0 -s 0x08000000 -D ${config:epuck2_utils}//e-puck2_main-processor.bin",
+            "command": "{dfu-util} -d 0483:df11 -a 0 -s 0x08000000 -D {settings.dict["install_path"]}/EPuck2_Utils/Utils/e-puck2_main-processor.bin",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -188,7 +195,7 @@ json_tasks = '''
         {
             "label": "User:Run EPuckMonitor",
             "type": "shell",
-            "command": "python ${config:epuck2_utils}//monitor",
+            "command": "python {settings.dict["install_path"]}EPuck2_Utils/Utils/monitor.py",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -252,5 +259,31 @@ def step5():
         os.mkdir("EPuck2_Workplace/")
         os.chdir("EPuck2_Workplace/")
         os_cli("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
-        #TODO: tyhmio blocky package json
+
+        folder = "Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly/"
+        is.path.isfile(folder + "package.json"):
+            os.rename(folder + "package.json", folder + "package.json-renamed-because-conflict-task-tp-4")
         #TODO: verification step (Lib actually cloned)
+
+def step6():
+    if settings.dict["shortcut"]:
+        if os_name == "Darwin":
+        elif os_name == "Windows":
+        elif os_name == "Linux":
+            desktop_file = f'''
+            [Desktop Entry]
+            Type=Application
+            Terminal=false
+            Name=Visual Studio Code EPuck2
+            Exec={settings.dict["install_path"]}/EPuck2_VSCode/code
+            Icon={settings.dict["install_path"]}/EPzck2_VSCode/resources/app/resources/linux/code.png
+            '''
+            os.chdir(os.popen("echo $HOME/Desktop").read().rstrip())
+            file = open("vscode_epuck2.desktop")
+            file.write(desktop_content)
+            file.close()
+            # According to https://www.how2shout.com/linux/allow-launching-linux-desktop-shortcut-files-using-command-terminal/
+            os_cli("gio set $FILE metadata::trusted true")  # Mark the shortcut status trusted
+            os_cli("chmod u+x $FILE") # Then allow execution
+
+            

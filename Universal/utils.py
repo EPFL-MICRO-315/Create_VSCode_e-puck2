@@ -56,3 +56,18 @@ def downloadTo(url, filename, max_try=5):
         f.write("#Hello world\nThis is a new line!")
         f.close()
         os.system("git -v")
+
+def os_cli(command):
+    print(colored("executing " + command, "green"))
+    os.system(command)
+
+def os_copy(src, dest):
+    if !os.path.isdir(src):
+        print(colored("invalid source folder to copy: " + src, "red"))
+    else:
+        print(colored("copying " + src + " to " + dest, "green"))
+        shutil.copytree(src, dest)
+    if !os.path.isdir(dest):
+        print(colored("failed to copy folder to " + dest, "red"))
+    else:
+        print(colored("copied " + dest, "green"))

@@ -16,8 +16,10 @@ import time
 import platform
 import shutil
 from termcolor import colored
+import colorama
 from utils import *
 
+colorama.init()
 origin = os.getcwd()
 os_name = platform.system()
 if os_name == "Darwin":
@@ -184,27 +186,29 @@ if os_name == "Windows":
     make_path = settings.dict["install_path"] + "/EPuck2_Utils/gnutools/make"
 else:
     make_path = "make"
+b1 = "\\"
+b2 = "\\\\"
 json_settings = f'''
 {{
     "extensions.autoCheckUpdates": false,
     "extensions.autoUpdate": false,
-    "gcc_arm_path": {settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain,
-    "gcc_arm_path_compiler": {settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc,
-    "make_path": {make_path},
-    "epuck2_utils": {settings.dict["install_path"]}/EPuck2_Utils/Utils,
-    "install_path": {settings.dict["install_path"]},
-    "workplace": {settings.dict["workplace_path"]},
+    "gcc_arm_path": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain",
+    "gcc_arm_path_compiler": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc",
+    "make_path": "{make_path.replace(b1, b2)}",
+    "epuck2_utils": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/Utils",
+    "install_path": "{settings.dict["install_path"].replace(b1, b2)}",
+    "workplace": "{settings.dict["workplace_path"].replace(b1, b2)}",
     "terminal.integrated.env ": {{
-        "osx.PATH": "{settings.dict["install_path"]}/EPuck_Utils/arm_gcc_toolchain/bin:$\{{env:PATH}}",
-        "linux.PATH": "{settings.dict["install_path"]}/EPuck_Utils/arm_gcc_toolchain/bin:$\{{env:PATH}}",
-        "windows.PATH": "{settings.dict["install_path"]}/EPuck_Utils/arm_gcc_toolchain/bin;{settings.dict["install_path"]}//EPuck2_Utils//gnutools;$\{{env:PATH}}"
+        "osx.PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck_Utils/arm_gcc_toolchain/bin:${{env:PATH}}",
+        "linux.PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck_Utils/arm_gcc_toolchain/bin:${{env:PATH}}",
+        "windows.PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck_Utils/arm_gcc_toolchain/bin;{settings.dict["install_path"]}//EPuck2_Utils//gnutools;${{env:PATH}}"
     }},
     "cortex-debug.armToolchainPath": {{
-        "osx": "{settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain/bin",
-        "windows": "{settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain/bin",
-        "linux": "{settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain/bin"
+        "osx": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+        "windows": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+        "linux": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin"
     }},
-    "version": {version}
+    "version": "{version}"
 }}
 '''
 
@@ -270,11 +274,13 @@ def step4():
         if os_name == "Darwin":
             data_dir += "/code-portable-data/"
             bin_dir += "/EPuck2_VSCode.app/Contents/Resources/app/bin/"
-        elif os_name == "Windows" or os_name == "Linux":
+        elif os_name == "Windows":
             data_dir += "/EPuck2_VSCode/data/"
             bin_dir += "/EPuck2_VSCode/bin/"
-            if os_name == "Windows":
-                exe = "code.exe "
+            exe = "code.cmd "
+        elif os_name == "Linux":
+            data_dir += "/EPuck2_VSCode/data/"
+            bin_dir += "/EPuck2_VSCode/bin/"
         if os.path.isdir(data_dir):
             shutil.rmtree(data_dir)
         os.mkdir(data_dir)
@@ -291,11 +297,15 @@ def step4():
         print(colored("writting settings.json", "green"))
         os.makedirs(data_dir + "/user-data/User/")
         os.chdir(data_dir + "/user-data/User/")
+        if os.isfile("settings.json"):
+            os.remove("settings.json")
         file = open("settings.json", "x") #x option for create file, error if already existing
         file.write(json_settings)
         file.close()
 
         print(colored("writting tasks.json", "green"))
+        if os.isfile("tasks.json"):
+            os.remove("tasks.json")
         file = open("tasks.json", "x") #x option for create file, error if already existing
         file.write(json_tasks)
         file.close()
@@ -306,7 +316,10 @@ def step5():
     if settings.dict["workplace_reinstall"] == "1":
         print(colored("workplace reinstall option is selected, proceeding", "green"))
         if os.path.isdir("EPuck2_Workplace"):
-            shutil.rmtree("EPuck2_Workplace")
+            if not os_name == "Windows":
+                shutil.rmtree("EPuck2_Workplace")
+            else:
+                os_cli("rmdir /s EPuck2_Workplace")
         os.mkdir("EPuck2_Workplace/")
         os.chdir("EPuck2_Workplace/")
         os_cli("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")

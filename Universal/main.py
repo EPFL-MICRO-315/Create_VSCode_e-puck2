@@ -139,6 +139,13 @@ settings_json = '''
         "desc": "Specific to host's operating system",
         "section": "settings",
         "key": "arm_gcc_toolchain_url"
+    },
+    {
+        "type": "bool",
+        "title": "clear cache",
+        "desc": "Delete all temporary files created during installation",
+        "section": "settings",
+        "key": "clear_cache"
     }
 ]
 '''
@@ -179,13 +186,14 @@ class MyApp(App):
             print(key, self.config.get('settings', key)) 
             installer.settings.dict[key] = self.config.get('settings', key)
         print(installer.settings)
-        #installer.init()
-        #installer.step1()
-        #installer.step2()
-        #installer.step3()
-        #installer.step4()
-        #installer.step5()
-
+        installer.init_folders()
+        installer.step1()
+        installer.step2()
+        installer.step3()
+        installer.step4()
+        installer.step5()
+        installer.step6()
+        
     def uninstall(self):
         Logger.info("Uninstall")
         self.root.ids.page1.disabled = True

@@ -5,6 +5,7 @@ import traceback
 from termcolor import colored
 import requests
 import tarfile
+import shutil
 
 def downloadTo(url, filename, max_try=5):
     """
@@ -62,12 +63,15 @@ def os_cli(command):
     os.system(command)
 
 def os_copy(src, dest):
-    if !os.path.isdir(src):
+    if os.path.isdir(dest):
+        print(colored("deleting already existing destination : " + dest, "red"))
+        shutil.rmtree(dest)
+    if not os.path.isdir(src):
         print(colored("invalid source folder to copy: " + src, "red"))
     else:
         print(colored("copying " + src + " to " + dest, "green"))
         shutil.copytree(src, dest)
-    if !os.path.isdir(dest):
+    if not os.path.isdir(dest):
         print(colored("failed to copy folder to " + dest, "red"))
     else:
         print(colored("copied " + dest, "green"))

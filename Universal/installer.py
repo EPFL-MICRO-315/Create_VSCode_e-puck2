@@ -19,7 +19,7 @@ from termcolor import colored
 from utils import *
 
 origin = os.getcwd()
-cs_name = platform.system()
+os_name = platform.system()
 if os_name == "Darwin":
     import zipfile
     import tarfile
@@ -42,7 +42,8 @@ class Settings:
             "shortcut": 1,
             "vscode_url": "",
             "arm_gcc_toolchain_url": "",
-            "gcm_url": ""
+            "gcm_url": "",
+            "clear_cache": "1"
         }
         if os_name == "Darwin":
             self.dict["install_path"] = os.popen("echo $HOME/Applications/").read().rstrip()
@@ -87,22 +88,23 @@ def step1():
         print(colored("Installation of dfu-util, git and git-credential-manager-core", "green"))
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
-        if settings.dict["gcm"] == 1:
+        if settings.dict["gcm"] == "1":
             os.system("brew --cask git-credential-amanger-core")
         os_copy(origin + "/Utils", "EPuck2_Utils/Utils")
     elif os_name == "Windows":
-        if settings.dict["gcm"] == 1:
+        if settings.dict["gcm"] == "1":
             print(colored("Installation of Git for Windows", "green"))
             downloadTo(settings.dict["gcm_url"], "git_setup.exe")
             print(colored("Please install git from the external dialog that opens right now", "yellow"))
             subprocess.run("git_setup.exe")
+            if settings.dict["clear_cache"] == "1":
+                os.remove("git_setup.exe")
         os_copy(origin + "/gnutools", "EPuck2_Utils/gnutools")
         os_copy(origin + "/Utils", "EPuck2_Utils/Utils")
-
     elif os_name == "Linux":
         print(colored("Installation of make, dfu-util and git", "green"))
         os_cli("sudo apt-get install make dfu-util git")
-        if settings.dict["gcm"] == 1:
+        if settings.dict["gcm"] == "1":
             print(colored("Installation of git-credential-manager", "green"))
             downloadTo(settings.dict["gcm_url"], "gcm.deb")
             print(colored("configuring git credential manager", "green"))
@@ -110,6 +112,8 @@ def step1():
             os_cli("git-credential-manager-core configure")
             os_cli("echo \"[credential]\" >> ~/.gitconfig")
             os_cli("echo \"        credentialStore = secretservice\" >> ~/.gitconfig")
+            if settings.dict["clear_cache"] == "1":
+                os.remove("gcm.deb")
         os_copy(origin + "/Utils", "EPuck2_Utils/Utils") # VSCode installation
         os_cli("sudo adduser $USER dialout")
 
@@ -117,20 +121,31 @@ def step2():
     os.chdir(settings.dict["install_path"])
 
     file = None
-    if settings.dict["vscode_app"]:
+    filename = "vscode.zip"
+    if settings.dict["vscode_app"] == "1":
+        if os_name == "Linux":
+            filename = "vscode.tar.gz"
+        
+        if not os.path.isfile(filename):
+            downloadTo(settings.dict["vscode_url"], filename)
+        else:
+            print(colored(f"{filename} already exists, not redownloading, delete manualy if file corrupted", "green"))
+            
+
         if os_name == "Darwin":
-            downloadTo(settings.dict["vscode_url"], "vscode.zip")
-            with zipfile.ZipFile("vscode.zip", "r") as file:
+            with zipfile.ZipFile(filename, "r") as file:
                 file.extractall("EPuck2_VSCode.app")
         elif os_name == "Windows":
-            downloadTo(settings.dict["vscode_url"], "vscode.zip")
-            with zipfile.ZipFile("vscode.zip", "r") as file:
+            with zipfile.ZipFile(filename, "r") as file:
                 file.extractall("EPuck2_VSCode")
         elif os_name == "Linux":
-            downloadTo(settings.dict["vscode_url"], "vscode.tar.gz")
-            file = tarfile.open("vscode.tar.gz")
+            file = tarfile.open(filename)
             file.extractall("EPuck2_VSCode")
         file.close()
+
+        if settings.dict["clear_cache"] == "1":
+            os.remove(filename)
+        
         #TODO: verification step
         print(colored("Visual Studio Code installed", "green"))
 
@@ -139,100 +154,107 @@ def step3():
     os.chdir(settings.dict["install_path"])
 
     file = None
-    if settings.dict["arm_gcc_toolchain"]:
+    filename = "arm_gcc_toolchain.tar.bz2"
+    if settings.dict["arm_gcc_toolchain"] == "1":
+        if os_name == "Windows":
+            filename = "arm_gcc_toolchain.zip"
+    
+        if not os.path.isfile(filename):
+            downloadTo(settings.dict["arm_gcc_toolchain_url"], filename)
+        else:
+            print(colored(f"{filename} already exists, not redownloading, delete manualy if file corrupted", "green"))
+        
         if os_name == "Darwin":
-            downloadTo(settings.dict["arm_gcc_toolchain_url"], "arm_gcc_toolchain.tar.bz2")
-            with zipfile.ZipFile("arm_gcc_toolchain.tar.bz2", "r") as file:
-                file.extractall("EPuck2_Utils")
+            with zipfile.ZipFile(filename, "r") as file:
+                file.extractall("EPuck2_Utils/arm_gcc_toolchain")
         elif os_name == "Windows":
-            downloadTo(settings.dict["arm_gcc_toolchain_url"], "arm_gcc_toolchain.zip")
-            with zipfile.ZipFile("arm_gcc_toolchain.zip", "r") as file:
-                file.extractall("EPuck2_Utils")
+            with zipfile.ZipFile(filename, "r") as file:
+                file.extractall("EPuck2_Utils/arm_gcc_toolchain")
         elif os_name == "Linux":
-            downloadTo(settings.dict["arm_gcc_toolchain_url"], "arm_gcc_toolchain.tar.bz2")
-            file = tarfile.open("arm_gcc_toolchain.tar.bz2")
-            file.extractall("EPuck2_Utils")
-            file.close()
+            file = tarfile.open(filename)
+            file.extractall("EPuck2_Utils/arm_gcc_toolchain")
+        file.close()
+    
+        if settings.dict["clear_cache"] == "1":
+            os.remove(filename)
         #TODO: verification step
         print(colored("arm_gcc_toolchain installed", "green"))
-
-#TODO:
 
 if os_name == "Windows":
     make_path = settings.dict["install_path"] + "/EPuck2_Utils/gnutools/make"
 else:
     make_path = "make"
 json_settings = f'''
-{
+{{
     "extensions.autoCheckUpdates": false,
     "extensions.autoUpdate": false,
-    "gcc_arm_path": {settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major,
-    "gcc_arm_path_compiler": {settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gcc,
+    "gcc_arm_path": {settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain,
+    "gcc_arm_path_compiler": {settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc,
     "make_path": {make_path},
     "epuck2_utils": {settings.dict["install_path"]}/EPuck2_Utils/Utils,
     "install_path": {settings.dict["install_path"]},
     "workplace": {settings.dict["workplace_path"]},
-    "terminal.integrated.env ": {
-        "osx.PATH": "{settings.dict["install_path"]}/EPuck_Utils/gcc-arm_toolchain/bin:$\{env:PATH}",
-        "linux.PATH": "{settings.dict["install_path"]}/EPuck_Utils/gcc-arm_toolchain/bin:$\{env:PATH}",
-        "windows.PATH": "{settings.dict["install_path"]}/EPuck_Utils/gcc-arm_toolchain/bin;{settings.dict["install_path"]}//EPuck2_Utils//gnutools;$\{env:PATH}"
-    },
-    "cortex-debug.armToolchainPath": {
-        "osx": "{settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major/bin",
-        "windows": "{settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major/bin",
-        "linux": "{settings.dict["install_path"]}/EPuck2_Utils/gcc-arm-none-eabi-7-2017-q4-major/bin"
-    },
+    "terminal.integrated.env ": {{
+        "osx.PATH": "{settings.dict["install_path"]}/EPuck_Utils/arm_gcc_toolchain/bin:$\{{env:PATH}}",
+        "linux.PATH": "{settings.dict["install_path"]}/EPuck_Utils/arm_gcc_toolchain/bin:$\{{env:PATH}}",
+        "windows.PATH": "{settings.dict["install_path"]}/EPuck_Utils/arm_gcc_toolchain/bin;{settings.dict["install_path"]}//EPuck2_Utils//gnutools;$\{{env:PATH}}"
+    }},
+    "cortex-debug.armToolchainPath": {{
+        "osx": "{settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain/bin",
+        "windows": "{settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain/bin",
+        "linux": "{settings.dict["install_path"]}/EPuck2_Utils/arm_gcc_toolchain/bin"
+    }},
     "version": {version}
-,}
+}}
 '''
 
 if os_name == "Windows":
-    dfu-util = settings.dict["install_path"] + "EPuck2_Utils/dfu-util.exe"
+    dfu_util = settings.dict["install_path"] + "EPuck2_Utils/dfu-util.exe"
 else:
-    dfu-util = "dfu-util"
+    dfu_util = "dfu-util"
 
 json_tasks = f'''
-{
+{{
     "version": "2.0.0",
     "tasks": [
-        {
+        {{
             "label": "User:List EPuck2 ports",
             "type": "shell",
             "command": "cd {settings.dict["install_path"]}/EPuck2_Utils/Utils && ./epuck2_port_check.sh",
-            "group": {
+            "group": {{
                 "kind": "build",
                 "isDefault": true
-            },
-            "presentation": {
+            }},
+            "presentation": {{
                 "echo": false,
-            }
-        },
-       {
+            }}
+        }},
+        {{
             "label": "User:DFU EPuck-2-Main_Processor",
             "type": "shell",
-            "command": "{dfu-util} -d 0483:df11 -a 0 -s 0x08000000 -D {settings.dict["install_path"]}/EPuck2_Utils/Utils/e-puck2_main-processor.bin",
-            "group": {
+            "command": "{dfu_util} -d 0483:df11 -a 0 -s 0x08000000 -D {settings.dict["install_path"]}/EPuck2_Utils/Utils/e-puck2_main-processor.bin",
+            "group": {{
                 "kind": "build",
                 "isDefault": true
-            },
-            "presentation": {
+            }},
+            "presentation": {{
                 "echo": false,
-            }
-        },
-        {
+            }}
+        }},
+        {{
             "label": "User:Run EPuckMonitor",
             "type": "shell",
             "command": "python {settings.dict["install_path"]}/EPuck2_Utils/Utils/monitor.py",
-            "group": {
+            "group": {{
                 "kind": "build",
                 "isDefault": true
-            },
-            "presentation": {
+            }},
+            "presentation": {{
                 "echo": false,
-            }
-        }
+            }}
+        }}
     ]
-}
+}}
 '''
 #TODO: add a clone Lib task
 
@@ -240,20 +262,21 @@ json_tasks = f'''
 def step4():
     os.chdir(settings.dict["install_path"])
 
-    if settings.dict["vscode_settings"]:
+    if settings.dict["vscode_settings"] == "1":
         print(colored("vscode settings configuration option is selected, proceeding", "green"))
         exe = "./code "
-        data_dir = ""
-        bin_dir = ""
+        data_dir = settings.dict["install_path"]
+        bin_dir = settings.dict["install_path"]
         if os_name == "Darwin":
-            data_dir = "code-portable-data/"
-            bin_dir = "EPuck2_VSCode.app/Contents/Resources/app/bin/"
+            data_dir += "/code-portable-data/"
+            bin_dir += "/EPuck2_VSCode.app/Contents/Resources/app/bin/"
         elif os_name == "Windows" or os_name == "Linux":
-            data_dir = "EPuck2_VSCode/data/"
-            bin_dir = "EPuck2_VSCode/bin/"
+            data_dir += "/EPuck2_VSCode/data/"
+            bin_dir += "/EPuck2_VSCode/bin/"
             if os_name == "Windows":
                 exe = "code.exe "
-        shutil.rmtree(data_dir)
+        if os.path.isdir(data_dir):
+            shutil.rmtree(data_dir)
         os.mkdir(data_dir)
         #TODO: verifshutilication step (data_dir successfully created)
 
@@ -266,38 +289,40 @@ def step4():
         #TODO: verification step (extensions successfully installed)
 
         print(colored("writting settings.json", "green"))
-        os.chdir(settings.dict["install_path"] + data_dir + "/user-data/User/")
-        file = open("settings.json")
-        file.write(settings_json)
+        os.makedirs(data_dir + "/user-data/User/")
+        os.chdir(data_dir + "/user-data/User/")
+        file = open("settings.json", "x") #x option for create file, error if already existing
+        file.write(json_settings)
         file.close()
 
         print(colored("writting tasks.json", "green"))
-        file = open("tasks.json")
-        file.write(tasks_json)
+        file = open("tasks.json", "x") #x option for create file, error if already existing
+        file.write(json_tasks)
         file.close()
 
 def step5():
     os.chdir(settings.dict["workplace_path"])
 
-    if settings.dict["workplace_reinstall"]:
+    if settings.dict["workplace_reinstall"] == "1":
         print(colored("workplace reinstall option is selected, proceeding", "green"))
-        shutil.rmtree("EPuck2_Workplace/")
+        if os.path.isdir("EPuck2_Workplace"):
+            shutil.rmtree("EPuck2_Workplace")
         os.mkdir("EPuck2_Workplace/")
         os.chdir("EPuck2_Workplace/")
         os_cli("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
 
         folder = "Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly/"
-        is.path.isfile(folder + "package.json"):
+        if os.path.isfile(folder + "package.json"):
             os.rename(folder + "package.json", folder + "package.json-renamed-because-conflict-task-tp-4")
         #TODO: verification step (Lib actually cloned)
 
 def step6():
-    os.chdir(origin)
-
-    if settings.dict["shortcut"]:
+    os.chdir(settings.dict["install_path"] + "/EPuck2_VSCode")
+    print(settings.dict["shortcut"], type(settings.dict["shortcut"]))
+    if settings.dict["shortcut"] == "1":
         print(colored("shortcut creation selected, proceeding", "green"))
         if os_name == "Windows":
-            os.popen("cmd.exe /c \"start shortcut.bat\"")
+            os.system(f"cmd.exe /c \"start {origin}/shortcut.bat\"")
         elif os_name == "Linux":
             desktop_file = f'''
             [Desktop Entry]
@@ -314,5 +339,3 @@ def step6():
             # According to https://www.how2shout.com/linux/allow-launching-linux-desktop-shortcut-files-using-command-terminal/
             os_cli("gio set $FILE metadata::trusted true")  # Mark the shortcut status trusted
             os_cli("chmod u+x $FILE") # Then allow execution
-
-            

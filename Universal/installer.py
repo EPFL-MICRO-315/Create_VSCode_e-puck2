@@ -69,7 +69,7 @@ def init():
 def step1():
     if os_name == "Darwin":    
         print(colored("Installation of brew, dfu-util, git and git-credential-manager-core", "green"))
-        os.system(settings.dict["gcm_url"]) )
+        os.system(settings.dict["gcm_url"])
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
         if settings.dict["gcm"]:

@@ -1,16 +1,11 @@
 @echo off
-py -3 --version
-
-if errorlevel 0 goto proceed
-echo "No python version >= 3 detected!"
-echo "Aborting!"
-exit
-
-:proceed
-echo "python version >= 3 detected!"
-echo "proceeding with pre-installation"
-py -3 -m pip install --upgrade pip
-py -3 -m pip install colorama
-py -3 -m pip install termcolor
-py -3 -m pip install "kivy[base]"
-py -3 Universal/main.py
+echo "Installing pyenv if not already installed"
+Powershell.exe -ExecutionPolicy ByPass -Command "Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1' -OutFile './install-pyenv-win.ps1'; &'./install-pyenv-win.ps1'"
+echo "Installing python 3.11.2"
+cmd.exe /c "pyenv install 3.11.2"
+cmd.exe /c "pyenv local 3.11.2"
+echo "Installing packages required for installation"
+cmd.exe /c "python -m ensurepip --upgrade"
+cmd.exe /c "python -m pip install colorama termcolor "kivy[base]""
+echo "Launching the installer"
+cmd.exe /c "python Universal/main.py"

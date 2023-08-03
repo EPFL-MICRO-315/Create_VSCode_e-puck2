@@ -91,7 +91,7 @@ def step1():
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
         if settings.dict["gcm"] == "1":
-            os.system("brew --cask git-credential-amanger-core")
+            os.system("brew --cask git-credential-manager-core")
         os_copy(origin + "/Utils", "EPuck2_Utils/Utils")
     elif os_name == "Windows":
         if settings.dict["gcm"] == "1":

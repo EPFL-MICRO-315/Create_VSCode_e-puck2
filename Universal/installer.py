@@ -166,13 +166,10 @@ def step3():
         else:
             print(colored(f"{filename} already exists, not redownloading, delete manualy if file corrupted", "green"))
         
-        if os_name == "Darwin":
+        if os_name == "Windows":
             with zipfile.ZipFile(filename, "r") as file:
                 file.extractall("EPuck2_Utils/arm_gcc_toolchain")
-        elif os_name == "Windows":
-            with zipfile.ZipFile(filename, "r") as file:
-                file.extractall("EPuck2_Utils/arm_gcc_toolchain")
-        elif os_name == "Linux":
+        else:
             file = tarfile.open(filename)
             file.extractall("EPuck2_Utils/arm_gcc_toolchain")
         file.close()

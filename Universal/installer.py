@@ -84,15 +84,12 @@ def step1():
     os.chdir(settings.dict["install_path"])
 
     if os_name == "Darwin":    
-        print(colored("Installation of Homebrew required to install several utility programs", "green"))
-        os_cli("/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")
-
         print(colored("Installation of dfu-util, git and git-credential-manager-core", "green"))
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
         if settings.dict["gcm"] == "1":
             os.system("brew --cask git-credential-manager-core")
-        os_copy(origin + "/Utils", "EPuck2_Utils/Utils")
+        os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils")
     elif os_name == "Windows":
         if settings.dict["gcm"] == "1":
             print(colored("Installation of Git for Windows", "green"))
@@ -101,8 +98,8 @@ def step1():
             subprocess.run("git_setup.exe")
             if settings.dict["clear_cache"] == "1":
                 os.remove("git_setup.exe")
-        os_copy(origin + "/gnutools", "EPuck2_Utils/gnutools")
-        os_copy(origin + "/Utils", "EPuck2_Utils/Utils")
+        os_copy(origin + "/Universal/gnutools", "EPuck2_Utils/gnutools")
+        os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils")
     elif os_name == "Linux":
         print(colored("Installation of make, dfu-util and git", "green"))
         os_cli("sudo apt-get install make dfu-util git")
@@ -116,40 +113,59 @@ def step1():
             os_cli("echo \"        credentialStore = secretservice\" >> ~/.gitconfig")
             if settings.dict["clear_cache"] == "1":
                 os.remove("gcm.deb")
-        os_copy(origin + "/Utils", "EPuck2_Utils/Utils") # VSCode installation
+        os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils") # VSCode installation
         os_cli("sudo adduser $USER dialout")
 
 def step2():
     os.chdir(settings.dict["install_path"])
 
     file = None
-    filename = "vscode.zip"
+    src = "vscode.zip"
+    dest = "EPuck2_VSCode"         
+    if os_name == "Linux":
+        src = "vscode.tar.gz"
+    elif os_name == "Darwin":
+        dest = "EPuck2_Vscode.app"
+
     if settings.dict["vscode_app"] == "1":
-        if os_name == "Linux":
-            filename = "vscode.tar.gz"
-        
-        if not os.path.isfile(filename):
-            downloadTo(settings.dict["vscode_url"], filename)
-        else:
-            print(colored(f"{filename} already exists, not redownloading, delete manualy if file corrupted", "green"))
+        i = 0
+        while i < 2:
+            if not os.path.isfile(src):
+                downloadTo(settings.dict["vscode_url"], src)
+            else:
+                Logger.info(f"{src} already exists, not redownloading, delete manualy if file corrupted", "green"))
             
+            try:
+                if os_name == "Linux":
+                    file = tarfile.open(src)
+                else:
+                    file = zipfile.ZipFile(src, "r")
+                
+                if os.path.isdir(dest): 
+                    Logger.warning("Visual Studio Code already installed, deleting...")
+                    shutil.rmtree(dest)
 
-        if os_name == "Darwin":
-            with zipfile.ZipFile(filename, "r") as file:
-                file.extractall("EPuck2_VSCode.app")
-        elif os_name == "Windows":
-            with zipfile.ZipFile(filename, "r") as file:
-                file.extractall("EPuck2_VSCode")
-        elif os_name == "Linux":
-            file = tarfile.open(filename)
-            file.extractall("EPuck2_VSCode")
-        file.close()
-
-        if settings.dict["clear_cache"] == "1":
-            os.remove(filename)
+                file.extractall(dest)
+                file.close()   
+                i = 2 #stop the loop
+               
+                if settings.dict["clear_cache"] == "1":
+                    os.remove(src)
         
-        #TODO: verification step
-        print(colored("Visual Studio Code installed", "green"))
+            except:
+                Logger.error(f"Cannot extract {src}, it could have been corrupted")
+                os.remove(src)
+                if i == 0:
+                    i = 1 #give one more chance
+                    Logger.info("Retrying...")
+                else:
+                    i = 2 #stop the loop
+                    Logger.error("Max number of try exceeding, skipping...")
+    
+    if not os.path.isdir(dest): 
+        Logger.error("Visual Studio Code not installed!")
+    else:
+        Logger.info("Visual Studio Code installed!")
 
 # arm_gcc_toolchain installation
 def step3():
@@ -327,13 +343,13 @@ def step5():
         #TODO: verification step (Lib actually cloned)
 
 def step6():
-    os.chdir(settings.dict["install_path"] + "/EPuck2_VSCode")
-    print(settings.dict["shortcut"], type(settings.dict["shortcut"]))
     if settings.dict["shortcut"] == "1":
         print(colored("shortcut creation selected, proceeding", "green"))
         if os_name == "Windows":
+            os.chdir(settings.dict["install_path"] + "/EPuck2_VSCode")
             os.system(f"cmd.exe /c \"start {origin}/shortcut.bat\"")
         elif os_name == "Linux":
+            os.chdir(settings.dict["install_path"] + "/EPuck2_VSCode")
             desktop_file = f'''
             [Desktop Entry]
             Type=Application

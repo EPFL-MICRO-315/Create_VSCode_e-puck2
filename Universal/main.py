@@ -189,6 +189,7 @@ class MyApp(App):
         installer.step4()
         installer.step5()
         installer.step6()
+        Logger.info("Done!!")
         
     def uninstall(self):
         Logger.info("Uninstall")

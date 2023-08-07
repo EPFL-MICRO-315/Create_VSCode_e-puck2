@@ -1,16 +1,15 @@
-@echo off
-py -3 --version
+echo "Installing pyenv if not already installed"
+curl https://pyenv.run | bash
 
-if errorlevel 0 goto proceed
-echo "No python version >= 3 detected!"
-echo "Aborting!"
-exit
+echo "Installing python 3.11.2"
+pyenv install 3.11.2
+pyenv local 3.11.2
 
-:proceed
-echo "python version >= 3 detected!"
-echo "proceeding with pre-installation"
-py -3 -m pip install --upgrade pip
-py -3 -m pip install colorama
-py -3 -m pip install termcolor
-py -3 -m pip install "kivy[base]"
-py -3 Universal/main.py
+echo "Installing packages required for installation"
+pip install --upgrade pip
+pip install colorama
+pip install termcolor
+pip install "kivy[base]"
+
+echo "Launching the installer"
+python Universal/main.py

@@ -179,9 +179,7 @@ class MyApp(App):
         self.root.ids.page2.disabled = False
         self.root.ids.progressbar.opacity = 1
         for key in installer.settings.dict:
-            print(key, self.config.get('settings', key)) 
             installer.settings.dict[key] = self.config.get('settings', key)
-        print(installer.settings)
         installer.init_folders()
         installer.step1()
         installer.step2()
@@ -197,4 +195,5 @@ class MyApp(App):
         self.root.ids.page2.disabled = False
         self.root.ids.progressbar.opacity = 1
 
+logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
 MyApp().run()

@@ -150,6 +150,7 @@ class MyApp(App):
     use_kivy_settings = False # otherwise polluted by useless GUI settings
 
     def build(self):
+        Logger.info("Installer starting")
         root = Builder.load_string(kv)
         root.ids.console.text = console
         return root
@@ -180,6 +181,7 @@ class MyApp(App):
         self.root.ids.progressbar.opacity = 1
         for key in installer.settings.dict:
             installer.settings.dict[key] = self.config.get('settings', key)
+        Logger.info("Installation is starting!!")
         installer.init_folders()
         installer.step1()
         installer.step2()
@@ -187,7 +189,7 @@ class MyApp(App):
         installer.step4()
         installer.step5()
         installer.step6()
-        Logger.info("Done!!")
+        logging.info("Installation done!!")
         
     def uninstall(self):
         Logger.info("Uninstall")
@@ -195,5 +197,8 @@ class MyApp(App):
         self.root.ids.page2.disabled = False
         self.root.ids.progressbar.opacity = 1
 
-logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
+h = logging.FileHandler("install" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".log")
+h.setLevel(logging.INFO)
+Logger.addHandler(h)
+
 MyApp().run()

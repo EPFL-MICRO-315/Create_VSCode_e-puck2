@@ -18,6 +18,7 @@ import shutil
 from termcolor import colored
 import colorama
 from utils import *
+from kivy.logger import Logger
 
 colorama.init()
 origin = os.getcwd()
@@ -84,40 +85,35 @@ def step1():
     os.chdir(settings.dict["install_path"])
 
     if os_name == "Darwin":    
-        logging.info("Installation of Homebrew required to install several utility programs")
-        os_cli("/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")
-
-        logging.info("Installation of dfu-util, git and git-credential-manager-core")
+        Logger.info("Installation of dfu-util, git and git-credential-manager-core")
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
         if settings.dict["gcm"] == "1":
             os.system("brew --cask git-credential-manager-core")
-        os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils")
     elif os_name == "Windows":
         if settings.dict["gcm"] == "1":
-            logging.info("Installation of Git for Windows")
+            Logger.info("Installation of Git for Windows")
             downloadTo(settings.dict["gcm_url"], "git_setup.exe")
-            logging.warning("Please install git from the external dialog that opens right now")
+            Logger.warning("Please install git from the external dialog that opens right now")
             subprocess.run("git_setup.exe")
             if settings.dict["clear_cache"] == "1":
                 os.remove("git_setup.exe")
         os_copy(origin + "/Universal/gnutools", "EPuck2_Utils/gnutools")
-        os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils")
     elif os_name == "Linux":
-        logging.info("Installation of make, dfu-util and git")
+        Logger.info("Installation of make, dfu-util and git")
         os_cli("sudo apt-get install make dfu-util git")
         if settings.dict["gcm"] == "1":
-            logging.info("Installation of git-credential-manager")
+            Logger.info("Installation of git-credential-manager")
             downloadTo(settings.dict["gcm_url"], "gcm.deb")
-            logging.info("configuring git credential manager")
+            Logger.info("configuring git credential manager")
             os_cli("sudo dpkg -i gcm.deb")
             os_cli("git-credential-manager-core configure")
             os_cli("echo \"[credential]\" >> ~/.gitconfig")
             os_cli("echo \"        credentialStore = secretservice\" >> ~/.gitconfig")
             if settings.dict["clear_cache"] == "1":
                 os.remove("gcm.deb")
-        os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils") # VSCode installation
         os_cli("sudo adduser $USER dialout")
+    os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils")
 
 def step2():
     os.chdir(settings.dict["install_path"])
@@ -128,7 +124,7 @@ def step2():
     if os_name == "Linux":
         src = "vscode.tar.gz"
     elif os_name == "Darwin":
-        dest = "EPuck2_Vscode.app"
+        dest = "EPuck2_VSCode.app"
 
     if settings.dict["vscode_app"] == "1":
         i = 0
@@ -139,17 +135,23 @@ def step2():
                 Logger.info(f"{src} already exists, not redownloading, delete manualy if file corrupted")
             
             try:
-                if os_name == "Linux":
-                    file = tarfile.open(src)
-                else:
-                    file = zipfile.ZipFile(src, "r")
-                
                 if os.path.isdir(dest): 
                     Logger.warning("Visual Studio Code already installed, deleting...")
                     shutil.rmtree(dest)
 
-                file.extractall(dest)
+                if os_name == "Linux":
+                    file = tarfile.open(src)
+                    file.extractall()
+                    shutil.move("VSCode-linux-x64", dest)
+                elif os_name == "Darwin":
+                    file = zipfile.ZipFile(src, "r")
+                    file.extractall()
+                    shutil.move("Visual Studio Code.app", dest)
+                elif os_name == "Windows":
+                    file = zipfile.ZipFile(src, "r")
+                    file.extractall(dest)
                 file.close()   
+                
                 i = 2 #stop the loop
                
                 if settings.dict["clear_cache"] == "1":
@@ -175,35 +177,62 @@ def step3():
     os.chdir(settings.dict["install_path"])
 
     file = None
-    filename = "arm_gcc_toolchain.tar.bz2"
+    src = "arm_gcc_toolchain.tar.bz2"
+    dest = "EPuck2_Utils/arm_gcc_toolchain"         
+    if os_name == "Windows":
+        src = "arm_gcc_toolchain.zip"
+
     if settings.dict["arm_gcc_toolchain"] == "1":
-        if os_name == "Windows":
-            filename = "arm_gcc_toolchain.zip"
-    
-        if not os.path.isfile(filename):
-            downloadTo(settings.dict["arm_gcc_toolchain_url"], filename)
-        else:
-            print(colored(f"{filename} already exists, not redownloading, delete manualy if file corrupted", "green"))
+        i = 0
+        while i < 2:
+            if not os.path.isfile(src):
+                downloadTo(settings.dict["arm_gcc_toolchain_url"], src)
+            else:
+                Logger.info(f"{src} already exists, not redownloading, delete manualy if file corrupted")
+            
+            try:
+                if os.path.isdir(dest): 
+                    Logger.warning("arm_gcc_toolchain already installed, deleting...")
+                    shutil.rmtree(dest)
+
+                if os_name == "Windows":
+                    file = zipfile.ZipFile(src, "r")
+                    file.extractall(dest)
+                else:
+                    file = tarfile.open(src)
+                    file.extractall()
+                    shutil.move("gcc-arm-none-eabi-7-2017-q4-major", dest)
+               
+                file.close()   
+                i = 2 #stop the loop
+               
+                if settings.dict["clear_cache"] == "1":
+                    os.remove(src)
         
-        if os_name == "Windows":
-            with zipfile.ZipFile(filename, "r") as file:
-                file.extractall("EPuck2_Utils/arm_gcc_toolchain")
-        else:
-            file = tarfile.open(filename)
-            file.extractall("EPuck2_Utils/arm_gcc_toolchain")
-        file.close()
+            except:
+                Logger.error(f"Cannot extract {src}, it could have been corrupted")
+                os.remove(src)
+                if i == 0:
+                    i = 1 #give one more chance
+                    Logger.info("Retrying...")
+                else:
+                    i = 2 #stop the loop
+                    Logger.error("Max number of try exceeding, skipping...")
     
-        if settings.dict["clear_cache"] == "1":
-            os.remove(filename)
-        #TODO: verification step
-        print(colored("arm_gcc_toolchain installed", "green"))
+    if not os.path.isdir(dest): 
+        Logger.error("arm_gcc_toolchain not installed!")
+    else:
+        Logger.info("arm_gcc_toolchain installed!")
 
 if os_name == "Windows":
     make_path = settings.dict["install_path"] + "/EPuck2_Utils/gnutools/make"
+    dfu_util = settings.dict["install_path"] + "EPuck2_Utils/dfu-util.exe"
 else:
     make_path = "make"
+    dfu_util = "dfu-util"
 b1 = "\\"
 b2 = "\\\\"
+
 json_settings = f'''
 {{
     "extensions.autoCheckUpdates": false,
@@ -227,11 +256,6 @@ json_settings = f'''
     "version": "{version}"
 }}
 '''
-
-if os_name == "Windows":
-    dfu_util = settings.dict["install_path"] + "EPuck2_Utils/dfu-util.exe"
-else:
-    dfu_util = "dfu-util"
 
 json_tasks = f'''
 {{
@@ -283,7 +307,7 @@ def step4():
     os.chdir(settings.dict["install_path"])
 
     if settings.dict["vscode_settings"] == "1":
-        print(colored("vscode settings configuration option is selected, proceeding", "green"))
+        Logger.info("vscode settings configuration option is selected, proceeding")
         exe = "./code "
         data_dir = settings.dict["install_path"]
         bin_dir = settings.dict["install_path"]
@@ -298,9 +322,14 @@ def step4():
             data_dir += "/EPuck2_VSCode/data/"
             bin_dir += "/EPuck2_VSCode/bin/"
         if os.path.isdir(data_dir):
+            Logger.warning("VSCode data_dir already existing, deleting...")
             shutil.rmtree(data_dir)
         os.mkdir(data_dir)
-        #TODO: verifshutilication step (data_dir successfully created)
+ 
+        if not os.path.isdir(data_dir): 
+            Logger.error("VSCode data_dir not created!")
+        else:
+            Logger.info("VSCode data_dir created!")
 
         os.chdir(bin_dir)
         os_cli(exe + "--install-extension marus25.cortex-debug@1.4.4 --force")
@@ -310,21 +339,33 @@ def step4():
         os_cli(exe + "--install-extension git-graph.4.4 --force")
         #TODO: verification step (extensions successfully installed)
 
-        print(colored("writting settings.json", "green"))
+        # settings.json
+        Logger.info("writting settings.json")
         os.makedirs(data_dir + "/user-data/User/")
         os.chdir(data_dir + "/user-data/User/")
         if os.isfile("settings.json"):
+            Logger.warning("VSCode settings.json already existing, deleting...")
             os.remove("settings.json")
         file = open("settings.json", "x") #x option for create file, error if already existing
         file.write(json_settings)
         file.close()
+        if not os.path.isfile(data_dir + "/user-data/User/settings.json"): 
+            Logger.error("VSCode settings.json not created!")
+        else:
+            Logger.info("VSCode settings.json created!")
 
-        print(colored("writting tasks.json", "green"))
+        # tasks.json
+        Logger.info("writting tasks.json")
         if os.isfile("tasks.json"):
+            Logger.warning("VSCode tasks.json already existing, deleting...")
             os.remove("tasks.json")
         file = open("tasks.json", "x") #x option for create file, error if already existing
         file.write(json_tasks)
         file.close()
+        if not os.path.isdir(data_dir + "/user-data/User/tasks.json"): 
+            Logger.error("VSCode tasks.json not created!")
+        else:
+            Logger.info("VSCode tasks.json created!")
 
 def step5():
     os.chdir(settings.dict["workplace_path"])

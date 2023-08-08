@@ -6,7 +6,7 @@ from termcolor import colored
 import requests
 import tarfile
 import shutil
-import logging
+from kivy.logger import Logger
 
 def downloadTo(url, filename, max_try=5):
     """
@@ -43,23 +43,23 @@ def downloadTo(url, filename, max_try=5):
                     break
             except Exception:
                 i += 1
-                logging.error("fail downloading, retry in 1 seconds")
+                Logger.error("fail downloading, retry in 1 seconds")
                 time.sleep(1)
 
 def os_cli(command):
-    logging.info("executing " + command)
+    Logger.info("executing " + command)
     os.system(command)
 
 def os_copy(src, dest):
     if os.path.isdir(dest):
-        logging.warning("deleting already existing destination : " + dest)
+        Logger.warning("deleting already existing destination : " + dest)
         shutil.rmtree(dest)
     if not os.path.isdir(src):
-        logging.error("invalid source folder to copy: " + src)
+        Logger.error("invalid source folder to copy: " + src)
     else:
-        logging.info("copying " + src + " to " + dest)
+        Logger.info("copying " + src + " to " + dest)
         shutil.copytree(src, dest)
     if not os.path.isdir(dest):
-        logging.error("failed to copy folder to " + dest)
+        Logger.error("failed to copy folder to " + dest)
     else:
-        logging.info("copied " + dest)
+        Logger.info("copied " + dest)

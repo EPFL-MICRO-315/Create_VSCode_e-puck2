@@ -1,3 +1,4 @@
+#!/bin/zsh
 if ! command -v brew &> /dev/null
 then
 	echo "brew not found, installing"
@@ -23,7 +24,7 @@ echo "reloading the shell"
 source ~/.zshrc
 
 echo "Installing python 3.11.2"
-pyenv install 3.11.2
+pyenv install -s 3.11.2
 pyenv local 3.11.2
 
 echo "Installing packages required for installation"

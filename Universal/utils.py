@@ -6,6 +6,7 @@ from termcolor import colored
 import requests
 import tarfile
 import shutil
+import logging
 
 def downloadTo(url, filename, max_try=5):
     """
@@ -42,36 +43,23 @@ def downloadTo(url, filename, max_try=5):
                     break
             except Exception:
                 i += 1
-                print(colored("fail downloading, retry in 1 seconds", "red"))
+                logging.error("fail downloading, retry in 1 seconds")
                 time.sleep(1)
 
-        try:
-            downloadTo("https://update.code.visualstudio.com/latest/linux-x64/stable", "vscode.tar.gz")
-            file = tarfile.open("vscode.tar.gz")
-            file.extractall("./")
-            file.close()
-            os.mkdir("./folder1")
-        except FileExistsError:
-            print("folder1 already existing")
-        f = open("folder1/file.md", "w")
-        f.write("#Hello world\nThis is a new line!")
-        f.close()
-        os.system("git -v")
-
 def os_cli(command):
-    print(colored("executing " + command, "green"))
+    logging.info("executing " + command)
     os.system(command)
 
 def os_copy(src, dest):
     if os.path.isdir(dest):
-        print(colored("deleting already existing destination : " + dest, "red"))
+        logging.warning("deleting already existing destination : " + dest)
         shutil.rmtree(dest)
     if not os.path.isdir(src):
-        print(colored("invalid source folder to copy: " + src, "red"))
+        logging.error("invalid source folder to copy: " + src)
     else:
-        print(colored("copying " + src + " to " + dest, "green"))
+        logging.info("copying " + src + " to " + dest)
         shutil.copytree(src, dest)
     if not os.path.isdir(dest):
-        print(colored("failed to copy folder to " + dest, "red"))
+        logging.error("failed to copy folder to " + dest)
     else:
-        print(colored("copied " + dest, "green"))
+        logging.info("copied " + dest)

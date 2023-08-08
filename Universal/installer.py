@@ -84,10 +84,10 @@ def step1():
     os.chdir(settings.dict["install_path"])
 
     if os_name == "Darwin":    
-        print(colored("Installation of Homebrew required to install several utility programs", "green"))
+        logging.info("Installation of Homebrew required to install several utility programs")
         os_cli("/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")
 
-        print(colored("Installation of dfu-util, git and git-credential-manager-core", "green"))
+        logging.info("Installation of dfu-util, git and git-credential-manager-core")
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
         if settings.dict["gcm"] == "1":
@@ -95,21 +95,21 @@ def step1():
         os_copy(origin + "/Utils", "EPuck2_Utils/Utils")
     elif os_name == "Windows":
         if settings.dict["gcm"] == "1":
-            print(colored("Installation of Git for Windows", "green"))
+            logging.info("Installation of Git for Windows")
             downloadTo(settings.dict["gcm_url"], "git_setup.exe")
-            print(colored("Please install git from the external dialog that opens right now", "yellow"))
+            logging.warning("Please install git from the external dialog that opens right now")
             subprocess.run("git_setup.exe")
             if settings.dict["clear_cache"] == "1":
                 os.remove("git_setup.exe")
         os_copy(origin + "/gnutools", "EPuck2_Utils/gnutools")
         os_copy(origin + "/Utils", "EPuck2_Utils/Utils")
     elif os_name == "Linux":
-        print(colored("Installation of make, dfu-util and git", "green"))
+        logging.info("Installation of make, dfu-util and git")
         os_cli("sudo apt-get install make dfu-util git")
         if settings.dict["gcm"] == "1":
-            print(colored("Installation of git-credential-manager", "green"))
+            logging.info("Installation of git-credential-manager")
             downloadTo(settings.dict["gcm_url"], "gcm.deb")
-            print(colored("configuring git credential manager", "green"))
+            logging.info("configuring git credential manager")
             os_cli("sudo dpkg -i gcm.deb")
             os_cli("git-credential-manager-core configure")
             os_cli("echo \"[credential]\" >> ~/.gitconfig")
@@ -122,17 +122,16 @@ def step1():
 def step2():
     os.chdir(settings.dict["install_path"])
 
-    file = None
-    filename = "vscode.zip"
     if settings.dict["vscode_app"] == "1":
+        file = None
+        filename = "vscode.zip"
         if os_name == "Linux":
             filename = "vscode.tar.gz"
         
         if not os.path.isfile(filename):
             downloadTo(settings.dict["vscode_url"], filename)
         else:
-            print(colored(f"{filename} already exists, not redownloading, delete manualy if file corrupted", "green"))
-            
+            logging.warning(f"{filename} already exists, not redownloading, delete manualy if file corrupted")
 
         if os_name == "Darwin":
             with zipfile.ZipFile(filename, "r") as file:
@@ -149,7 +148,7 @@ def step2():
             os.remove(filename)
         
         #TODO: verification step
-        print(colored("Visual Studio Code installed", "green"))
+        logging.info("Visual Studio Code installed")
 
 # arm_gcc_toolchain installation
 def step3():

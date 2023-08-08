@@ -133,7 +133,7 @@ def step2():
             if not os.path.isfile(src):
                 downloadTo(settings.dict["vscode_url"], src)
             else:
-                Logger.info(f"{src} already exists, not redownloading, delete manualy if file corrupted", "green"))
+                Logger.info(f"{src} already exists, not redownloading, delete manualy if file corrupted")
             
             try:
                 if os_name == "Linux":

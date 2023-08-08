@@ -4,11 +4,13 @@ from kivy.uix.label import Label
 from kivy.logger import Logger
 from kivy.lang import Builder
 from kivy.config import Config
+from kivy.clock import Clock
 
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 Config.set('kivy', 'exit_on_escape', '0')
 import logging
 import installer
+import random
 from utils import *
 
 console = "\n"
@@ -176,6 +178,8 @@ class MyApp(App):
         self.root.ids.console.text = console
 
     def install(self):
+        Clock.schedule_interval(self.wip, 0.5)
+        self.root.ids.progressbar.value = 500
         self.root.ids.page1.disabled = True
         self.root.ids.page2.disabled = False
         self.root.ids.progressbar.opacity = 1
@@ -184,10 +188,15 @@ class MyApp(App):
         Logger.info("Installation is starting!!")
         installer.init_folders()
         installer.step1()
+        time.sleep(1)
         installer.step2()
+        time.sleep(1)
         installer.step3()
+        time.sleep(1)
         installer.step4()
+        time.sleep(1)
         installer.step5()
+        time.sleep(1)
         installer.step6()
         logging.info("Installation done!!")
         
@@ -196,6 +205,10 @@ class MyApp(App):
         self.root.ids.page1.disabled = True
         self.root.ids.page2.disabled = False
         self.root.ids.progressbar.opacity = 1
+
+    def wip(self, *largs):
+        self.root.ids.progressbar.value = random.random() * 1000
+
 
 h = logging.FileHandler("install" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".log")
 h.setLevel(logging.INFO)

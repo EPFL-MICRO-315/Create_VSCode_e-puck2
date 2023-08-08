@@ -1,16 +1,36 @@
-@echo off
-py -3 --version
+if ! command -v brew &> /dev/null
+then
+	echo "brew not found, installing"
+	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+fi	
+echo "updating brew"
+brew update
 
-if errorlevel 0 goto proceed
-echo "No python version >= 3 detected!"
-echo "Aborting!"
-exit
+if ! command -v pyenv &> /dev/null
+then
+	echo "pyenv not found, installing" 
+	brew install pyenv
+else
+	echo "pyenv already installed"
+fi
 
-:proceed
-echo "python version >= 3 detected!"
-echo "proceeding with pre-installation"
-py -3 -m pip install --upgrade pip
-py -3 -m pip install colorama
-py -3 -m pip install termcolor
-py -3 -m pip install "kivy[base]"
-py -3 Universal/main.py
+echo "Configuring pyenv"
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+
+echo "reloading the shell"
+source ~/.zshrc
+
+echo "Installing python 3.11.2"
+pyenv install 3.11.2
+pyenv local 3.11.2
+
+echo "Installing packages required for installation"
+pip install --upgrade pip
+pip install colorama
+pip install termcolor
+pip install "kivy[base]"
+
+echo "Launching the installer"
+python Universal/main.py

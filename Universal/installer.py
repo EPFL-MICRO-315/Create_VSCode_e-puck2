@@ -142,15 +142,15 @@ def step2():
                 if os_name == "Linux":
                     file = tarfile.open(src)
                     file.extractall()
+                    file.close()
                     shutil.move("VSCode-linux-x64", dest)
                 elif os_name == "Darwin":
-                    file = zipfile.ZipFile(src, "r")
-                    file.extractall()
+                    os_cli(f"unzip {src}") #doesn't use the zipfile function cause it looses the file permissions
                     shutil.move("Visual Studio Code.app", dest)
                 elif os_name == "Windows":
                     file = zipfile.ZipFile(src, "r")
                     file.extractall(dest)
-                file.close()   
+                    file.close()   
                 
                 i = 2 #stop the loop
                
@@ -243,16 +243,18 @@ json_settings = f'''
     "epuck2_utils": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/Utils",
     "install_path": "{settings.dict["install_path"].replace(b1, b2)}",
     "workplace": "{settings.dict["workplace_path"].replace(b1, b2)}",
-    "terminal.integrated.env ": {{
-        "osx.PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck_Utils/arm_gcc_toolchain/bin:${{env:PATH}}",
-        "linux.PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck_Utils/arm_gcc_toolchain/bin:${{env:PATH}}",
-        "windows.PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck_Utils/arm_gcc_toolchain/bin;{settings.dict["install_path"]}//EPuck2_Utils//gnutools;${{env:PATH}}"
+    "terminal.integrated.env.osx": {{
+        "PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
     }},
-    "cortex-debug.armToolchainPath": {{
-        "osx": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-        "windows": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-        "linux": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin"
+    "terminal.integrated.env.linux": {{
+        "PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
     }},
+    "terminal.integrated.env.windows": {{
+        "PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin;{settings.dict["install_path"]}//EPuck2_Utils//gnutools;${{env:PATH}}"
+    }},
+    "cortex-debug.armToolchainPath.osx": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+    "cortex-debug.armToolchainPath.windows": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+    "cortex-debug.armToolchainPath,linux": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
     "version": "{version}"
 }}
 '''
@@ -336,14 +338,16 @@ def step4():
         os_cli(exe + "--install-extension ms-vscode.cpptools --force")
         os_cli(exe + "--install-extension forbeslindesay.forbeslindesay-taskrunner --force")
         os_cli(exe + "--install-extension tomoki1207.pdf --force")
-        os_cli(exe + "--install-extension git-graph.4.4 --force")
+        os_cli(exe + "--install-extension mhutchie.git-graph --force")
         #TODO: verification step (extensions successfully installed)
+
+        if not os.path.exists(data_dir + "/user-data/User/"):
+            os.makedirs(data_dir + "/user-data/User/")
+        os.chdir(data_dir + "/user-data/User/")
 
         # settings.json
         Logger.info("writting settings.json")
-        os.makedirs(data_dir + "/user-data/User/")
-        os.chdir(data_dir + "/user-data/User/")
-        if os.isfile("settings.json"):
+        if os.path.isfile("settings.json"):
             Logger.warning("VSCode settings.json already existing, deleting...")
             os.remove("settings.json")
         file = open("settings.json", "x") #x option for create file, error if already existing
@@ -356,13 +360,13 @@ def step4():
 
         # tasks.json
         Logger.info("writting tasks.json")
-        if os.isfile("tasks.json"):
+        if os.path.isfile("tasks.json"):
             Logger.warning("VSCode tasks.json already existing, deleting...")
             os.remove("tasks.json")
         file = open("tasks.json", "x") #x option for create file, error if already existing
         file.write(json_tasks)
         file.close()
-        if not os.path.isdir(data_dir + "/user-data/User/tasks.json"): 
+        if not os.path.isfile(data_dir + "/user-data/User/tasks.json"): 
             Logger.error("VSCode tasks.json not created!")
         else:
             Logger.info("VSCode tasks.json created!")

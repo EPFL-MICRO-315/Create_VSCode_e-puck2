@@ -395,7 +395,7 @@ def step6():
         print(colored("shortcut creation selected, proceeding", "green"))
         if os_name == "Windows":
             os.chdir(settings.dict["install_path"] + "/EPuck2_VSCode")
-            os.system(f"cmd.exe /c \"start {origin}/shortcut.bat\"")
+            os.system(f"cmd.exe /c \"start {origin}/Universal/shortcut.bat\"")
         elif os_name == "Linux":
             os.chdir(settings.dict["install_path"] + "/EPuck2_VSCode")
             desktop_file = f'''

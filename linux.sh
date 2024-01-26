@@ -4,9 +4,9 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 function install() {
-	# Check if required
-	#sudo apt-get update
-	#sudo apt-get install zlib1g-dev
+	echo -e "${GREEN}Installing required packages${NC}"
+	sudo apt-get update
+	sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev
 
 	if ! command -v pyenv &> /dev/null
 	then
@@ -71,7 +71,13 @@ case "$1" in
     install|'')
         install
         ;;
-    *)
+    help)
+		echo -e "This installer script is made for Ubuntu"
+		echo -e "It should works on most debian based distributions as well"
+		echo -e "In case the script is not working on your host (e.g: Nixos, Archlinux), we invite you to use Distrobox"
+		echo -e "\nUse 'install' or 'uninstall'"
+		;;
+	*)
         echo -e "${GREEN}Invalid argument. Use 'install' or 'uninstall'${NC}"
         ;;
 esac

@@ -1,13 +1,12 @@
 version = "V2.0 alpha"
 f"""
-Description: This script performs data preprocessing tasks for a machine learning project.
 Authors: Antoine Vincent Martin, Daniel Burnier
 Date Created: August, 2022
 Date Modified: July 31, 2023
 Version: {version}
-Python Version: 3.10.12
-Dependencies: kivy, termcolor
-License: WTFPL
+Python Version:
+Dependencies:
+License:
 """
 
 import os
@@ -73,6 +72,7 @@ class Settings:
 settings = Settings()
 
 def init_folders():
+    Logger.info("Creating folders")
     if not os.path.exists(settings.dict["install_path"]):
         os.makedirs(settings.dict["install_path"])
     if not os.path.exists(settings.dict["install_path"] + "/EPuck2_Utils/"):
@@ -101,7 +101,7 @@ def step1():
         os_copy(origin + "/Universal/gnutools", "EPuck2_Utils/gnutools")
     elif os_name == "Linux":
         Logger.info("Installation of make, dfu-util and git")
-        os_cli("sudo apt-get install make dfu-util git")
+        os_cli("sudo apt-get -y install make dfu-util git")
         if settings.dict["gcm"] == "1":
             Logger.info("Installation of git-credential-manager")
             downloadTo(settings.dict["gcm_url"], "gcm.deb")
@@ -118,7 +118,6 @@ def step1():
 def step2():
     os.chdir(settings.dict["install_path"])
 
-    file = None
     src = "vscode.zip"
     dest = "EPuck2_VSCode"         
     if os_name == "Linux":
@@ -127,8 +126,7 @@ def step2():
         dest = "EPuck2_VSCode.app"
 
     if settings.dict["vscode_app"] == "1":
-        i = 0
-        while i < 2:
+        for attempt in range(2):
             if not os.path.isfile(src):
                 downloadTo(settings.dict["vscode_url"], src)
             else:
@@ -140,51 +138,45 @@ def step2():
                     shutil.rmtree(dest)
 
                 if os_name == "Linux":
-                    file = tarfile.open(src)
-                    file.extractall()
-                    file.close()
+                    with tarfile.open(src) as file:
+                        file.extractall()
                     shutil.move("VSCode-linux-x64", dest)
                 elif os_name == "Darwin":
                     os_cli(f"unzip {src}") #doesn't use the zipfile function cause it looses the file permissions
                     shutil.move("Visual Studio Code.app", dest)
                 elif os_name == "Windows":
-                    file = zipfile.ZipFile(src, "r")
-                    file.extractall(dest)
-                    file.close()   
-                
-                i = 2 #stop the loop
+                    with zipfile.ZipFile(src, "r") as file:
+                        file.extractall(dest)
                
                 if settings.dict["clear_cache"] == "1":
                     os.remove(src)
         
-            except:
-                Logger.error(f"Cannot extract {src}, it could have been corrupted")
+                break #stop the loop if no error occured
+
+            except Exception as e:
+                Logger.error(f"Cannot extract {src}, it could have been corrupted. Error: {str(e)}")
                 os.remove(src)
-                if i == 0:
-                    i = 1 #give one more chance
+                if attempt == 0:
                     Logger.info("Retrying...")
                 else:
-                    i = 2 #stop the loop
                     Logger.error("Max number of try exceeding, skipping...")
     
     if not os.path.isdir(dest): 
         Logger.error("Visual Studio Code not installed!")
     else:
-        Logger.info("Visual Studio Code installed!")
+        Logger.info("Visual Studio Code is installed!")
 
 # arm_gcc_toolchain installation
 def step3():
     os.chdir(settings.dict["install_path"])
 
-    file = None
     src = "arm_gcc_toolchain.tar.bz2"
     dest = "EPuck2_Utils/arm_gcc_toolchain"         
     if os_name == "Windows":
         src = "arm_gcc_toolchain.zip"
 
     if settings.dict["arm_gcc_toolchain"] == "1":
-        i = 0
-        while i < 2:
+        for attempt in range(2):
             if not os.path.isfile(src):
                 downloadTo(settings.dict["arm_gcc_toolchain_url"], src)
             else:
@@ -196,27 +188,26 @@ def step3():
                     shutil.rmtree(dest)
 
                 if os_name == "Windows":
-                    file = zipfile.ZipFile(src, "r")
-                    file.extractall(dest)
+                    with zipfile.ZipFile(src, "r") as file:
+                        file.extractall(dest)
                 else:
-                    file = tarfile.open(src)
-                    file.extractall()
+                    with tarfile.open(src) as file:
+                        file.extractall()
                     shutil.move("gcc-arm-none-eabi-7-2017-q4-major", dest)
                
-                file.close()   
-                i = 2 #stop the loop
+                file.close()
                
                 if settings.dict["clear_cache"] == "1":
                     os.remove(src)
         
-            except:
-                Logger.error(f"Cannot extract {src}, it could have been corrupted")
+                break #stop the loop if no error occured
+
+            except Exception as e:
+                Logger.error(f"Cannot extract {src}, it could have been corrupted. Error: {str(e)}")
                 os.remove(src)
-                if i == 0:
-                    i = 1 #give one more chance
+                if attempt == 0:
                     Logger.info("Retrying...")
                 else:
-                    i = 2 #stop the loop
                     Logger.error("Max number of try exceeding, skipping...")
     
     if not os.path.isdir(dest): 
@@ -323,6 +314,7 @@ def step4():
         elif os_name == "Linux":
             data_dir += "/EPuck2_VSCode/data/"
             bin_dir += "/EPuck2_VSCode/bin/"
+        
         if os.path.isdir(data_dir):
             Logger.warning("VSCode data_dir already existing, deleting...")
             shutil.rmtree(data_dir)
@@ -350,9 +342,12 @@ def step4():
         if os.path.isfile("settings.json"):
             Logger.warning("VSCode settings.json already existing, deleting...")
             os.remove("settings.json")
-        file = open("settings.json", "x") #x option for create file, error if already existing
-        file.write(json_settings)
-        file.close()
+        try:
+            with open("settings.json", "x") as file: #x option for create file, error if already existing
+                file.write(json_settings)
+        except Exception as e:
+            Logger.error(f"Error writing to settings.json: {str(e)}")
+
         if not os.path.isfile(data_dir + "/user-data/User/settings.json"): 
             Logger.error("VSCode settings.json not created!")
         else:
@@ -363,9 +358,12 @@ def step4():
         if os.path.isfile("tasks.json"):
             Logger.warning("VSCode tasks.json already existing, deleting...")
             os.remove("tasks.json")
-        file = open("tasks.json", "x") #x option for create file, error if already existing
-        file.write(json_tasks)
-        file.close()
+        try:
+            with open("tasks.json", "x") as file: #x option for create file, error if already existing
+                file.write(json_tasks)
+        except Exception as e:
+            Logger.error(f"Error writing to tasks.json: {str(e)}")
+
         if not os.path.isfile(data_dir + "/user-data/User/tasks.json"): 
             Logger.error("VSCode tasks.json not created!")
         else:

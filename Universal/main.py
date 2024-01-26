@@ -185,6 +185,7 @@ class MyApp(App):
         self.root.ids.progressbar.opacity = 1
         for key in installer.settings.dict:
             installer.settings.dict[key] = self.config.get('settings', key)
+        
         Logger.info("Installation is starting!!")
         installer.init_folders()
         installer.step1()

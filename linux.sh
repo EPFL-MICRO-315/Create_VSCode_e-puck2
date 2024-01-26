@@ -11,7 +11,7 @@ line3='eval "$(pyenv init -)"' #for .bashrc, .profile, .bash_profile
 function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
 	sudo apt-get update
-	sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev libmtdev-dev
+	sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev libmtdev-dev libglib2.0-dev libnss3-dev libatk1.0-dev libatk-bridge2.0-dev libgtk-3-dev libasound-dev
 
 	if ! command -v pyenv &> /dev/null
 	then

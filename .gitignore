@@ -3,3 +3,4 @@
 install-pyenv-win.ps1
 .python-version
 **/android.txt
+*.log

@@ -11,7 +11,7 @@ line3='eval "$(pyenv init -)"' #for .bashrc, .profile, .bash_profile
 function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
 	sudo apt-get update
-	sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev
+	sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev libmtdev-dev
 
 	if ! command -v pyenv &> /dev/null
 	then
@@ -53,8 +53,8 @@ function install() {
 	pip install termcolor
 	pip install "kivy[base]"
 
-	#echo "Launching the installer"
-	#python Universal/ain.py
+	echo -e "${GREEN}Launching the installer${NC}"
+	python Universal/main.py
 }
 
 function uninstall() {

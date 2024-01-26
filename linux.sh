@@ -2,6 +2,11 @@
 
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
+	
+line1='export PYENV_ROOT="$HOME/.pyenv"' #for .bashrc, .profile, .bash_profile
+line2='command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' #for .bashrc, .profile
+line4='[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' #for .bash_profile
+line3='eval "$(pyenv init -)"' #for .bashrc, .profile, .bash_profile
 
 function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
@@ -17,12 +22,6 @@ function install() {
 	fi
 
 	echo -e "${GREEN}Configuring pyenv, adding to path (.bashrc, .profile, .bash_profile)${NC}"
-
-	line1='export PYENV_ROOT="$HOME/.pyenv"' #for .bashrc, .profile, .bash_profile
-	line2='command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' #for .bashrc, .profile
-	line4='[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' #for .bash_profile
-	line3='eval "$(pyenv init -)"' #for .bashrc, .profile, .bash_profile
-
 	if ! grep -q -e "$line1" -e "$line2" -e "$line3" ~/.bashrc; then
 		echo "$line1" >> ~/.bashrc
 		echo "$line2" >> ~/.bashrc
@@ -36,7 +35,7 @@ function install() {
 	fi
 
 	if ! grep -q -e "$line1" -e "$line4" -e "$line3" ~/.bash_profile; then
-		echo "$line1" >> ~/.
+		echo "$line1" >> ~/.bash_profile
 		echo "$line4" >> ~/.bash_profile
 		echo "$line3" >> ~/.bash_profile
 	fi
@@ -55,13 +54,33 @@ function install() {
 	pip install "kivy[base]"
 
 	#echo "Launching the installer"
-	#python Universal/main.py
+	#python Universal/ain.py
 }
 
 function uninstall() {
-	echo -e "${GREEN}Uninstalling not yet implemented${NC}"
+	echo -e "${GREEN}Uninstalling of VSCode-Epuck2 not yet implemented${NC}"
 
-	# remove the lines from .bashrc, .profile, .bash_profile
+	echo -e "${GREEN}Do you want to uninstall pyenv? (yes/no)${NC}"
+    read response
+    if [ "$response" = "yes" ]; then
+        echo -e "${GREEN}Uninstalling pyenv and related packages${NC}"
+        rm -rf ~/.pyenv
+
+        # remove the lines from .bashrc, .profile, .bash_profile
+        sed -i "/${line1//\//\\/}/d" ~/.bashrc
+        sed -i "/${line2//\//\\/}/d" ~/.bashrc
+        sed -i "/${line3//\//\\/}/d" ~/.bashrc
+
+        sed -i "/${line1//\//\\/}/d" ~/.profile
+        sed -i "/${line2//\//\\/}/d" ~/.profile
+        sed -i "/${line3//\//\\/}/d" ~/.profile
+
+		sed -i "/${line1//\//\\/}/d" ~/.bash_profile
+        sed -i "/${line4//\//\\/}/d" ~/.bash_profile
+        sed -i "/${line3//\//\\/}/d" ~/.bash_profile
+    else
+        echo -e "${GREEN}Skipping pyenv uninstallation${NC}"
+    fi
 }
 
 case "$1" in

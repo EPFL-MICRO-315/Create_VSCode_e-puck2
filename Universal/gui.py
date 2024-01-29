@@ -1,7 +1,9 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import logging
 import time
+import platform
 
+os_name = platform.system()
 fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url' ]
         
 class ClassWizard(QtWidgets.QWizard):
@@ -142,7 +144,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         vscode_urlEdit = QtWidgets.QLineEdit()
         arm_urlDescription = QtWidgets.QLabel("ARM Toolchain download URL:")
         arm_urlEdit = QtWidgets.QLineEdit()
-        gcm_urlDescription = QtWidgets.QLabel("GCM (Github Credential Manager) download URL:")
+        gcm_urlDescription = QtWidgets.QLabel("GCM (Github Credential Manager) download command:")
         gcm_urlEdit = QtWidgets.QLineEdit()
         
         self.registerField('vscode',          vscode)
@@ -155,6 +157,19 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         self.registerField('vscode_url',      vscode_urlEdit)
         self.registerField('arm_url',         arm_urlEdit)
         self.registerField('gcm_url',         gcm_urlEdit)
+
+        if os_name == "Darwin":
+            vscode_urlEdit.setText("https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal")
+            arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2")
+            gcm_urlEdit.setText("curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")
+        elif os_name == "Windows":
+            vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/win32-x64-archive/stable")
+            arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip")
+            gcm_urlEdit.setText("https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe")
+        elif os_name == "Linux":
+            vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/linux-x64/stable")
+            arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2")
+            gcm_urlEdit.setText("https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb")
 
         urlBoxL = QtWidgets.QVBoxLayout()
         urlBoxL.addWidget(vscode_urlDescription)
@@ -170,8 +185,6 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         layout.addWidget(urlBox)
         
         self.setLayout(layout)
-
-       
                            
 class ProceedPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
@@ -206,10 +219,9 @@ class InstallPage(QtWidgets.QWizardPage):
         self.setLayout(layout)
 
     def initializePage(self):
-        logging.info("Settings summary: ")
+        logging.warning("Settings summary: ")
         for f in fields:
             logging.info(f + ": " + str(self.field(f)))
-            print(f + ": " + str(self.field(f)))
 
     def isComplete(self):
         return False
@@ -219,8 +231,7 @@ if __name__ == '__main__':
 
     log_file = "install-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".log"
     logging.basicConfig(filename=log_file, encoding='utf-8', level=logging.INFO)
-    logging.debug("Log saved at: " + log_file)
-    #logging.debug("Installation starting")
+    logging.warning("Log saved at: " + log_file)
     
     app = QtWidgets.QApplication(sys.argv)
     wizard = ClassWizard()

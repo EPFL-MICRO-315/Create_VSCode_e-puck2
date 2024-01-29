@@ -111,10 +111,11 @@ def step1():
                 os.remove("gcm.deb")
         os_cli("sudo adduser $USER dialout")
     os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils")
+    return True
 
 def step2():
     os.chdir(settings.dict["install_path"])
-
+    success = True
     src = "vscode.zip"
     dest = "EPuck2_VSCode"         
     if os_name == "Linux":
@@ -157,11 +158,14 @@ def step2():
                     logging.info("Retrying...")
                 else:
                     logging.error("Max number of try exceeding, skipping...")
+                    success = False
     
     if not os.path.isdir(dest): 
         logging.error("Visual Studio Code not installed!")
+        success = False
     else:
         logging.info("Visual Studio Code is installed!")
+    return success
 
 # arm_gcc_toolchain installation
 def step3():
@@ -211,6 +215,7 @@ def step3():
         logging.error("arm_gcc_toolchain not installed!")
     else:
         logging.info("arm_gcc_toolchain installed!")
+    return not True
 
 if os_name == "Windows":
     make_path = settings.dict["install_path"] + "/EPuck2_Utils/gnutools/make"
@@ -365,6 +370,7 @@ def step4():
             logging.error("VSCode tasks.json not created!")
         else:
             logging.info("VSCode tasks.json created!")
+    return True
 
 def step5():
     os.chdir(settings.dict["workplace_path"])
@@ -384,6 +390,7 @@ def step5():
         if os.path.isfile(folder + "package.json"):
             os.rename(folder + "package.json", folder + "package.json-renamed-because-conflict-task-tp-4")
         #TODO: verification step (Lib actually cloned)
+    return True
 
 def step6():
     if settings.dict["shortcut"] == "1":
@@ -408,3 +415,4 @@ def step6():
             # According to https://www.how2shout.com/linux/allow-launching-linux-desktop-shortcut-files-using-command-terminal/
             os_cli("gio set $FILE metadata::trusted true")  # Mark the shortcut status trusted
             os_cli("chmod u+x $FILE") # Then allow execution
+    return True

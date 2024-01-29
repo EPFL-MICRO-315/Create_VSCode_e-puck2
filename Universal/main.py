@@ -18,7 +18,7 @@ class ClassWizard(QtWidgets.QWizard):
         self.addPage(ProceedPage())
         self.addPage(InstallPage())
         
-        px = QtGui.QPixmap('e-puck2.png')
+        px = QtGui.QPixmap('Universal/e-puck2.png')
         px = px.scaled(250, 250, QtCore.Qt.KeepAspectRatio);
         self.setPixmap(QtWidgets.QWizard.WatermarkPixmap, px)
         
@@ -202,12 +202,13 @@ class ProceedPage(QtWidgets.QWizardPage):
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(label)
         self.setLayout(layout)
-    
+        self.setCommitPage(True)
+        self.setButtonText(QtWidgets.QWizard.CommitButton, "Install")
 
 class InstallPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super(InstallPage, self).__init__(parent)
-
+        self.hasDone = False
         self.setTitle("Installation in progress") 
 
         self.label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
@@ -236,12 +237,13 @@ class InstallPage(QtWidgets.QWizardPage):
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.run)
         self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.finished.connect(self.hasDoneF)
+        self.thread.finished.connect(self.hasDoneF)
         self.worker.progress.connect(self.reportProgress)
         self.thread.start()
 
     def updateConsole(self, text):
+        
         # Parse the log level from the text
         log_level = text.split(":")[0]
 
@@ -268,8 +270,18 @@ class InstallPage(QtWidgets.QWizardPage):
     def reportProgress(self, n):
         self.progress.setValue(n)
         
+    def hasDoneF(self):
+        try:
+            self.worker.deleteLater()
+        except:
+            pass
+
+        self.setTitle("Installation completed") 
+        self.completeChanged.emit()
+        self.hasDone = True
+
     def isComplete(self):
-        return False
+        return self.hasDone
     
 class Worker(QObject):
     finished = pyqtSignal()
@@ -277,17 +289,30 @@ class Worker(QObject):
 
     def run(self):
         self.progress.emit(1)
-        step1()
+        
+        if(not step1()):
+            self.finished.emit()
+            return
         self.progress.emit(2)
-        step2()
+        if(not step2()):
+            self.finished.emit()
+            return
         self.progress.emit(3)
-        step3()
+        if(not step3()):
+            self.finished.emit()
+            return
         self.progress.emit(4)
-        step4()
+        if(not step4()):
+            self.finished.emit()
+            return
         self.progress.emit(5)
-        step5()
+        if(not step5()):
+            self.finished.emit()
+            return
         self.progress.emit(6)
-        step6()
+        if(not step6()):
+            self.finished.emit()
+            return
         self.finished.emit()
 
 class QtHandler(logging.Handler, QObject):

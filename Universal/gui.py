@@ -214,7 +214,7 @@ class InstallPage(QtWidgets.QWizardPage):
         self.label.setWordWrap(True)
         self.progress = QtWidgets.QProgressBar()
         self.progress.setRange(0, 5)
-        self.console = QtWidgets.QPlainTextEdit()
+        self.console = QtWidgets.QTextEdit()
         self.console.setReadOnly(True)
         qt_handler.signal.connect(self.updateConsole)
 
@@ -244,19 +244,24 @@ class InstallPage(QtWidgets.QWizardPage):
         log_level = text.split(":")[0]
 
         # Set the text color based on the log level
-        #if log_level == "CRITICAL":
-        #    self.console.setTextColor(QtCore.Qt.red)
-        #elif log_level == "ERROR":
-        #    self.console.setTextColor(QtCore.Qt.darkRed)
-        #elif log_level == "WARNING":
-        #    self.console.setTextColor(QtCore.Qt.darkYellow)
-        #elif log_level == "INFO":
-        #    self.console.setTextColor(QtCore.Qt.darkGreen)
-        #elif log_level == "DEBUG":
-        #    self.console.setTextColor(QtCore.Qt.darkBlue)
-        #else:
-        #    self.console.setTextColor(QtCore.Qt.black)
-        self.console.appendPlainText(text)
+        weight = "bold"
+        if log_level == "CRITICAL":
+            color = "red"
+        elif log_level == "ERROR":
+            color = "darkred"
+        elif log_level == "WARNING":
+            color = "darkorange"
+        elif log_level == "INFO":
+            color = "darkgreen"
+        elif log_level == "DEBUG":
+            color = "darkblue"
+        else:
+            color = "black"
+            weight = "normal"
+        
+        html = '<div style="font-weight: {}; color: {}">{}</div>'.format(weight, color, text+"\n")
+
+        self.console.append(html)
 
     def reportProgress(self, n):
         self.progress.setValue(n)
@@ -272,6 +277,7 @@ class Worker(QObject):
         """Long-running task."""
         for i in range(50):
             #time.sleep(1)
+            print("zesz}" + str(i))
             self.progress.emit(i + 1)
             logging.info("Step " + str(i + 1) + " completed")
         self.finished.emit()
@@ -282,13 +288,10 @@ class QtHandler(logging.Handler, QObject):
 
     def __init__(self):
         logging.Handler.__init__(self)
-        QObject.__init__(self)    
-        #formatter = logging.Formatter('%(levelname)s: %(message)s')
-        #self.setFormatter(formatter)
+        QObject.__init__(self)
 
     def emit(self, record):
-        #record = self.format(record)
-        record = str(record)
+        record = self.format(record)
         self.signal.emit(record)
 
 if __name__ == '__main__':

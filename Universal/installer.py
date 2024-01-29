@@ -14,12 +14,9 @@ import sys
 import time
 import platform
 import shutil
-from termcolor import colored
-import colorama
+import logging
 from utils import *
-from kivy.logger import Logger
 
-colorama.init()
 origin = os.getcwd()
 os_name = platform.system()
 if os_name == "Darwin":
@@ -72,7 +69,7 @@ class Settings:
 settings = Settings()
 
 def init_folders():
-    Logger.info("Creating folders")
+    logging.info("Creating folders")
     if not os.path.exists(settings.dict["install_path"]):
         os.makedirs(settings.dict["install_path"])
     if not os.path.exists(settings.dict["install_path"] + "/EPuck2_Utils/"):
@@ -85,27 +82,27 @@ def step1():
     os.chdir(settings.dict["install_path"])
 
     if os_name == "Darwin":    
-        Logger.info("Installation of dfu-util, git and git-credential-manager-core")
+        logging.info("Installation of dfu-util, git and git-credential-manager-core")
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
         if settings.dict["gcm"] == "1":
             os.system("brew --cask git-credential-manager-core")
     elif os_name == "Windows":
         if settings.dict["gcm"] == "1":
-            Logger.info("Installation of Git for Windows")
+            logging.info("Installation of Git for Windows")
             downloadTo(settings.dict["gcm_url"], "git_setup.exe")
-            Logger.warning("Please install git from the external dialog that opens right now")
+            logging.warning("Please install git from the external dialog that opens right now")
             subprocess.run("git_setup.exe")
             if settings.dict["clear_cache"] == "1":
                 os.remove("git_setup.exe")
         os_copy(origin + "/Universal/gnutools", "EPuck2_Utils/gnutools")
     elif os_name == "Linux":
-        Logger.info("Installation of make, dfu-util and git")
+        logging.info("Installation of make, dfu-util and git")
         os_cli("sudo apt-get -y install make dfu-util git")
         if settings.dict["gcm"] == "1":
-            Logger.info("Installation of git-credential-manager")
+            logging.info("Installation of git-credential-manager")
             downloadTo(settings.dict["gcm_url"], "gcm.deb")
-            Logger.info("configuring git credential manager")
+            logging.info("configuring git credential manager")
             os_cli("sudo dpkg -i gcm.deb")
             os_cli("git-credential-manager-core configure")
             os_cli("echo \"[credential]\" >> ~/.gitconfig")
@@ -130,11 +127,11 @@ def step2():
             if not os.path.isfile(src):
                 downloadTo(settings.dict["vscode_url"], src)
             else:
-                Logger.info(f"{src} already exists, not redownloading, delete manualy if file corrupted")
+                logging.info(f"{src} already exists, not redownloading, delete manualy if file corrupted")
             
             try:
                 if os.path.isdir(dest): 
-                    Logger.warning("Visual Studio Code already installed, deleting...")
+                    logging.warning("Visual Studio Code already installed, deleting...")
                     shutil.rmtree(dest)
 
                 if os_name == "Linux":
@@ -154,17 +151,17 @@ def step2():
                 break #stop the loop if no error occured
 
             except Exception as e:
-                Logger.error(f"Cannot extract {src}, it could have been corrupted. Error: {str(e)}")
+                logging.error(f"Cannot extract {src}, it could have been corrupted. Error: {str(e)}")
                 os.remove(src)
                 if attempt == 0:
-                    Logger.info("Retrying...")
+                    logging.info("Retrying...")
                 else:
-                    Logger.error("Max number of try exceeding, skipping...")
+                    logging.error("Max number of try exceeding, skipping...")
     
     if not os.path.isdir(dest): 
-        Logger.error("Visual Studio Code not installed!")
+        logging.error("Visual Studio Code not installed!")
     else:
-        Logger.info("Visual Studio Code is installed!")
+        logging.info("Visual Studio Code is installed!")
 
 # arm_gcc_toolchain installation
 def step3():
@@ -180,11 +177,11 @@ def step3():
             if not os.path.isfile(src):
                 downloadTo(settings.dict["arm_gcc_toolchain_url"], src)
             else:
-                Logger.info(f"{src} already exists, not redownloading, delete manualy if file corrupted")
+                logging.info(f"{src} already exists, not redownloading, delete manualy if file corrupted")
             
             try:
                 if os.path.isdir(dest): 
-                    Logger.warning("arm_gcc_toolchain already installed, deleting...")
+                    logging.warning("arm_gcc_toolchain already installed, deleting...")
                     shutil.rmtree(dest)
 
                 if os_name == "Windows":
@@ -203,17 +200,17 @@ def step3():
                 break #stop the loop if no error occured
 
             except Exception as e:
-                Logger.error(f"Cannot extract {src}, it could have been corrupted. Error: {str(e)}")
+                logging.error(f"Cannot extract {src}, it could have been corrupted. Error: {str(e)}")
                 os.remove(src)
                 if attempt == 0:
-                    Logger.info("Retrying...")
+                    logging.info("Retrying...")
                 else:
-                    Logger.error("Max number of try exceeding, skipping...")
+                    logging.error("Max number of try exceeding, skipping...")
     
     if not os.path.isdir(dest): 
-        Logger.error("arm_gcc_toolchain not installed!")
+        logging.error("arm_gcc_toolchain not installed!")
     else:
-        Logger.info("arm_gcc_toolchain installed!")
+        logging.info("arm_gcc_toolchain installed!")
 
 if os_name == "Windows":
     make_path = settings.dict["install_path"] + "/EPuck2_Utils/gnutools/make"
@@ -300,7 +297,7 @@ def step4():
     os.chdir(settings.dict["install_path"])
 
     if settings.dict["vscode_settings"] == "1":
-        Logger.info("vscode settings configuration option is selected, proceeding")
+        logging.info("vscode settings configuration option is selected, proceeding")
         exe = "./code "
         data_dir = settings.dict["install_path"]
         bin_dir = settings.dict["install_path"]
@@ -316,14 +313,14 @@ def step4():
             bin_dir += "/EPuck2_VSCode/bin/"
         
         if os.path.isdir(data_dir):
-            Logger.warning("VSCode data_dir already existing, deleting...")
+            logging.warning("VSCode data_dir already existing, deleting...")
             shutil.rmtree(data_dir)
         os.mkdir(data_dir)
  
         if not os.path.isdir(data_dir): 
-            Logger.error("VSCode data_dir not created!")
+            logging.error("VSCode data_dir not created!")
         else:
-            Logger.info("VSCode data_dir created!")
+            logging.info("VSCode data_dir created!")
 
         os.chdir(bin_dir)
         os_cli(exe + "--install-extension marus25.cortex-debug@1.4.4 --force")
@@ -338,36 +335,36 @@ def step4():
         os.chdir(data_dir + "/user-data/User/")
 
         # settings.json
-        Logger.info("writting settings.json")
+        logging.info("writting settings.json")
         if os.path.isfile("settings.json"):
-            Logger.warning("VSCode settings.json already existing, deleting...")
+            logging.warning("VSCode settings.json already existing, deleting...")
             os.remove("settings.json")
         try:
             with open("settings.json", "x") as file: #x option for create file, error if already existing
                 file.write(json_settings)
         except Exception as e:
-            Logger.error(f"Error writing to settings.json: {str(e)}")
+            logging.error(f"Error writing to settings.json: {str(e)}")
 
         if not os.path.isfile(data_dir + "/user-data/User/settings.json"): 
-            Logger.error("VSCode settings.json not created!")
+            logging.error("VSCode settings.json not created!")
         else:
-            Logger.info("VSCode settings.json created!")
+            logging.info("VSCode settings.json created!")
 
         # tasks.json
-        Logger.info("writting tasks.json")
+        logging.info("writting tasks.json")
         if os.path.isfile("tasks.json"):
-            Logger.warning("VSCode tasks.json already existing, deleting...")
+            logging.warning("VSCode tasks.json already existing, deleting...")
             os.remove("tasks.json")
         try:
             with open("tasks.json", "x") as file: #x option for create file, error if already existing
                 file.write(json_tasks)
         except Exception as e:
-            Logger.error(f"Error writing to tasks.json: {str(e)}")
+            logging.error(f"Error writing to tasks.json: {str(e)}")
 
         if not os.path.isfile(data_dir + "/user-data/User/tasks.json"): 
-            Logger.error("VSCode tasks.json not created!")
+            logging.error("VSCode tasks.json not created!")
         else:
-            Logger.info("VSCode tasks.json created!")
+            logging.info("VSCode tasks.json created!")
 
 def step5():
     os.chdir(settings.dict["workplace_path"])

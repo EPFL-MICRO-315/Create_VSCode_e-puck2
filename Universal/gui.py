@@ -210,14 +210,18 @@ class InstallPage(QtWidgets.QWizardPage):
         self.setTitle("Installation in progress") 
 
         self.label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
-                "Please be patient (it could take a few of minutes depending on your connection)")
+                                      "Please be patient (it could take a few of minutes depending on your connection)")
         self.label.setWordWrap(True)
         self.progress = QtWidgets.QProgressBar()
         self.progress.setRange(0, 5)
-        
+        self.console = QtWidgets.QPlainTextEdit()
+        self.console.setReadOnly(True)
+        qt_handler.signal.connect(self.updateConsole)
+
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.label)
         layout.addWidget(self.progress)
+        layout.addWidget(self.console)
         self.setLayout(layout)
 
     def initializePage(self):
@@ -225,7 +229,6 @@ class InstallPage(QtWidgets.QWizardPage):
         for f in fields:
             logging.info(f + ": " + str(self.field(f)))
         logging.warning("Installation starting")
-
         self.thread = QThread()
         self.worker = Worker()
         self.worker.moveToThread(self.thread)
@@ -234,12 +237,30 @@ class InstallPage(QtWidgets.QWizardPage):
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.worker.progress.connect(self.reportProgress)
-        
         self.thread.start()
+
+    def updateConsole(self, text):
+        # Parse the log level from the text
+        log_level = text.split(":")[0]
+
+        # Set the text color based on the log level
+        #if log_level == "CRITICAL":
+        #    self.console.setTextColor(QtCore.Qt.red)
+        #elif log_level == "ERROR":
+        #    self.console.setTextColor(QtCore.Qt.darkRed)
+        #elif log_level == "WARNING":
+        #    self.console.setTextColor(QtCore.Qt.darkYellow)
+        #elif log_level == "INFO":
+        #    self.console.setTextColor(QtCore.Qt.darkGreen)
+        #elif log_level == "DEBUG":
+        #    self.console.setTextColor(QtCore.Qt.darkBlue)
+        #else:
+        #    self.console.setTextColor(QtCore.Qt.black)
+        self.console.appendPlainText(text)
 
     def reportProgress(self, n):
         self.progress.setValue(n)
-
+        
     def isComplete(self):
         return False
     
@@ -249,16 +270,38 @@ class Worker(QObject):
 
     def run(self):
         """Long-running task."""
-        for i in range(5):
-            time.sleep(1)
+        for i in range(50):
+            #time.sleep(1)
             self.progress.emit(i + 1)
+            logging.info("Step " + str(i + 1) + " completed")
         self.finished.emit()
+
+
+class QtHandler(logging.Handler, QObject):
+    signal = pyqtSignal(str)
+
+    def __init__(self):
+        logging.Handler.__init__(self)
+        QObject.__init__(self)    
+        #formatter = logging.Formatter('%(levelname)s: %(message)s')
+        #self.setFormatter(formatter)
+
+    def emit(self, record):
+        #record = self.format(record)
+        record = str(record)
+        self.signal.emit(record)
 
 if __name__ == '__main__':
     import sys
 
     log_file = "install-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".log"
-    logging.basicConfig(filename=log_file, encoding='utf-8', level=logging.INFO)
+
+    file_handler = logging.FileHandler(filename=log_file)
+    stdout_handler = logging.StreamHandler(stream=sys.stdout)
+    qt_handler = QtHandler()
+    handlers = [file_handler, stdout_handler, qt_handler]
+    
+    logging.basicConfig(encoding='utf-8', level=logging.INFO, handlers=handlers)
     logging.warning("Log saved at: " + log_file)
     
     app = QtWidgets.QApplication(sys.argv)

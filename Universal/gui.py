@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
 import logging
 import time
 import platform
@@ -208,24 +209,51 @@ class InstallPage(QtWidgets.QWizardPage):
 
         self.setTitle("Installation in progress") 
 
-        label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
+        self.label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
                 "Please be patient (it could take a few of minutes depending on your connection)")
-        label.setWordWrap(True)
-        progress = QtWidgets.QProgressBar()
-
+        self.label.setWordWrap(True)
+        self.progress = QtWidgets.QProgressBar()
+        self.progress.setRange(0, 5)
+        
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(label)
-        layout.addWidget(progress)
+        layout.addWidget(self.label)
+        layout.addWidget(self.progress)
         self.setLayout(layout)
 
     def initializePage(self):
         logging.warning("Settings summary: ")
         for f in fields:
             logging.info(f + ": " + str(self.field(f)))
+        logging.warning("Installation starting")
+
+        self.thread = QThread()
+        self.worker = Worker()
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.progress.connect(self.reportProgress)
+        
+        self.thread.start()
+
+    def reportProgress(self, n):
+        self.progress.setValue(n)
 
     def isComplete(self):
         return False
     
+class Worker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def run(self):
+        """Long-running task."""
+        for i in range(5):
+            time.sleep(1)
+            self.progress.emit(i + 1)
+        self.finished.emit()
+
 if __name__ == '__main__':
     import sys
 

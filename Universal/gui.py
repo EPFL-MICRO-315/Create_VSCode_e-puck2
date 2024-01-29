@@ -1,5 +1,9 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+import logging
+import time
 
+fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url' ]
+        
 class ClassWizard(QtWidgets.QWizard):
     def __init__(self, parent=None):
         super(ClassWizard, self).__init__(parent)
@@ -16,10 +20,8 @@ class ClassWizard(QtWidgets.QWizard):
         
         self.setWindowTitle("VSCode EPuck2 Setup")
         self.WizardStyle = QtWidgets.QWizard.ClassicStyle
-
+        
     def accept(self):
-        className = self.field('className')
-
         super(ClassWizard, self).accept()
 
 
@@ -44,22 +46,24 @@ class SetupPage(QtWidgets.QWizardPage):
         super(SetupPage, self).__init__(parent)
 
         installPath = str(QtCore.QDir.homePath() + "/.local/bin")
-        installPathLabel = QtWidgets.QLabel(installPath)
+        installPathEdit = QtWidgets.QLineEdit(installPath)
         def installPath_dialog():
             nonlocal installPath
+            installPath = installPathEdit.text()
             tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", installPath)
             if tmp != "":
                 installPath = tmp
-            installPathLabel.setText(installPath)
+            installPathEdit.setText(installPath)
 
         workplacePath = str(QtCore.QDir.homePath() + "/Documents/")
-        workplacePathLabel = QtWidgets.QLabel(workplacePath)
+        workplacePathEdit = QtWidgets.QLineEdit(workplacePath)
         def workplacePath_dialog():
             nonlocal workplacePath
+            workplacePath = workplacePathEdit.text()
             tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", workplacePath)
             if tmp != "":
                 workplacePath = tmp
-            workplacePathLabel.setText(workplacePath)
+            workplacePathEdit.setText(workplacePath)
 
 
         self.setTitle("Custom the setup")     
@@ -73,7 +77,7 @@ class SetupPage(QtWidgets.QWizardPage):
         
         installPathBoxL = QtWidgets.QGridLayout()
         installPathBoxL.addWidget(installPathDescription, 0, 0, 1, 2)
-        installPathBoxL.addWidget(installPathLabel)
+        installPathBoxL.addWidget(installPathEdit)
         installPathBoxL.addWidget(installPathButton)        
         installPathBox.setLayout(installPathBoxL);
         
@@ -84,7 +88,7 @@ class SetupPage(QtWidgets.QWizardPage):
         
         workplacePathBoxL = QtWidgets.QGridLayout()
         workplacePathBoxL.addWidget(workplacePathDescription, 0, 0, 1, 2)
-        workplacePathBoxL.addWidget(workplacePathLabel, 1, 0)
+        workplacePathBoxL.addWidget(workplacePathEdit, 1, 0)
         workplacePathBoxL.addWidget(workplacePathButton, 1, 1)       
         workplacePathBox.setLayout(workplacePathBoxL);
 
@@ -94,8 +98,8 @@ class SetupPage(QtWidgets.QWizardPage):
         self.setLayout(layout)
 
         # registerField functions are used to let other pages accessing the specfied variable with user defined key
-        self.registerField("install_path", installPathLabel)
-        self.registerField("workplace_path", workplacePathLabel)
+        self.registerField('install_path', installPathEdit)
+        self.registerField('workplace_path', workplacePathEdit)
 
 class AdvancedSetupPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
@@ -141,6 +145,17 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         gcm_urlDescription = QtWidgets.QLabel("GCM (Github Credential Manager) download URL:")
         gcm_urlEdit = QtWidgets.QLineEdit()
         
+        self.registerField('vscode',          vscode)
+        self.registerField('vscode_settings', vscode_settings)
+        self.registerField('arm',             arm)
+        self.registerField('gcm',             gcm)
+        self.registerField('workplace',       workplace)
+        self.registerField('shortcut',        shortcut)
+        self.registerField('clear_cache',     clear_cache)
+        self.registerField('vscode_url',      vscode_urlEdit)
+        self.registerField('arm_url',         arm_urlEdit)
+        self.registerField('gcm_url',         gcm_urlEdit)
+
         urlBoxL = QtWidgets.QVBoxLayout()
         urlBoxL.addWidget(vscode_urlDescription)
         urlBoxL.addWidget(vscode_urlEdit)
@@ -156,17 +171,8 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         
         self.setLayout(layout)
 
-        self.registerField("vscode",          vscode)
-        self.registerField("vscode_settings", vscode_settings)
-        self.registerField("arm",             arm)
-        self.registerField("gcm",             gcm)
-        self.registerField("workplace",       workplace)
-        self.registerField("shortcut",        shortcut)
-        self.registerField("clear_cache",     clear_cache)
-        self.registerField("vscode_url",      vscode_urlEdit)
-        self.registerField("arm_url",         arm_urlEdit)
-        self.registerField("gcm_url",         gcm_urlEdit)
-
+       
+                           
 class ProceedPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super(ProceedPage, self).__init__(parent)
@@ -181,24 +187,41 @@ class ProceedPage(QtWidgets.QWizardPage):
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(label)
         self.setLayout(layout)
+    
 
 class InstallPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super(InstallPage, self).__init__(parent)
 
-        self.setTitle("Installation in progress")        
+        self.setTitle("Installation in progress") 
 
         label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
                 "Please be patient (it could take a few of minutes depending on your connection)")
         label.setWordWrap(True)
+        progress = QtWidgets.QProgressBar()
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(label)
+        layout.addWidget(progress)
         self.setLayout(layout)
 
+    def initializePage(self):
+        logging.info("Settings summary: ")
+        for f in fields:
+            logging.info(f + ": " + str(self.field(f)))
+            print(f + ": " + str(self.field(f)))
+
+    def isComplete(self):
+        return False
+    
 if __name__ == '__main__':
     import sys
 
+    log_file = "install-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".log"
+    logging.basicConfig(filename=log_file, encoding='utf-8', level=logging.INFO)
+    logging.debug("Log saved at: " + log_file)
+    #logging.debug("Installation starting")
+    
     app = QtWidgets.QApplication(sys.argv)
     wizard = ClassWizard()
     wizard.show()

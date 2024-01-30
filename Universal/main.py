@@ -6,7 +6,8 @@ import platform
 from installer import *
 
 os_name = platform.system()
-fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url' ]
+fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'tools', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url' ]
+fields_steps = [ 'vscode', 'vscode_settings', 'arm', 'tools', 'gcm', 'workplace', 'shortcut' ]
 
 class ClassWizard(QtWidgets.QWizard):
     def __init__(self, parent=None):
@@ -118,6 +119,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         vscode          = QtWidgets.QCheckBox("(re)install VSCode ?")
         vscode_settings = QtWidgets.QCheckBox("(re) VSCode settings?")
         arm             = QtWidgets.QCheckBox("(re)install ARM toolchain ?")
+        tools           = QtWidgets.QCheckBox("(re)install required tools (git, dfu-utils, various gnu tools) ?")
         gcm             = QtWidgets.QCheckBox("(re)install GCM (Github Credential Manager) ?")
         workplace       = QtWidgets.QCheckBox("(re)install workplace ?")
         shortcut        = QtWidgets.QCheckBox("(re)create shortcut ?")
@@ -135,6 +137,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         checkBoxL.addWidget(vscode)
         checkBoxL.addWidget(vscode_settings)
         checkBoxL.addWidget(arm)
+        checkBoxL.addWidget(tools)
         checkBoxL.addWidget(gcm)
         checkBoxL.addWidget(workplace)
         checkBoxL.addWidget(shortcut)
@@ -153,6 +156,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         self.registerField('vscode',          vscode)
         self.registerField('vscode_settings', vscode_settings)
         self.registerField('arm',             arm)
+        self.registerField('tools',           tools)
         self.registerField('gcm',             gcm)
         self.registerField('workplace',       workplace)
         self.registerField('shortcut',        shortcut)
@@ -215,8 +219,9 @@ class InstallPage(QtWidgets.QWizardPage):
         self.label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
                                       "Please be patient (it could take a few of minutes depending on your connection)")
         self.label.setWordWrap(True)
+        
         self.progress = QtWidgets.QProgressBar()
-        self.progress.setRange(0, 6) #TODO: change this value depending on what is enabled via settings
+        
         self.console = QtWidgets.QTextEdit()
         self.console.setReadOnly(True)
         qt_handler.signal.connect(self.updateConsole)
@@ -233,6 +238,8 @@ class InstallPage(QtWidgets.QWizardPage):
             settings.dict[f] = self.field(f)
             logging.info(f + ": " + str(settings.dict[f]))
         logging.warning("Installation starting")
+
+        self.progress.setRange(0, sum(settings.dict[k] for k in fields_steps))
 
         self.thread = QThread()
         self.worker = Worker()
@@ -266,10 +273,11 @@ class InstallPage(QtWidgets.QWizardPage):
 
         self.console.append(html)
 
-    def reportProgress(self, n):
-        self.progress.setValue(n)
-        
+    def reportProgress(self):
+        self.progress.setValue(self.progress.value() + 1)
+        logging.info("progress: " + str(self.progress.value()) + "/" + str(self.progress.maximum()))
     def hasDoneF(self):
+        self.progress.setValue(self.progress.maximum())
         try:
             self.worker.deleteLater()
         except:
@@ -284,35 +292,30 @@ class InstallPage(QtWidgets.QWizardPage):
     
 class Worker(QObject):
     finished = pyqtSignal()
-    progress = pyqtSignal(int)
+    progress = pyqtSignal()
 
-    def run(self):
-        self.progress.emit(1)
-        
-        if(not step1()):
-            self.finished.emit()
-            return
-        self.progress.emit(2)
-        
-        if(not step2()):
-            self.finished.emit()
-            return
-        self.progress.emit(3)
-        if(not step3()):
-            self.finished.emit()
-            return
-        self.progress.emit(4)
-        if(not step4()):
-            self.finished.emit()
-            return
-        self.progress.emit(5)
-        if(not step5()):
-            self.finished.emit()
-            return
-        self.progress.emit(6)
-        if(not step6()):
-            self.finished.emit()
-            return
+    def run(self):        
+        if(settings.dict["tools"]):
+            self.progress.emit()
+            step0()
+        if(settings.dict["gcm"]):        
+            self.progress.emit()
+            step1()
+        if(settings.dict["vscode"]):
+            self.progress.emit()
+            step2()
+        if(settings.dict["arm"]):
+            self.progress.emit()
+            step3()
+        if(settings.dict["vscode_settings"]):
+            self.progress.emit()
+            step4()
+        if(settings.dict["workplace"]):
+            self.progress.emit()
+            step5()
+        if(settings.dict["shortcut"]):
+            self.progress.emit()
+            step6()
         self.finished.emit()
 
 class QtHandler(logging.Handler, QObject):

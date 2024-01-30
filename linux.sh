@@ -49,9 +49,6 @@ function install() {
 
 	echo -e "${GREEN}Installing packages required for installation${NC}"
 	pip install --upgrade pip
-	pip install colorama
-	pip install termcolor
-	pip install "kivy[base]"
 	pip install PyQt5
 	echo -e "${GREEN}Launching the installer${NC}"
 	python Universal/main.py

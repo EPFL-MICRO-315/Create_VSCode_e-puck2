@@ -1,8 +1,6 @@
 import os
 import sys
 import time
-import traceback
-from termcolor import colored
 import requests
 import tarfile
 import shutil
@@ -26,7 +24,7 @@ def downloadTo(url, filename, max_try=5):
         logging.info(f"{filename} already exists, not redownloading, delete manualy if file corrupted")
         return
     else:    
-        print(colored('downloading "{}" from "{}"'.format(filename, url), "green"))
+        logging.info('downloading "{}" from "{}"'.format(filename, url))
         for attempt in range(max_try):
             with open(filename, "wb") as file:
                 try: #sometimes throw a certificate error, thus try multiple times

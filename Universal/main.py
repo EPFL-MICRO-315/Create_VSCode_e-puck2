@@ -283,7 +283,7 @@ class InstallPage(QtWidgets.QWizardPage):
 
     def increaseProgress(self):
         self.progress.setValue(self.progress.value() + 1)
-        logging.warning("progress: " + str(self.progress.value()) + "/" + str(self.progress.maximum()))
+        logging.debug("progress: " + str(self.progress.value()) + "/" + str(self.progress.maximum()))
 
     def installerComplete(self):
         self.increaseProgress()

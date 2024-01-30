@@ -2,9 +2,9 @@ version = "V2.0 alpha"
 f"""
 Authors: Antoine Vincent Martin, Daniel Burnier
 Date Created: August, 2022
-Date Modified: July 31, 2023
+Date Modified: January 30, 2024
 Version: {version}
-Python Version:
+Python Version: 3.11.2
 Dependencies:
 License:
 """
@@ -17,7 +17,6 @@ import platform
 import shutil
 import logging
 from utils import *
-
 
 origin = os.getcwd()
 os_name = platform.system()
@@ -33,7 +32,7 @@ elif os_name == "Linux":
 settings = {}
 
 def init_folders():
-    logging.info("Creating folders")
+    logging.warning("Creating folders")
     if not os.path.exists(settings["install_path"]):
         os.makedirs(settings["install_path"])
     if not os.path.exists(settings["install_path"] + "/EPuck2_Utils/"):
@@ -44,7 +43,8 @@ def init_folders():
 # Tools installation
 def step0():
     os.chdir(settings["install_path"])
-        
+    logging.warning("Tools installation")
+    
     if os_name == "Darwin":    
         logging.info("Installation of dfu-util, git")
         os.system("brew install dfu-util git")
@@ -59,22 +59,19 @@ def step0():
 # Github Credential Manager installation
 def step1():
     os.chdir(settings["install_path"])
+    logging.warning("Installation of git-credential-manager")
         
     if os_name == "Darwin":    
-        logging.info("Installation of git-credential-manager-core")
         os.system("brew tap microsoft/git")
         os.system("brew --cask git-credential-manager-core")
     elif os_name == "Windows":
-        logging.info("Installation of Git for Windows")
         downloadTo(settings["gcm_url"], "git_setup.exe")
         logging.warning("Please install git from the external dialog that opens right now")
         subprocess.run("git_setup.exe")
         if settings["clear_cache"]:
             os.remove("git_setup.exe")
     elif os_name == "Linux":
-        logging.info("Installation of git-credential-manager")
         downloadTo(settings["gcm_url"], "gcm.deb")
-        logging.info("configuring git credential manager")
         os_cli("sudo dpkg -i gcm.deb")
         os_cli("git-credential-manager-core configure")
         
@@ -91,7 +88,8 @@ def step1():
 # Visual Studio Code installation
 def step2():
     os.chdir(settings["install_path"])
-
+    logging.warning("Installation of VSCode")
+    
     src = "vscode.zip"
     dest = "EPuck2_VSCode"         
     if os_name == "Linux":
@@ -104,7 +102,7 @@ def step2():
         
         try:
             if os.path.isdir(dest): 
-                logging.info("Visual Studio Code already installed, deleting...")
+                logging.warning(f"Visual Studio Code installation in {settings['install_path']} detected, deleting...")
                 shutil.rmtree(dest)
 
             if os_name == "Linux":
@@ -139,6 +137,7 @@ def step2():
 # arm_gcc_toolchain installation
 def step3():
     os.chdir(settings["install_path"])
+    logging.warning("Installation of arm_gcc_toolchain")
 
     src = "arm_gcc_toolchain.tar.bz2"
     dest = "EPuck2_Utils/arm_gcc_toolchain"         
@@ -146,14 +145,11 @@ def step3():
         src = "arm_gcc_toolchain.zip"
 
     for attempt in range(2):
-        if not os.path.isfile(src):
-            downloadTo(settings["arm_gcc_toolchain_url"], src)
-        else:
-            logging.info(f"{src} already exists, not redownloading, delete manualy if file corrupted")
+        downloadTo(settings["arm_gcc_toolchain_url"], src)
         
         try:
             if os.path.isdir(dest): 
-                logging.warning("arm_gcc_toolchain already installed, deleting...")
+                logging.warning(f"arm_gcc_toolchain installation in {settings['install_path']} detected, deleting...")
                 shutil.rmtree(dest)
 
             if os_name == "Windows":
@@ -180,11 +176,9 @@ def step3():
                 logging.error("Max number of try exceeding, skipping...")
     
     if not os.path.isdir(dest): 
-        logging.error("arm_gcc_toolchain not installed!")
+        logging.fatal("arm_gcc_toolchain not installed!")
     else:
         logging.info("arm_gcc_toolchain installed!")
-    return not True
-
 
 # VSCode configuration
 def step4():
@@ -198,79 +192,79 @@ def step4():
     b2 = "\\\\"
 
     json_settings = f'''
-    {{
-        "extensions.autoCheckUpdates": false,
-        "extensions.autoUpdate": false,
-        "gcc_arm_path": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain",
-        "gcc_arm_path_compiler": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc",
-        "make_path": "{make_path.replace(b1, b2)}",
-        "epuck2_utils": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/Utils",
-        "install_path": "{settings["install_path"].replace(b1, b2)}",
-        "workplace": "{settings["workplace_path"].replace(b1, b2)}",
-        "terminal.integrated.env.osx": {{
-            "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
-        }},
-        "terminal.integrated.env.linux": {{
-            "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
-        }},
-        "terminal.integrated.env.windows": {{
-            "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin;{settings["install_path"]}//EPuck2_Utils//gnutools;${{env:PATH}}"
-        }},
-        "cortex-debug.armToolchainPath.osx": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-        "cortex-debug.armToolchainPath.windows": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-        "cortex-debug.armToolchainPath,linux": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-        "version": "{version}"
-    }}
+{{
+    "extensions.autoCheckUpdates": false,
+    "extensions.autoUpdate": false,
+    "gcc_arm_path": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain",
+    "gcc_arm_path_compiler": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc",
+    "make_path": "{make_path.replace(b1, b2)}",
+    "epuck2_utils": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/Utils",
+    "install_path": "{settings["install_path"].replace(b1, b2)}",
+    "workplace": "{settings["workplace_path"].replace(b1, b2)}",
+    "terminal.integrated.env.osx": {{
+        "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
+    }},
+    "terminal.integrated.env.linux": {{
+        "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
+    }},
+    "terminal.integrated.env.windows": {{
+        "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin;{settings["install_path"]}//EPuck2_Utils//gnutools;${{env:PATH}}"
+    }},
+    "cortex-debug.armToolchainPath.osx": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+    "cortex-debug.armToolchainPath.windows": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+    "cortex-debug.armToolchainPath,linux": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+    "version": "{version}"
+}}
     '''
 
     json_tasks = f'''
-    {{
-        "version": "2.0.0",
-        "tasks": [
-            {{
-                "label": "User:List EPuck2 ports",
-                "type": "shell",
-                "command": "cd {settings["install_path"]}/EPuck2_Utils/Utils && ./epuck2_port_check.sh",
-                "group": {{
-                    "kind": "build",
-                    "isDefault": true
-                }},
-                "presentation": {{
-                    "echo": false,
-                }}
+{{
+    "version": "2.0.0",
+    "tasks": [
+        {{
+            "label": "User:List EPuck2 ports",
+            "type": "shell",
+            "command": "cd {settings["install_path"]}/EPuck2_Utils/Utils && ./epuck2_port_check.sh",
+            "group": {{
+                "kind": "build",
+                "isDefault": true
             }},
-            {{
-                "label": "User:DFU EPuck-2-Main_Processor",
-                "type": "shell",
-                "command": "{dfu_util} -d 0483:df11 -a 0 -s 0x08000000 -D {settings["install_path"]}/EPuck2_Utils/Utils/e-puck2_main-processor.bin",
-                "group": {{
-                    "kind": "build",
-                    "isDefault": true
-                }},
-                "presentation": {{
-                    "echo": false,
-                }}
-            }},
-            {{
-                "label": "User:Run EPuckMonitor",
-                "type": "shell",
-                "command": "python {settings["install_path"]}/EPuck2_Utils/Utils/monitor.py",
-                "group": {{
-                    "kind": "build",
-                    "isDefault": true
-                }},
-                "presentation": {{
-                    "echo": false,
-                }}
+            "presentation": {{
+                "echo": false,
             }}
-            #TODO: add a clone Lib task
-        ]
+        }},
+        {{
+            "label": "User:DFU EPuck-2-Main_Processor",
+            "type": "shell",
+            "command": "{dfu_util} -d 0483:df11 -a 0 -s 0x08000000 -D {settings["install_path"]}/EPuck2_Utils/Utils/e-puck2_main-processor.bin",
+            "group": {{
+                "kind": "build",
+                "isDefault": true
+            }},
+            "presentation": {{
+                "echo": false,
+            }}
+        }},
+        {{
+            "label": "User:Run EPuckMonitor",
+            "type": "shell",
+            "command": "python {settings["install_path"]}/EPuck2_Utils/Utils/monitor.py",
+            "group": {{
+                "kind": "build",
+                "isDefault": true
+            }},
+            "presentation": {{
+                "echo": false,
+            }}
+        }}
+        #TODO: add a clone Lib task
+    ]
     }}
 '''
 
     os.chdir(settings["install_path"])
-
-    logging.info("vscode settings configuration option is selected, proceeding")
+    logging.warning("Configuration of VSCode (settings and user tasks)")
+    
     exe = "./code "
     data_dir = settings["install_path"]
     bin_dir = settings["install_path"]
@@ -286,7 +280,7 @@ def step4():
         bin_dir += "/EPuck2_VSCode/bin/"
     
     if os.path.isdir(data_dir):
-        logging.warning("VSCode data_dir already existing, deleting...")
+        logging.warning(f"VSCode data_dir detected in {settings['install_path']}, deleting...")
         shutil.rmtree(data_dir)
     os.mkdir(data_dir)
 
@@ -341,8 +335,8 @@ def step4():
 
 def step5():
     os.chdir(settings["workplace_path"])
-
-    print(colored("workplace reinstall option is selected, proceeding", "green"))
+    logging.warning(f"Setting up the Workplace in {settings['workplace_path']}")
+    
     if os.path.isdir("EPuck2_Workplace"):
         if not os_name == "Windows":
             shutil.rmtree("EPuck2_Workplace")
@@ -358,7 +352,8 @@ def step5():
     #TODO: verification step (Lib actually cloned)
 
 def step6():
-    print(colored("shortcut creation selected, proceeding", "green"))
+    logging.warning("shortcut creation selected, proceeding")
+    
     if os_name == "Windows":
         os.chdir(settings["install_path"] + "/EPuck2_VSCode")
         os.system(f"cmd.exe /c \"start {origin}/Universal/shortcut.bat\"")

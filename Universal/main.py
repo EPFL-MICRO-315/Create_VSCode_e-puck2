@@ -51,7 +51,16 @@ class SetupPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super(SetupPage, self).__init__(parent)
 
-        installPath = str(QtCore.QDir.homePath() + "/.local/bin")
+        if os_name == "Darwin":
+            installPath = os.popen("echo $HOME/Applications/").read().rstrip()
+            workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
+        elif os_name == "Windows":
+            installPath = os.popen("echo %APPDATA%").read().rstrip()
+            workplacePath = os.popen("echo %USERPROFILE%\\Documents\\").read().rstrip()
+        elif os_name == "Linux":
+            installPath = os.popen("echo $HOME/.local/bin/").read().rstrip()
+            workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
+        
         installPathEdit = QtWidgets.QLineEdit(installPath)
         def installPath_dialog():
             nonlocal installPath
@@ -61,7 +70,6 @@ class SetupPage(QtWidgets.QWizardPage):
                 installPath = tmp
             installPathEdit.setText(installPath)
 
-        workplacePath = str(QtCore.QDir.homePath() + "/Documents/")
         workplacePathEdit = QtWidgets.QLineEdit(workplacePath)
         def workplacePath_dialog():
             nonlocal workplacePath
@@ -213,7 +221,7 @@ class ProceedPage(QtWidgets.QWizardPage):
 class InstallPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super(InstallPage, self).__init__(parent)
-        self.hasDone = False
+        self.isCompleteValue = False
         self.setTitle("Installation in progress") 
 
         self.label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
@@ -235,26 +243,25 @@ class InstallPage(QtWidgets.QWizardPage):
     def initializePage(self):
         logging.warning("Settings summary: ")
         for f in fields:
-            settings.dict[f] = self.field(f)
-            logging.info(f + ": " + str(settings.dict[f]))
+            settings[f] = self.field(f)
+            logging.info(f + ": " + str(settings[f]))
         logging.warning("Installation starting")
 
-        self.progress.setRange(0, sum(settings.dict[k] for k in fields_steps))
+        self.progress.setRange(0, sum(settings[k] for k in fields_steps))
 
         self.thread = QThread()
         self.worker = Worker()
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.run)
         self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.hasDoneF)
-        self.thread.finished.connect(self.hasDoneF)
-        self.worker.progress.connect(self.reportProgress)
+        self.thread.finished.connect(self.installerComplete)
+        self.worker.progress.connect(self.increaseProgress)
         self.thread.start()
 
     def updateConsole(self, text):            
         # Parse the log level from the text
-        log_level = text.split(":")[0]
-        
+        log_level, log_content = text.split(":")[0], ":".join(text.split(":")[2:])
+
         # Set the text color based on the log level
         weight = "bold"
         if log_level == "CRITICAL":
@@ -266,6 +273,7 @@ class InstallPage(QtWidgets.QWizardPage):
         elif log_level == "DEBUG":
             color = "darkblue"
         else:
+            text = log_content
             color = "black"
             weight = "normal"
         
@@ -273,11 +281,12 @@ class InstallPage(QtWidgets.QWizardPage):
 
         self.console.append(html)
 
-    def reportProgress(self):
+    def increaseProgress(self):
         self.progress.setValue(self.progress.value() + 1)
-        logging.info("progress: " + str(self.progress.value()) + "/" + str(self.progress.maximum()))
-    def hasDoneF(self):
-        self.progress.setValue(self.progress.maximum())
+        logging.warning("progress: " + str(self.progress.value()) + "/" + str(self.progress.maximum()))
+
+    def installerComplete(self):
+        self.increaseProgress()
         try:
             self.worker.deleteLater()
         except:
@@ -285,35 +294,36 @@ class InstallPage(QtWidgets.QWizardPage):
 
         self.setTitle("Installation completed") 
         self.completeChanged.emit()
-        self.hasDone = True
+        self.isCompleteValue = True
 
     def isComplete(self):
-        return self.hasDone
+        return self.isCompleteValue
     
 class Worker(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal()
 
-    def run(self):        
-        if(settings.dict["tools"]):
+    def run(self):
+        init_folders()        
+        if(settings["tools"]):
             self.progress.emit()
             step0()
-        if(settings.dict["gcm"]):        
+        if(settings["gcm"]):        
             self.progress.emit()
             step1()
-        if(settings.dict["vscode"]):
+        if(settings["vscode"]):
             self.progress.emit()
             step2()
-        if(settings.dict["arm"]):
+        if(settings["arm"]):
             self.progress.emit()
             step3()
-        if(settings.dict["vscode_settings"]):
+        if(settings["vscode_settings"]):
             self.progress.emit()
             step4()
-        if(settings.dict["workplace"]):
+        if(settings["workplace"]):
             self.progress.emit()
             step5()
-        if(settings.dict["shortcut"]):
+        if(settings["shortcut"]):
             self.progress.emit()
             step6()
         self.finished.emit()

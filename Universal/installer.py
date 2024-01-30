@@ -30,59 +30,20 @@ elif os_name == "Windows":
 elif os_name == "Linux":
     import tarfile
 
-class Settings:
-    def __init__(self):
-        self.dict = {
-            "install_path": "",
-            "workplace_path": "",
-            "tools": True,
-            "gcm": True,
-            "arm_gcc_toolchain": True,
-            "vscode_app": True,
-            "vscode_settings": True,
-            "workplace_reinstall": True,
-            "shortcut": True,
-            "vscode_url": "",
-            "arm_gcc_toolchain_url": "",
-            "gcm_url": "",
-            "clear_cache": False
-        }
-        if os_name == "Darwin":
-            self.dict["install_path"] = os.popen("echo $HOME/Applications/").read().rstrip()
-            self.dict["workplace_path"] = os.popen("echo $HOME/Documents/").read().rstrip()
-            self.dict["vscode_url"] = "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
-            self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
-            self.dict["gcm_url"] = "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
-        elif os_name == "Windows":
-            self.dict["install_path"] = os.popen("echo %APPDATA%").read().rstrip()
-            self.dict["workplace_path"] = os.popen("echo %USERPROFILE%\\Documents\\").read().rstrip()
-            self.dict["vscode_url"] = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable"
-            self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip"
-            self.dict["gcm_url"] = "https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe"
-        elif os_name == "Linux":
-            self.dict["install_path"] = os.popen("echo $HOME/.local/bin/").read().rstrip()
-            self.dict["workplace_path"] = os.popen("echo $HOME/Documents/").read().rstrip()
-            self.dict["vscode_url"] = "https://update.code.visualstudio.com/latest/linux-x64/stable"
-            self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2"
-            self.dict["gcm_url"] = "https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb"
-        
-    def __str__(self):
-        return str(self.dict)
-
-settings = Settings()
+settings = {}
 
 def init_folders():
     logging.info("Creating folders")
-    if not os.path.exists(settings.dict["install_path"]):
-        os.makedirs(settings.dict["install_path"])
-    if not os.path.exists(settings.dict["install_path"] + "/EPuck2_Utils/"):
-        os.makedirs(settings.dict["install_path"] + "/EPuck2_Utils/")
-    if not os.path.exists(settings.dict["workplace_path"]):
-        os.makedirs(settings.dict["workplace_path"])
+    if not os.path.exists(settings["install_path"]):
+        os.makedirs(settings["install_path"])
+    if not os.path.exists(settings["install_path"] + "/EPuck2_Utils/"):
+        os.makedirs(settings["install_path"] + "/EPuck2_Utils/")
+    if not os.path.exists(settings["workplace_path"]):
+        os.makedirs(settings["workplace_path"])
      
 # Tools installation
 def step0():
-    os.chdir(settings.dict["install_path"])
+    os.chdir(settings["install_path"])
         
     if os_name == "Darwin":    
         logging.info("Installation of dfu-util, git")
@@ -97,7 +58,7 @@ def step0():
     
 # Github Credential Manager installation
 def step1():
-    os.chdir(settings.dict["install_path"])
+    os.chdir(settings["install_path"])
         
     if os_name == "Darwin":    
         logging.info("Installation of git-credential-manager-core")
@@ -105,14 +66,14 @@ def step1():
         os.system("brew --cask git-credential-manager-core")
     elif os_name == "Windows":
         logging.info("Installation of Git for Windows")
-        downloadTo(settings.dict["gcm_url"], "git_setup.exe")
+        downloadTo(settings["gcm_url"], "git_setup.exe")
         logging.warning("Please install git from the external dialog that opens right now")
         subprocess.run("git_setup.exe")
-        if settings.dict["clear_cache"]:
+        if settings["clear_cache"]:
             os.remove("git_setup.exe")
     elif os_name == "Linux":
         logging.info("Installation of git-credential-manager")
-        downloadTo(settings.dict["gcm_url"], "gcm.deb")
+        downloadTo(settings["gcm_url"], "gcm.deb")
         logging.info("configuring git credential manager")
         os_cli("sudo dpkg -i gcm.deb")
         os_cli("git-credential-manager-core configure")
@@ -124,12 +85,12 @@ def step1():
                 file.write("[credential]\n")
                 file.write("        credentialStore = secretservice")
 
-        if settings.dict["clear_cache"]:
+        if settings["clear_cache"]:
             os.remove("gcm.deb")
 
 # Visual Studio Code installation
 def step2():
-    os.chdir(settings.dict["install_path"])
+    os.chdir(settings["install_path"])
 
     src = "vscode.zip"
     dest = "EPuck2_VSCode"         
@@ -139,7 +100,7 @@ def step2():
         dest = "EPuck2_VSCode.app"
 
     for attempt in range(2):
-        downloadTo(settings.dict["vscode_url"], src)
+        downloadTo(settings["vscode_url"], src)
         
         try:
             if os.path.isdir(dest): 
@@ -157,7 +118,7 @@ def step2():
                 with zipfile.ZipFile(src, "r") as file:
                     file.extractall(dest)
             
-            if settings.dict["clear_cache"]:
+            if settings["clear_cache"]:
                 os.remove(src)
     
             break #stop the loop if no error occured
@@ -177,7 +138,7 @@ def step2():
 
 # arm_gcc_toolchain installation
 def step3():
-    os.chdir(settings.dict["install_path"])
+    os.chdir(settings["install_path"])
 
     src = "arm_gcc_toolchain.tar.bz2"
     dest = "EPuck2_Utils/arm_gcc_toolchain"         
@@ -186,7 +147,7 @@ def step3():
 
     for attempt in range(2):
         if not os.path.isfile(src):
-            downloadTo(settings.dict["arm_gcc_toolchain_url"], src)
+            downloadTo(settings["arm_gcc_toolchain_url"], src)
         else:
             logging.info(f"{src} already exists, not redownloading, delete manualy if file corrupted")
         
@@ -205,7 +166,7 @@ def step3():
             
             file.close()
             
-            if settings.dict["clear_cache"]:
+            if settings["clear_cache"]:
                 os.remove(src)
     
             break #stop the loop if no error occured
@@ -228,8 +189,8 @@ def step3():
 # VSCode configuration
 def step4():
     if os_name == "Windows":
-        make_path = settings.dict["install_path"] + "/EPuck2_Utils/gnutools/make"
-        dfu_util = settings.dict["install_path"] + "/EPuck2_Utils/dfu-util.exe"
+        make_path = settings["install_path"] + "/EPuck2_Utils/gnutools/make"
+        dfu_util = settings["install_path"] + "/EPuck2_Utils/dfu-util.exe"
     else:
         make_path = "make"
         dfu_util = "dfu-util"
@@ -240,24 +201,24 @@ def step4():
     {{
         "extensions.autoCheckUpdates": false,
         "extensions.autoUpdate": false,
-        "gcc_arm_path": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain",
-        "gcc_arm_path_compiler": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc",
+        "gcc_arm_path": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain",
+        "gcc_arm_path_compiler": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc",
         "make_path": "{make_path.replace(b1, b2)}",
-        "epuck2_utils": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/Utils",
-        "install_path": "{settings.dict["install_path"].replace(b1, b2)}",
-        "workplace": "{settings.dict["workplace_path"].replace(b1, b2)}",
+        "epuck2_utils": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/Utils",
+        "install_path": "{settings["install_path"].replace(b1, b2)}",
+        "workplace": "{settings["workplace_path"].replace(b1, b2)}",
         "terminal.integrated.env.osx": {{
-            "PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
+            "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
         }},
         "terminal.integrated.env.linux": {{
-            "PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
+            "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
         }},
         "terminal.integrated.env.windows": {{
-            "PATH": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin;{settings.dict["install_path"]}//EPuck2_Utils//gnutools;${{env:PATH}}"
+            "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin;{settings["install_path"]}//EPuck2_Utils//gnutools;${{env:PATH}}"
         }},
-        "cortex-debug.armToolchainPath.osx": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-        "cortex-debug.armToolchainPath.windows": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-        "cortex-debug.armToolchainPath,linux": "{settings.dict["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+        "cortex-debug.armToolchainPath.osx": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+        "cortex-debug.armToolchainPath.windows": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+        "cortex-debug.armToolchainPath,linux": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
         "version": "{version}"
     }}
     '''
@@ -269,7 +230,7 @@ def step4():
             {{
                 "label": "User:List EPuck2 ports",
                 "type": "shell",
-                "command": "cd {settings.dict["install_path"]}/EPuck2_Utils/Utils && ./epuck2_port_check.sh",
+                "command": "cd {settings["install_path"]}/EPuck2_Utils/Utils && ./epuck2_port_check.sh",
                 "group": {{
                     "kind": "build",
                     "isDefault": true
@@ -281,7 +242,7 @@ def step4():
             {{
                 "label": "User:DFU EPuck-2-Main_Processor",
                 "type": "shell",
-                "command": "{dfu_util} -d 0483:df11 -a 0 -s 0x08000000 -D {settings.dict["install_path"]}/EPuck2_Utils/Utils/e-puck2_main-processor.bin",
+                "command": "{dfu_util} -d 0483:df11 -a 0 -s 0x08000000 -D {settings["install_path"]}/EPuck2_Utils/Utils/e-puck2_main-processor.bin",
                 "group": {{
                     "kind": "build",
                     "isDefault": true
@@ -293,7 +254,7 @@ def step4():
             {{
                 "label": "User:Run EPuckMonitor",
                 "type": "shell",
-                "command": "python {settings.dict["install_path"]}/EPuck2_Utils/Utils/monitor.py",
+                "command": "python {settings["install_path"]}/EPuck2_Utils/Utils/monitor.py",
                 "group": {{
                     "kind": "build",
                     "isDefault": true
@@ -307,12 +268,12 @@ def step4():
     }}
 '''
 
-    os.chdir(settings.dict["install_path"])
+    os.chdir(settings["install_path"])
 
     logging.info("vscode settings configuration option is selected, proceeding")
     exe = "./code "
-    data_dir = settings.dict["install_path"]
-    bin_dir = settings.dict["install_path"]
+    data_dir = settings["install_path"]
+    bin_dir = settings["install_path"]
     if os_name == "Darwin":
         data_dir += "/code-portable-data/"
         bin_dir += "/EPuck2_VSCode.app/Contents/Resources/app/bin/"
@@ -379,7 +340,7 @@ def step4():
         logging.info("VSCode tasks.json created!")
 
 def step5():
-    os.chdir(settings.dict["workplace_path"])
+    os.chdir(settings["workplace_path"])
 
     print(colored("workplace reinstall option is selected, proceeding", "green"))
     if os.path.isdir("EPuck2_Workplace"):
@@ -399,21 +360,21 @@ def step5():
 def step6():
     print(colored("shortcut creation selected, proceeding", "green"))
     if os_name == "Windows":
-        os.chdir(settings.dict["install_path"] + "/EPuck2_VSCode")
+        os.chdir(settings["install_path"] + "/EPuck2_VSCode")
         os.system(f"cmd.exe /c \"start {origin}/Universal/shortcut.bat\"")
     elif os_name == "Linux":
-        os.chdir(settings.dict["install_path"] + "/EPuck2_VSCode")
         desktop_file = f'''
 [Desktop Entry]
 Type=Application
 Terminal=false
 Name=Visual Studio Code EPuck2
-Exec={settings.dict["install_path"]}/EPuck2_VSCode/code
-Icon={settings.dict["install_path"]}/EPzck2_VSCode/resources/app/resources/linux/code.png
+Exec={settings["install_path"]}/EPuck2_VSCode/code
+Icon={settings["install_path"]}/EPzck2_VSCode/resources/app/resources/linux/code.png
         '''
         os.chdir(os.popen("echo $HOME/Desktop").read().rstrip())
-        with open("vscode_epuck2.desktop") as file:
+        filename = "vscode_epuck2.desktop"
+        with open(filename, "w+") as file:
             file.write(desktop_file)
         # According to https://www.how2shout.com/linux/allow-launching-linux-desktop-shortcut-files-using-command-terminal/
-        os_cli("gio set $FILE metadata::trusted true")  # Mark the shortcut status trusted
-        os_cli("chmod u+x $FILE") # Then allow execution
+        os_cli(f"set {filename} metadata::trusted true")  # Mark the shortcut status trusted
+        os_cli(f"chmod u+x {filename}") # Then allow execution

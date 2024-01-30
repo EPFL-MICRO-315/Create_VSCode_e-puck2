@@ -193,26 +193,28 @@ def step4():
 
     json_settings = f'''
 {{
+    "window.title": "$\{{dirty}}${{activeEditorShort}}${{separator}}${{rootName}}${{separator}}${{profileName}}${{separator}}Visual Studio Code E-Puck2",
     "extensions.autoCheckUpdates": false,
     "extensions.autoUpdate": false,
-    "gcc_arm_path": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain",
-    "gcc_arm_path_compiler": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc",
+    "editor.parameterHints.enabled": false,
+    "gcc_arm_path": "{settings["install_path"].replace(b1, b2)}EPuck2_Utils/arm_gcc_toolchain",
+    "gcc_arm_path_compiler": "{settings["install_path"].replace(b1, b2)}EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc",
     "make_path": "{make_path.replace(b1, b2)}",
-    "epuck2_utils": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/Utils",
+    "epuck2_utils": "{settings["install_path"].replace(b1, b2)}EPuck2_Utils/Utils",
     "install_path": "{settings["install_path"].replace(b1, b2)}",
     "workplace": "{settings["workplace_path"].replace(b1, b2)}",
     "terminal.integrated.env.osx": {{
-        "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
+        "PATH": "{settings["install_path"].replace(b1, b2)}EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
     }},
     "terminal.integrated.env.linux": {{
-        "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
+        "PATH": "{settings["install_path"].replace(b1, b2)}EPuck2_Utils/arm_gcc_toolchain/bin:${{env:PATH}}"
     }},
     "terminal.integrated.env.windows": {{
-        "PATH": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin;{settings["install_path"]}//EPuck2_Utils//gnutools;${{env:PATH}}"
+        "PATH": "{settings["install_path"].replace(b1, b2)}EPuck2_Utils/arm_gcc_toolchain/bin;{settings["install_path"]}//EPuck2_Utils//gnutools;${{env:PATH}}"
     }},
-    "cortex-debug.armToolchainPath.osx": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-    "cortex-debug.armToolchainPath.windows": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-    "cortex-debug.armToolchainPath,linux": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+    "cortex-debug.armToolchainPath.osx": "{settings["install_path"].replace(b1, b2)}EPuck2_Utils/arm_gcc_toolchain/bin",
+    "cortex-debug.armToolchainPath.windows": "{settings["install_path"].replace(b1, b2)}EPuck2_Utils/arm_gcc_toolchain/bin",
+    "cortex-debug.armToolchainPath,linux": "{settings["install_path"].replace(b1, b2)}EPuck2_Utils/arm_gcc_toolchain/bin",
     "version": "{version}"
 }}
     '''
@@ -224,7 +226,7 @@ def step4():
         {{
             "label": "User:List EPuck2 ports",
             "type": "shell",
-            "command": "cd {settings["install_path"]}/EPuck2_Utils/Utils && ./epuck2_port_check.sh",
+            "command": "cd {settings["install_path"]}EPuck2_Utils/Utils && ./epuck2_port_check.sh",
             "group": {{
                 "kind": "build",
                 "isDefault": true
@@ -236,7 +238,7 @@ def step4():
         {{
             "label": "User:DFU EPuck-2-Main_Processor",
             "type": "shell",
-            "command": "{dfu_util} -d 0483:df11 -a 0 -s 0x08000000 -D {settings["install_path"]}/EPuck2_Utils/Utils/e-puck2_main-processor.bin",
+            "command": "{dfu_util} -d 0483:df11 -a 0 -s 0x08000000 -D {settings["install_path"]}EPuck2_Utils/Utils/e-puck2_main-processor.bin",
             "group": {{
                 "kind": "build",
                 "isDefault": true
@@ -248,7 +250,7 @@ def step4():
         {{
             "label": "User:Run EPuckMonitor",
             "type": "shell",
-            "command": "python {settings["install_path"]}/EPuck2_Utils/Utils/monitor.py",
+            "command": "python {settings["install_path"]}EPuck2_Utils/Utils/monitor.py",
             "group": {{
                 "kind": "build",
                 "isDefault": true
@@ -363,10 +365,11 @@ def step6():
 Type=Application
 Terminal=false
 Name=Visual Studio Code EPuck2
-Exec={settings["install_path"]}/EPuck2_VSCode/code
-Icon={settings["install_path"]}/EPzck2_VSCode/resources/app/resources/linux/code.png
+Exec={settings["install_path"]}EPuck2_VSCode/code
+Icon={settings["install_path"]}EPuck2_VSCode/resources/app/resources/linux/code.png
+Catergories=Development;IDE;
         '''
-        os.chdir(os.popen("echo $HOME/Desktop").read().rstrip())
+        os.chdir(os.popen("echo $HOME/.local/share/applications").read().rstrip())
         filename = "vscode_epuck2.desktop"
         with open(filename, "w+") as file:
             file.write(desktop_file)

@@ -145,7 +145,7 @@ def step3():
         src = "arm_gcc_toolchain.zip"
 
     for attempt in range(2):
-        downloadTo(settings["arm_gcc_toolchain_url"], src)
+        downloadTo(settings["arm_url"], src)
         
         try:
             if os.path.isdir(dest): 

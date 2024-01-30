@@ -11,7 +11,7 @@ line3='eval "$(pyenv init -)"' #for .bashrc, .profile, .bash_profile
 function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
 	sudo apt-get update
-	sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev libmtdev-dev libglib2.0-dev libnss3-dev libatk1.0-dev libatk-bridge2.0-dev libgtk-3-dev libasound-dev
+	sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev libmtdev-dev libglib2.0-dev libnss3-dev libatk1.0-dev libatk-bridge2.0-dev libgtk-3-dev libasound-dev python3-tk libxcb-xinerama0
 
 	if ! command -v pyenv &> /dev/null
 	then
@@ -42,14 +42,18 @@ function install() {
 
 	echo -e "${GREEN}Reloading the shell${NC}"
 	source ~/.bashrc
+	source ~/.profile
+	source ~/.bash_profile
 
 	echo -e "${GREEN}Installing python 3.11.2${NC}"
-	LDFLAGS="-L/nix/store/j0pi1a69r7zzwxl92c21w1l2syyfnchp-zlib-1.3/lib" pyenv install -s 3.11.2
+	#LDFLAGS="-L/nix/store/j0pi1a69r7zzwxl92c21w1l2syyfnchp-zlib-1.3/lib" pyenv install -s 3.11.2
+	pyenv install -s 3.11.2
 	pyenv local 3.11.2
 
 	echo -e "${GREEN}Installing packages required for installation${NC}"
 	pip install --upgrade pip
 	pip install PyQt5
+	pip install requests
 	echo -e "${GREEN}Launching the installer${NC}"
 	python Universal/main.py
 }

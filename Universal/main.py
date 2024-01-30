@@ -4,6 +4,7 @@ import logging
 import time
 import platform
 from installer import *
+from utils import *
 
 os_name = platform.system()
 fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'tools', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url' ]
@@ -270,7 +271,7 @@ class InstallPage(QtWidgets.QWizardPage):
             color = "darkred"
         elif log_level == "WARNING":
             color = "darkorange"
-        elif log_level == "DEBUG":
+        elif log_level == "PROGRESS":
             color = "darkblue"
         else:
             text = log_content
@@ -283,7 +284,7 @@ class InstallPage(QtWidgets.QWizardPage):
 
     def increaseProgress(self):
         self.progress.setValue(self.progress.value() + 1)
-        logging.debug("progress: " + str(self.progress.value()) + "/" + str(self.progress.maximum()))
+        logging.progress(str(self.progress.value()) + "/" + str(self.progress.maximum()))
 
     def installerComplete(self):
         self.increaseProgress()
@@ -350,6 +351,7 @@ if __name__ == '__main__':
     handlers = [file_handler, stdout_handler, qt_handler]
     
     logging.basicConfig(encoding='utf-8', level=logging.INFO, handlers=handlers)
+    addLoggingLevel("PROGRESS", 25)
     logging.warning("Log saved at: " + log_file)
     
     app = QtWidgets.QApplication(sys.argv)

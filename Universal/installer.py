@@ -258,9 +258,19 @@ def step4():
             "presentation": {{
                 "echo": false,
             }}
+        }},
+        {{
+            "label": "User:Clone Lib",
+            "type": "shell",
+            "command": "rm -rf {settings["workplace_path"]}Lib && git clone https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git {settings["workplace_path"]}Lib",
+            "group": {{
+                "kind": "build",
+                "isDefault": true
+            }},
+            "presentation": {{
+                "echo": false,
+            }}
         }}
-        #TODO: add a clone Lib task
-    ]
     }}
 '''
 
@@ -351,7 +361,11 @@ def step5():
     folder = "Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly/"
     if os.path.isfile(folder + "package.json"):
         os.rename(folder + "package.json", folder + "package.json-renamed-because-conflict-task-tp-4")
-    #TODO: verification step (Lib actually cloned)
+
+    if not os.path.isfile(settings["workplace_path"] + "Lib/README.md"): #check if Lib was correctly cloned 
+        logging.error("VSCode tasks.json not created!")
+    else:
+        logging.info("VSCode tasks.json created!")
 
 def step6():
     logging.warning("shortcut creation selected, proceeding")

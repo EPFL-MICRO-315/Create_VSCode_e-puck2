@@ -294,9 +294,9 @@ class InstallPage(QtWidgets.QWizardPage):
             pass
 
         self.setTitle("Installation completed") 
-        self.completeChanged.emit()
         self.isCompleteValue = True
-
+        self.completeChanged.emit()
+        
     def isComplete(self):
         return self.isCompleteValue
     

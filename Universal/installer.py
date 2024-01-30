@@ -10,12 +10,14 @@ License:
 """
 
 import os
+from os.path import expanduser
 import sys
 import time
 import platform
 import shutil
 import logging
 from utils import *
+
 
 origin = os.getcwd()
 os_name = platform.system()
@@ -33,23 +35,23 @@ class Settings:
         self.dict = {
             "install_path": "",
             "workplace_path": "",
-            "gcm": 1,
-            "arm_gcc_toolchain": 1,
-            "vscode_app": 1,
-            "vscode_settings": 1,
-            "workplace_reinstall": 1,
-            "shortcut": 1,
+            "gcm": True,
+            "arm_gcc_toolchain": True,
+            "vscode_app": True,
+            "vscode_settings": True,
+            "workplace_reinstall": True,
+            "shortcut": True,
             "vscode_url": "",
             "arm_gcc_toolchain_url": "",
             "gcm_url": "",
-            "clear_cache": "1"
+            "clear_cache": False
         }
         if os_name == "Darwin":
             self.dict["install_path"] = os.popen("echo $HOME/Applications/").read().rstrip()
             self.dict["workplace_path"] = os.popen("echo $HOME/Documents/").read().rstrip()
             self.dict["vscode_url"] = "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
             self.dict["arm_gcc_toolchain_url"] = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2"
-            self.dict["gcm"] = "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+            self.dict["gcm_url"] = "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
         elif os_name == "Windows":
             self.dict["install_path"] = os.popen("echo %APPDATA%").read().rstrip()
             self.dict["workplace_path"] = os.popen("echo %USERPROFILE%\\Documents\\").read().rstrip()
@@ -80,34 +82,40 @@ def init_folders():
 # Utils installation
 def step1():
     os.chdir(settings.dict["install_path"])
-
+        
     if os_name == "Darwin":    
         logging.info("Installation of dfu-util, git and git-credential-manager-core")
         os.system("brew tap microsoft/git")
         os.system("brew install dfu-util git")
-        if settings.dict["gcm"] == "1":
+        if settings.dict["gcm"]:
             os.system("brew --cask git-credential-manager-core")
     elif os_name == "Windows":
-        if settings.dict["gcm"] == "1":
+        if settings.dict["gcm"]:
             logging.info("Installation of Git for Windows")
             downloadTo(settings.dict["gcm_url"], "git_setup.exe")
             logging.warning("Please install git from the external dialog that opens right now")
             subprocess.run("git_setup.exe")
-            if settings.dict["clear_cache"] == "1":
+            if settings.dict["clear_cache"]:
                 os.remove("git_setup.exe")
         os_copy(origin + "/Universal/gnutools", "EPuck2_Utils/gnutools")
     elif os_name == "Linux":
         logging.info("Installation of make, dfu-util and git")
         os_cli("sudo apt-get -y install make dfu-util git")
-        if settings.dict["gcm"] == "1":
+        if settings.dict["gcm"]:
             logging.info("Installation of git-credential-manager")
             downloadTo(settings.dict["gcm_url"], "gcm.deb")
             logging.info("configuring git credential manager")
             os_cli("sudo dpkg -i gcm.deb")
             os_cli("git-credential-manager-core configure")
-            os_cli("echo \"[credential]\" >> ~/.gitconfig")
-            os_cli("echo \"        credentialStore = secretservice\" >> ~/.gitconfig")
-            if settings.dict["clear_cache"] == "1":
+            
+            #TODO: Check if really necessary
+            with open(expanduser("~") + '/.gitconfig', 'a+') as file:
+                content = file.read()
+                if '[credential]' not in content or '        credentialStore = secretservice' not in content:
+                    file.write("[credential]\n")
+                    file.write("        credentialStore = secretservice")
+
+            if settings.dict["clear_cache"]:
                 os.remove("gcm.deb")
         os_cli("sudo adduser $USER dialout")
     os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils")
@@ -123,7 +131,7 @@ def step2():
     elif os_name == "Darwin":
         dest = "EPuck2_VSCode.app"
 
-    if settings.dict["vscode_app"] == "1":
+    if settings.dict["vscode_app"] == True:
         for attempt in range(2):
             if not os.path.isfile(src):
                 downloadTo(settings.dict["vscode_url"], src)
@@ -146,7 +154,7 @@ def step2():
                     with zipfile.ZipFile(src, "r") as file:
                         file.extractall(dest)
                
-                if settings.dict["clear_cache"] == "1":
+                if settings.dict["clear_cache"] == True:
                     os.remove(src)
         
                 break #stop the loop if no error occured
@@ -176,7 +184,7 @@ def step3():
     if os_name == "Windows":
         src = "arm_gcc_toolchain.zip"
 
-    if settings.dict["arm_gcc_toolchain"] == "1":
+    if settings.dict["arm_gcc_toolchain"] == True:
         for attempt in range(2):
             if not os.path.isfile(src):
                 downloadTo(settings.dict["arm_gcc_toolchain_url"], src)
@@ -198,7 +206,7 @@ def step3():
                
                 file.close()
                
-                if settings.dict["clear_cache"] == "1":
+                if settings.dict["clear_cache"] == True:
                     os.remove(src)
         
                 break #stop the loop if no error occured
@@ -301,7 +309,7 @@ json_tasks = f'''
 def step4():
     os.chdir(settings.dict["install_path"])
 
-    if settings.dict["vscode_settings"] == "1":
+    if settings.dict["vscode_settings"] == True:
         logging.info("vscode settings configuration option is selected, proceeding")
         exe = "./code "
         data_dir = settings.dict["install_path"]
@@ -375,7 +383,7 @@ def step4():
 def step5():
     os.chdir(settings.dict["workplace_path"])
 
-    if settings.dict["workplace_reinstall"] == "1":
+    if settings.dict["workplace_reinstall"] == True:
         print(colored("workplace reinstall option is selected, proceeding", "green"))
         if os.path.isdir("EPuck2_Workplace"):
             if not os_name == "Windows":
@@ -393,7 +401,7 @@ def step5():
     return True
 
 def step6():
-    if settings.dict["shortcut"] == "1":
+    if settings.dict["shortcut"] == True:
         print(colored("shortcut creation selected, proceeding", "green"))
         if os_name == "Windows":
             os.chdir(settings.dict["install_path"] + "/EPuck2_VSCode")

@@ -7,7 +7,7 @@ from installer import *
 
 os_name = platform.system()
 fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url' ]
-        
+
 class ClassWizard(QtWidgets.QWizard):
     def __init__(self, parent=None):
         super(ClassWizard, self).__init__(parent)
@@ -18,6 +18,7 @@ class ClassWizard(QtWidgets.QWizard):
         self.addPage(ProceedPage())
         self.addPage(InstallPage())
         
+        self.setMinimumSize(800, 600)
         px = QtGui.QPixmap('Universal/e-puck2.png')
         px = px.scaled(250, 250, QtCore.Qt.KeepAspectRatio);
         self.setPixmap(QtWidgets.QWizard.WatermarkPixmap, px)
@@ -128,7 +129,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         gcm.setChecked(True)
         workplace.setChecked(True)
         shortcut.setChecked(True)
-        clear_cache.setChecked(True)
+        clear_cache.setChecked(False)
 
         checkBoxL = QtWidgets.QVBoxLayout()
         checkBoxL.addWidget(vscode)
@@ -215,11 +216,11 @@ class InstallPage(QtWidgets.QWizardPage):
                                       "Please be patient (it could take a few of minutes depending on your connection)")
         self.label.setWordWrap(True)
         self.progress = QtWidgets.QProgressBar()
-        self.progress.setRange(0, 6)
+        self.progress.setRange(0, 6) #TODO: change this value depending on what is enabled via settings
         self.console = QtWidgets.QTextEdit()
         self.console.setReadOnly(True)
         qt_handler.signal.connect(self.updateConsole)
-
+        
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.label)
         layout.addWidget(self.progress)
@@ -229,9 +230,10 @@ class InstallPage(QtWidgets.QWizardPage):
     def initializePage(self):
         logging.warning("Settings summary: ")
         for f in fields:
-            settings.dict[f] = str(self.field(f))
-            logging.info(f + ": " + settings.dict[f])
+            settings.dict[f] = self.field(f)
+            logging.info(f + ": " + str(settings.dict[f]))
         logging.warning("Installation starting")
+
         self.thread = QThread()
         self.worker = Worker()
         self.worker.moveToThread(self.thread)
@@ -242,11 +244,10 @@ class InstallPage(QtWidgets.QWizardPage):
         self.worker.progress.connect(self.reportProgress)
         self.thread.start()
 
-    def updateConsole(self, text):
-        
+    def updateConsole(self, text):            
         # Parse the log level from the text
         log_level = text.split(":")[0]
-
+        
         # Set the text color based on the log level
         weight = "bold"
         if log_level == "CRITICAL":
@@ -255,8 +256,6 @@ class InstallPage(QtWidgets.QWizardPage):
             color = "darkred"
         elif log_level == "WARNING":
             color = "darkorange"
-        elif log_level == "INFO":
-            color = "darkgreen"
         elif log_level == "DEBUG":
             color = "darkblue"
         else:
@@ -294,6 +293,7 @@ class Worker(QObject):
             self.finished.emit()
             return
         self.progress.emit(2)
+        
         if(not step2()):
             self.finished.emit()
             return

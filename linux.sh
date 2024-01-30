@@ -87,9 +87,12 @@ case "$1" in
     uninstall)
         uninstall
         ;;
-    install|'')
+    install)
         install
         ;;
+	debug)
+		python Universal/main.py
+		;;
     help)
 		echo -e "This installer script is made for Ubuntu"
 		echo -e "It should works on most debian based distributions as well"

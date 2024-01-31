@@ -57,7 +57,7 @@ function uninstall() {
     read response
     if [ "$response" = "yes" ]; then
         echo -e "${GREEN}Uninstalling pyenv and related packages${NC}"
-        rm -rf ~/.pyenv
+        brew uninstall pyenv
 
         # remove the lines from .zshrc
         sed -i '' "/${line1//\//\\/}/d" ~/.zshrc

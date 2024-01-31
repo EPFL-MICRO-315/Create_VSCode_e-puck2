@@ -73,7 +73,7 @@ def step1():
     elif os_name == "Linux":
         downloadTo(settings["gcm_url"], "gcm.deb")
         os_cli("sudo dpkg -i gcm.deb")
-        os_cli("git-credential-manager-core configure")
+        os_cli("git-credential-manager configure")
         os_cli("git config --global credential.credentialStore secretservice") # might need to logout and login again
 
         if settings["clear_cache"]:

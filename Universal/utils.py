@@ -102,7 +102,8 @@ def addLoggingLevel(levelName, levelNum, methodName=None):
     setattr(logging, methodName, logToRoot)
 
 def rmdir(dir):
-    if not os_name == "Windows":
-        shutil.rmtree(dir)
-    else:
-        os_cli(f"rmdir /s {dir}")
+    if os.path.isdir(dir):
+        if not os_name == "Windows":
+            shutil.rmtree(dir)
+        else:
+            os_cli(f"rmdir /s {dir}")

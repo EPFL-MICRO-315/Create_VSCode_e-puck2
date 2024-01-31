@@ -14,11 +14,11 @@ class ClassWizard(QtWidgets.QWizard):
     def __init__(self, parent=None):
         super(ClassWizard, self).__init__(parent)
 
-        self.addPage(IntroPage())
-        self.addPage(SetupPage())
-        self.addPage(AdvancedSetupPage())
-        self.addPage(ProceedPage())
-        self.addPage(InstallPage())
+        self.intro_id = self.addPage(IntroPage())
+        self.setup_id = self.addPage(SetupPage())
+        self.advanced_setup_id = self.addPage(AdvancedSetupPage())
+        self.proceed_id = self.addPage(ProceedPage())
+        self.install_id = self.addPage(InstallPage())
         
         self.setWindowTitle("VSCode EPuck2 Setup")
         self.setMinimumSize(800, 600)
@@ -32,7 +32,7 @@ class ClassWizard(QtWidgets.QWizard):
             px = QtGui.QPixmap('Universal/e-puck2.png')
             px = px.scaled(250, 250, QtCore.Qt.KeepAspectRatio)
             self.setPixmap(QtWidgets.QWizard.WatermarkPixmap, px)
-            self.setWizardStyle(QtWidgets.QWizard.MacStyle)
+            self.setWizardStyle(QtWidgets.QWizard.ModernStyle)
         
     def accept(self):
         super(ClassWizard, self).accept()
@@ -44,15 +44,33 @@ class IntroPage(QtWidgets.QWizardPage):
 
         self.setTitle("Welcome to the VSCode EPuck2 Setup Wizard")        
 
-        label = QtWidgets.QLabel("This wizard will install on this computer a copy of VSCode EPuck 2 IDE.\n"
+        label = QtWidgets.QLabel("This wizard is able to install and uninstall on this computer a copy of VSCode EPuck 2 IDE.\n"
                 "This software includes the editor (VSCode) with pre-installed extensions, "
                 "it also includes the ARM toolchain (compiler and debugger).")
         label.setWordWrap(True)
 
+
+        actionBox = QtWidgets.QGroupBox("What do you want to do:")
+        installButton = QtWidgets.QRadioButton('Install')
+        uninstallButton = QtWidgets.QRadioButton('Uninstall')
+        
+        actionBoxL = QtWidgets.QGridLayout()
+        actionBoxL.addWidget(installButton)
+        actionBoxL.addWidget(uninstallButton)
+        actionBox.setLayout(actionBoxL)
+
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(label)
+        layout.addWidget(actionBox)
         self.setLayout(layout)
 
+        self.registerField('install_bool', installButton)
+        self.registerField('uninstall_bool', uninstallButton)
+    
+    def validatePage(self):
+        if not (self.field('install_bool') or self.field('uninstall_bool')):
+            return False
+        return True
 
 class SetupPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
@@ -86,11 +104,6 @@ class SetupPage(QtWidgets.QWizardPage):
                 workplacePath = tmp
             workplacePathEdit.setText(workplacePath)
 
-
-        self.setTitle("Custom the setup")     
-        self.setSubTitle("Specify in more details where you want the wizard to setup the IDE")
-
-
         installPathBox = QtWidgets.QGroupBox("Install Path:")
         installPathButton = QtWidgets.QPushButton('...')
         installPathButton.clicked.connect(installPath_dialog)
@@ -121,6 +134,20 @@ class SetupPage(QtWidgets.QWizardPage):
         # registerField functions are used to let other pages accessing the specfied variable with user defined key
         self.registerField('install_path', installPathEdit)
         self.registerField('workplace_path', workplacePathEdit)
+
+    def initializePage(self):
+        if self.field('install_bool'):
+            self.setTitle("Custom the setup - Install")     
+            self.setSubTitle("Specify in more details where you want the wizard to install the IDE")
+        elif self.field('uninstall_bool'):
+            self.setTitle("Custom the setup - Uninstall")     
+            self.setSubTitle("Specify in more details where is located the IDE to be uninstalled")
+
+    #def nextId(self):
+    #    if self.field('install_bool'):
+    #        return ClassWizard.intro_id
+    #    elif self.field('uninstall_bool'):
+    #        return ClassWizard.intro_id
 
 class AdvancedSetupPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):

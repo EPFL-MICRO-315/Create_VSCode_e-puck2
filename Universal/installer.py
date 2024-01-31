@@ -187,7 +187,7 @@ def step4():
 
     json_settings = f'''
 {{
-    "window.title": "$\{{dirty}}${{activeEditorShort}}${{separator}}${{rootName}}${{separator}}${{profileName}}${{separator}}Visual Studio Code E-Puck2",
+    "window.title": "${{dirty}}${{activeEditorShort}}${{separator}}${{rootName}}${{separator}}${{profileName}}${{separator}}Visual Studio Code E-Puck2",
     "extensions.autoCheckUpdates": false,
     "extensions.autoUpdate": false,
     "editor.parameterHints.enabled": false,

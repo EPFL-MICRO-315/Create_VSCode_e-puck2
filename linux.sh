@@ -7,11 +7,12 @@ line1='export PYENV_ROOT="$HOME/.pyenv"' #for .bashrc, .profile, .bash_profile
 line2='command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' #for .bashrc, .profile
 line4='[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' #for .bash_profile
 line3='eval "$(pyenv init -)"' #for .bashrc, .profile, .bash_profile
+PACKAGES= "make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev libmtdev-dev libglib2.0-dev libnss3-dev libatk1.0-dev libatk-bridge2.0-dev libgtk-3-dev libasound-dev python3-tk libxcb-xinerama0"
 
 function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
 	sudo apt-get update
-	sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev libmtdev-dev libglib2.0-dev libnss3-dev libatk1.0-dev libatk-bridge2.0-dev libgtk-3-dev libasound-dev python3-tk libxcb-xinerama0
+	sudo apt-get install -y $PACKAGES
 
 	if ! command -v pyenv &> /dev/null
 	then
@@ -82,8 +83,18 @@ function uninstall() {
     else
         echo -e "${GREEN}Skipping pyenv uninstallation${NC}"
     fi
+
+	for package in $PACKAGES; do
+    if apt-cache rdepends $package | grep -q "^ "; then
+        echo "$package is a dependency of another package, not removing"
+    else
+        echo "${GREEN}Removing $package${NC}"
+        sudo apt-get remove -y $package
+    fi
+	done
 }
 
+echo -e "${GREEN}The script should be run within the Create_VSCode_e-puck2 directory!${NC}"
 case "$1" in
     uninstall)
         uninstall

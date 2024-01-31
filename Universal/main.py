@@ -20,7 +20,7 @@ install_id = 4
 class ClassWizard(QtWidgets.QWizard):
     def __init__(self, parent=None):
         super(ClassWizard, self).__init__(parent)
-        self.setWindowIcon(QtGui.QIcon('Universal/icon.png'))
+        
         self.setPage(intro_id, IntroPage())
         self.setPage(setup_id, SetupPage())
         self.setPage(advanced_setup_id, AdvancedSetupPage())

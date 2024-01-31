@@ -213,6 +213,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         vscode_settings.setChecked(True)
         arm.setChecked(True)
         monitor.setChecked(True)
+        tools.setChecked(True)
         gcm.setChecked(True)
         workplace.setChecked(True)
         shortcut.setChecked(True)

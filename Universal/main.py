@@ -275,6 +275,8 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         urlBoxL.addWidget(vscode_urlEdit)
         urlBoxL.addWidget(arm_urlDescription)
         urlBoxL.addWidget(arm_urlEdit)
+        urlBoxL.addWidget(monitor_urlDescription)
+        urlBoxL.addWidget(monitor_urlEdit)
         if os_name != "Darwin":
             self.registerField('gcm_url',         gcm_urlEdit)
             urlBoxL.addWidget(gcm_urlDescription)

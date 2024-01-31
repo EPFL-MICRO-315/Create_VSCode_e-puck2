@@ -197,9 +197,7 @@ def step4():
 
             if os_name == "Darwin":
                 with zipfile.ZipFile(src, "r") as file:
-                    file.extractall(dest)
-                shutil.move(dest + "/EPuckMonitor.app", "tmp")
-                shutil.move("tmp", "EPuckMonitor.app")
+                    file.extractall()
             elif os_name == "Linux":
                 with tarfile.open(src) as file:
                     file.extractall()

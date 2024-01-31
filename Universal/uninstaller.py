@@ -58,14 +58,14 @@ def step3():
     data_dir = settings["install_path"]
     bin_dir = settings["install_path"]
     if os_name == "Darwin":
-        data_dir += "/code-portable-data/"
-        bin_dir += "/EPuck2_VSCode.app/Contents/Resources/app/bin/"
+        data_dir += "code-portable-data/"
+        bin_dir += "EPuck2_VSCode.app"
     elif os_name == "Windows":
-        data_dir += "/EPuck2_VSCode/data/"
-        bin_dir += "/EPuck2_VSCode/bin/"
+        data_dir += "EPuck2_VSCode/data/"
+        bin_dir += "EPuck2_VSCode/bin/"
     elif os_name == "Linux":
-        data_dir += "/EPuck2_VSCode/data/"
-        bin_dir += "/EPuck2_VSCode/bin/"
+        data_dir += "EPuck2_VSCode/data/"
+        bin_dir += "EPuck2_VSCode/bin/"
     
     logging.warning(f"Deleting VSCode data_dir: {data_dir}")
     rmdir(data_dir)

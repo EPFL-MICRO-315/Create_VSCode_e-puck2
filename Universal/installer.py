@@ -181,9 +181,9 @@ def step4():
     
     if os_name == "Windows":
         src = "monitor_win.zip"
-        dest = "EPuck2_Utils/EPuckMonitor.app"
     elif os_name == "Darwin":
         src = "monitor_mac.zip"
+        dest = "EPuck2_Utils/EPuckMonitor.app"
     elif os_name == "Linux":
         src = "monitor_linux64bit.tar.gz"
         
@@ -195,14 +195,18 @@ def step4():
                 logging.warning(f"EPuck 2 monitor installation in {settings['install_path']} detected, deleting...")
                 shutil.rmtree(dest)
 
-            if os_name != "Linux":
+            if os_name == "Darwin":
                 with zipfile.ZipFile(src, "r") as file:
                     file.extractall(dest)
-            else:
+                shutil.move(dest + "/EPuckMonitor.app", dest)
+            elif os_name == "Linux":
                 with tarfile.open(src) as file:
                     file.extractall()
                 shutil.move("build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release", dest)
-            
+            else:
+                with zipfile.ZipFile(src, "r") as file:
+                    file.extractall(dest)
+                
             file.close()
             
             if settings["clear_cache"]:
@@ -262,11 +266,11 @@ def step5():
 }}
     '''
     if os_name == "Darwin":
-        monitor_cmd = "${'install_path'}/EPuckMonitor.app/Contents/MacOS/EPuckMonitor"
+        monitor_cmd = "${config:install_path}EPuck2_Utils/EPuckMonitor.app/Contents/MacOS/EPuckMonitor"
     elif os_name == "Windows":
-        monitor_cmd = "${'install_path'}//Monitor//EPuckMonitor.exe"
+        monitor_cmd = "${config:install_path}EPuck2_Utils//Monitor//EPuckMonitor.exe"
     elif os_name == "Linux":
-        monitor_cmd = "cd ${'install_path'}/Monitor && ./EPuckMonitor"
+        monitor_cmd = "cd ${config:install_path}EPuck2_Utils/Monitor && ./EPuckMonitor"
         
     json_tasks = f'''
 {{

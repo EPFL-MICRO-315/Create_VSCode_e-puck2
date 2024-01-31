@@ -177,15 +177,15 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         if os_name == "Darwin":
             vscode_urlEdit.setText("https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2")
-            gcm_urlEdit.setText("curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")
+            gcm_urlEdit.setText("Leave empty")
         elif os_name == "Windows":
             vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/win32-x64-archive/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip")
-            gcm_urlEdit.setText("https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe")
+            gcm_urlEdit.setText("https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe")
         elif os_name == "Linux":
             vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/linux-x64/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2")
-            gcm_urlEdit.setText("https://github.com/GitCredentialManager/git-credential-manager/releases/download/v2.0.785/gcm-linux_amd64.2.0.785.deb")
+            gcm_urlEdit.setText("https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.4.1/gcm-linux_amd64.2.4.1.deb")
 
         urlBoxL = QtWidgets.QVBoxLayout()
         urlBoxL.addWidget(vscode_urlDescription)

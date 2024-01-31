@@ -62,8 +62,8 @@ def step1():
     logging.warning("Installation of git-credential-manager")
         
     if os_name == "Darwin":    
-        os.system("brew tap microsoft/git")
-        os.system("brew --cask git-credential-manager-core")
+        os.system("brew install --cask git-credential-manager")
+        os.system("git config --global credential.credentialStore keychain")
     elif os_name == "Windows":
         downloadTo(settings["gcm_url"], "git_setup.exe")
         logging.warning("Please install git from the external dialog that opens right now")
@@ -74,13 +74,7 @@ def step1():
         downloadTo(settings["gcm_url"], "gcm.deb")
         os_cli("sudo dpkg -i gcm.deb")
         os_cli("git-credential-manager-core configure")
-        
-        #TODO: Check if really necessary
-        with open(expanduser("~") + '/.gitconfig', 'a+') as file:
-            content = file.read()
-            if '[credential]' not in content or '        credentialStore = secretservice' not in content:
-                file.write("[credential]\n")
-                file.write("        credentialStore = secretservice")
+        os_cli("git config --global credential.credentialStore secretservice") # might need to logout and login again
 
         if settings["clear_cache"]:
             os.remove("gcm.deb")

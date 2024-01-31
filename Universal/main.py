@@ -173,7 +173,11 @@ class SetupPage(QtWidgets.QWizardPage):
         if sys.argv[1] == "install":
             return True
         elif sys.argv[1] == "uninstall":
-            if os.path.isdir(self.field('install_path') + "/EPuck2_VSCode"):
+            if os_name == "Darwin":
+                folder = self.field('install_path') + "/EPuck2_VSCode.app"
+            else:
+                folder = self.field('install_path') + "/EPuck2_VSCode"
+            if os.path.isdir(folder):
                 self.validateLabel.setText("")
                 return True
             self.validateLabel.setText("The specified path does not contain the IDE")
@@ -262,8 +266,9 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         urlBoxL.addWidget(vscode_urlEdit)
         urlBoxL.addWidget(arm_urlDescription)
         urlBoxL.addWidget(arm_urlEdit)
-        urlBoxL.addWidget(gcm_urlDescription)
-        urlBoxL.addWidget(gcm_urlEdit)
+        if os_name != "Darwin":
+            urlBoxL.addWidget(gcm_urlDescription)
+            urlBoxL.addWidget(gcm_urlEdit)
         urlBox.setLayout(urlBoxL)
 
         layout = QtWidgets.QVBoxLayout()
@@ -462,7 +467,7 @@ if __name__ == '__main__':
     logging.basicConfig(encoding='utf-8', level=logging.INFO, handlers=handlers)
     addLoggingLevel("PROGRESS", 25)
     logging.warning("Log saved at: " + log_file)
-    print(len(sys.argv))
+    
     app = QtWidgets.QApplication(sys.argv)
     wizard = ClassWizard()
     wizard.show()

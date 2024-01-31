@@ -3,22 +3,28 @@ from PyQt5.QtCore import QObject, QThread, pyqtSignal
 import logging
 import time
 import platform
-from installer import *
+import installer
+import uninstaller
 from utils import *
 
 os_name = platform.system()
 fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'tools', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url' ]
 fields_steps = [ 'vscode', 'vscode_settings', 'arm', 'tools', 'gcm', 'workplace', 'shortcut' ]
+intro_id = 0
+setup_id = 1
+advanced_setup_id = 2
+proceed_id = 3
+install_id = 4
 
 class ClassWizard(QtWidgets.QWizard):
     def __init__(self, parent=None):
         super(ClassWizard, self).__init__(parent)
 
-        self.intro_id = self.addPage(IntroPage())
-        self.setup_id = self.addPage(SetupPage())
-        self.advanced_setup_id = self.addPage(AdvancedSetupPage())
-        self.proceed_id = self.addPage(ProceedPage())
-        self.install_id = self.addPage(InstallPage())
+        self.setPage(intro_id, IntroPage())
+        self.setPage(setup_id, SetupPage())
+        self.setPage(advanced_setup_id, AdvancedSetupPage())
+        self.setPage(proceed_id, ProceedPage())
+        self.setPage(install_id, InstallPage())
         
         self.setWindowTitle("VSCode EPuck2 Setup")
         self.setMinimumSize(800, 600)
@@ -66,7 +72,9 @@ class IntroPage(QtWidgets.QWizardPage):
 
         self.registerField('install_bool', installButton)
         self.registerField('uninstall_bool', uninstallButton)
-    
+        self.setCommitPage(True)
+        self.setButtonText(QtWidgets.QWizard.CommitButton, "Continue")
+
     def validatePage(self):
         if not (self.field('install_bool') or self.field('uninstall_bool')):
             return False
@@ -76,78 +84,127 @@ class SetupPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super(SetupPage, self).__init__(parent)
 
-        if os_name == "Darwin":
-            installPath = os.popen("echo $HOME/Applications/").read().rstrip()
-            workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
-        elif os_name == "Windows":
-            installPath = os.popen("echo %APPDATA%").read().rstrip()
-            workplacePath = os.popen("echo %USERPROFILE%\\Documents\\").read().rstrip()
-        elif os_name == "Linux":
-            installPath = os.popen("echo $HOME/.local/bin/").read().rstrip()
-            workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
-        
-        installPathEdit = QtWidgets.QLineEdit(installPath)
-        def installPath_dialog():
-            nonlocal installPath
-            installPath = installPathEdit.text()
-            tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", installPath)
-            if tmp != "":
-                installPath = tmp
-            installPathEdit.setText(installPath)
-
-        workplacePathEdit = QtWidgets.QLineEdit(workplacePath)
-        def workplacePath_dialog():
-            nonlocal workplacePath
-            workplacePath = workplacePathEdit.text()
-            tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", workplacePath)
-            if tmp != "":
-                workplacePath = tmp
-            workplacePathEdit.setText(workplacePath)
-
-        installPathBox = QtWidgets.QGroupBox("Install Path:")
-        installPathButton = QtWidgets.QPushButton('...')
-        installPathButton.clicked.connect(installPath_dialog)
-        installPathDescription = QtWidgets.QLabel("Where the IDE and its components will be stored")
-        
-        installPathBoxL = QtWidgets.QGridLayout()
-        installPathBoxL.addWidget(installPathDescription, 0, 0, 1, 2)
-        installPathBoxL.addWidget(installPathEdit)
-        installPathBoxL.addWidget(installPathButton)        
-        installPathBox.setLayout(installPathBoxL);
-        
-        workplacePathBox = QtWidgets.QGroupBox("Workplace Path:")
-        workplacePathButton = QtWidgets.QPushButton('...')
-        workplacePathButton.clicked.connect(workplacePath_dialog)
-        workplacePathDescription = QtWidgets.QLabel("Where the librairies, exercises and your project will be stored")
-        
-        workplacePathBoxL = QtWidgets.QGridLayout()
-        workplacePathBoxL.addWidget(workplacePathDescription, 0, 0, 1, 2)
-        workplacePathBoxL.addWidget(workplacePathEdit, 1, 0)
-        workplacePathBoxL.addWidget(workplacePathButton, 1, 1)       
-        workplacePathBox.setLayout(workplacePathBoxL);
-
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(installPathBox)
-        layout.addWidget(workplacePathBox)
-        self.setLayout(layout)
-
-        # registerField functions are used to let other pages accessing the specfied variable with user defined key
-        self.registerField('install_path', installPathEdit)
-        self.registerField('workplace_path', workplacePathEdit)
-
     def initializePage(self):
         if self.field('install_bool'):
+            if os_name == "Darwin":
+                installPath = os.popen("echo $HOME/Applications/").read().rstrip()
+                workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
+            elif os_name == "Windows":
+                installPath = os.popen("echo %APPDATA%").read().rstrip()
+                workplacePath = os.popen("echo %USERPROFILE%\\Documents\\").read().rstrip()
+            elif os_name == "Linux":
+                installPath = os.popen("echo $HOME/.local/bin/").read().rstrip()
+                workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
+            
+            installPathEdit = QtWidgets.QLineEdit(installPath)
+            def installPath_dialog():
+                nonlocal installPath
+                installPath = installPathEdit.text()
+                tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", installPath)
+                if tmp != "":
+                    installPath = tmp
+                installPathEdit.setText(installPath)
+
+            workplacePathEdit = QtWidgets.QLineEdit(workplacePath)
+            def workplacePath_dialog():
+                nonlocal workplacePath
+                workplacePath = workplacePathEdit.text()
+                tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", workplacePath)
+                if tmp != "":
+                    workplacePath = tmp
+                workplacePathEdit.setText(workplacePath)
+
+            installPathBox = QtWidgets.QGroupBox("IDE (VSCode, tools, ...) Path:")
+            installPathButton = QtWidgets.QPushButton('...')
+            installPathButton.clicked.connect(installPath_dialog)
+            installPathDescription = QtWidgets.QLabel("Where the IDE and its components will be stored")
+            
+            installPathBoxL = QtWidgets.QGridLayout()
+            installPathBoxL.addWidget(installPathDescription, 0, 0, 1, 2)
+            installPathBoxL.addWidget(installPathEdit)
+            installPathBoxL.addWidget(installPathButton)        
+            installPathBox.setLayout(installPathBoxL);
+            
+            workplacePathBox = QtWidgets.QGroupBox("Workplace Path:")
+            workplacePathButton = QtWidgets.QPushButton('...')
+            workplacePathButton.clicked.connect(workplacePath_dialog)
+            workplacePathDescription = QtWidgets.QLabel("Where the librairies, exercises and your project will be stored")
+            
+            workplacePathBoxL = QtWidgets.QGridLayout()
+            workplacePathBoxL.addWidget(workplacePathDescription, 0, 0, 1, 2)
+            workplacePathBoxL.addWidget(workplacePathEdit, 1, 0)
+            workplacePathBoxL.addWidget(workplacePathButton, 1, 1)       
+            workplacePathBox.setLayout(workplacePathBoxL);
+
+            # registerField functions are used to let other pages accessing the specfied variable with user defined key
+            self.registerField('install_path', installPathEdit)
+            self.registerField('workplace_path', workplacePathEdit)
+            
             self.setTitle("Custom the setup - Install")     
             self.setSubTitle("Specify in more details where you want the wizard to install the IDE")
+
+            layout = QtWidgets.QVBoxLayout()
+            layout.addWidget(installPathBox)
+            layout.addWidget(workplacePathBox)
+            self.setLayout(layout)
+            
         elif self.field('uninstall_bool'):
+            if os_name == "Darwin":
+                installPath = os.popen("echo $HOME/Applications/").read().rstrip()
+            elif os_name == "Windows":
+                installPath = os.popen("echo %APPDATA%").read().rstrip()
+            elif os_name == "Linux":
+                installPath = os.popen("echo $HOME/.local/bin/").read().rstrip()
+            
+            installPathEdit = QtWidgets.QLineEdit(installPath)
+            def installPath_dialog():
+                nonlocal installPath
+                installPath = installPathEdit.text()
+                tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", installPath)
+                if tmp != "":
+                    installPath = tmp
+                installPathEdit.setText(installPath)
+
+            installPathBox = QtWidgets.QGroupBox("IDE (VSCode, tools, ...) Path:")
+            installPathButton = QtWidgets.QPushButton('...')
+            installPathButton.clicked.connect(installPath_dialog)
+            installPathDescription = QtWidgets.QLabel("Where the IDE and its components were previously installed")
+            
+            installPathBoxL = QtWidgets.QGridLayout()
+            installPathBoxL.addWidget(installPathDescription, 0, 0, 1, 2)
+            installPathBoxL.addWidget(installPathEdit)
+            installPathBoxL.addWidget(installPathButton)        
+            installPathBox.setLayout(installPathBoxL);
+
+            self.validateLabel = QtWidgets.QLabel("")
+
+            # registerField functions are used to let other pages accessing the specfied variable with user defined key
+            self.registerField('install_path', installPathEdit)
+            
             self.setTitle("Custom the setup - Uninstall")     
             self.setSubTitle("Specify in more details where is located the IDE to be uninstalled")
 
-    #def nextId(self):
-    #    if self.field('install_bool'):
-    #        return ClassWizard.intro_id
-    #    elif self.field('uninstall_bool'):
-    #        return ClassWizard.intro_id
+            layout = QtWidgets.QVBoxLayout()
+            layout.addWidget(installPathBox)
+            layout.addWidget(self.validateLabel)
+            self.setLayout(layout)
+
+    def validatePage(self):
+        if self.field('install_bool'):
+            return True
+        elif self.field('uninstall_bool'):
+            if os.path.isdir(self.field('install_path') + "/EPuck2_VSCode"):
+                self.validateLabel.setText("")
+                return True
+            self.validateLabel.setText("The specified path does not contain the IDE")
+            logging.error("The specified path does not contain the IDE")
+            return False
+        
+    def nextId(self):
+        if self.field('install_bool'):
+            return advanced_setup_id
+        elif self.field('uninstall_bool'):
+            return proceed_id
 
 class AdvancedSetupPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
@@ -277,14 +334,21 @@ class InstallPage(QtWidgets.QWizardPage):
     def initializePage(self):
         logging.warning("Settings summary: ")
         for f in fields:
-            settings[f] = self.field(f)
-            logging.info(f + ": " + str(settings[f]))
+            installer.settings[f] = self.field(f)
+            uninstaller.settings[f] = self.field(f)
+            logging.info(f + ": " + str(installer.settings[f]))
         logging.warning("Installation starting")
 
-        self.progress.setRange(0, sum(settings[k] for k in fields_steps))
-
+        
         self.thread = QThread()
-        self.worker = Worker()
+
+        if self.field('install_bool'):
+            self.worker = Installer()
+            self.progress.setRange(0, sum(installer.settings[k] for k in fields_steps))
+        elif self.field('uninstall_bool'):
+            self.worker = Uninstaller()
+            self.progress.setRange(0, 4)
+        
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.run)
         self.worker.finished.connect(self.thread.quit)
@@ -346,35 +410,49 @@ class InstallPage(QtWidgets.QWizardPage):
     def isComplete(self):
         return self.isCompleteValue
     
-class Worker(QObject):
+class Installer(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal()
 
     def run(self):
-        init_folders()        
-        if(settings["tools"]):
+        installer.init_folders()        
+        if(installer.settings["tools"]):
             self.progress.emit()
-            step0()
-        if(settings["gcm"]):        
+            installer.step0()
+        if(installer.settings["gcm"]):        
             self.progress.emit()
-            step1()
-        if(settings["vscode"]):
+            installer.step1()
+        if(installer.settings["vscode"]):
             self.progress.emit()
-            step2()
-        if(settings["arm"]):
+            installer.step2()
+        if(installer.settings["arm"]):
             self.progress.emit()
-            step3()
-        if(settings["vscode_settings"]):
+            installer.step3()
+        if(installer.settings["vscode_settings"]):
             self.progress.emit()
-            step4()
-        if(settings["workplace"]):
+            installer.step4()
+        if(installer.settings["workplace"]):
             self.progress.emit()
-            step5()
-        if(settings["shortcut"]):
+            installer.step5()
+        if(installer.settings["shortcut"]):
             self.progress.emit()
-            step6()
+            installer.step6()
         self.finished.emit()
 
+class Uninstaller(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal()
+
+    def run(self):    
+        self.progress.emit()
+        uninstaller.step1()
+        self.progress.emit()
+        uninstaller.step2()
+        self.progress.emit()
+        uninstaller.step3()
+        self.progress.emit()
+        uninstaller.step4()
+        
 class QtHandler(logging.Handler, QObject):
     signal = pyqtSignal(str)
 

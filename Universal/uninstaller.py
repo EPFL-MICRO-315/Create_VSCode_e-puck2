@@ -18,7 +18,6 @@ import shutil
 import logging
 from utils import *
 
-origin = os.getcwd()
 os_name = platform.system()
 if os_name == "Windows":
     import subprocess

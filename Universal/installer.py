@@ -198,6 +198,7 @@ def step4():
             if os_name == "Darwin":
                 with zipfile.ZipFile(src, "r") as file:
                     file.extractall()
+                os_cli("chmod +x EPuckMonitor.app/Contents/MacOS/EPuckMonitor")
             elif os_name == "Linux":
                 with tarfile.open(src) as file:
                     file.extractall()

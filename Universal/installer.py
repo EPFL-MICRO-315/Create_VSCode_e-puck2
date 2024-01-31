@@ -174,8 +174,57 @@ def step3():
     else:
         logging.info("arm_gcc_toolchain installed!")
 
-# VSCode configuration
+# EPuck2 Monitor installation
 def step4():
+    os.chdir(settings["install_path"])
+    dest = "EPuck2_Utils/Monitor"         
+    
+    if os_name == "Windows":
+        src = "monitor_win.zip"
+        dest = "EPuck2_Utils/EPuckMonitor.app"
+    elif os_name == "Darwin":
+        src = "monitor_mac.zip"
+    elif os_name == "Linux":
+        src = "monitor_linux64bit.tar.gz"
+        
+    for attempt in range(2):
+        downloadTo(settings["monitor_url"], src)
+        
+        try:
+            if os.path.isdir(dest): 
+                logging.warning(f"EPuck 2 monitor installation in {settings['install_path']} detected, deleting...")
+                shutil.rmtree(dest)
+
+            if os_name != "Linux":
+                with zipfile.ZipFile(src, "r") as file:
+                    file.extractall(dest)
+            else:
+                with tarfile.open(src) as file:
+                    file.extractall()
+                shutil.move("build-qmake-Desktop_Qt_5_10_1_GCC_64bit-Release", dest)
+            
+            file.close()
+            
+            if settings["clear_cache"]:
+                os.remove(src)
+    
+            break #stop the loop if no error occured
+
+        except Exception as e:
+            logging.error(f"Cannot extract {src}, it could have been corrupted. Error: {str(e)}")
+            os.remove(src)
+            if attempt == 0:
+                logging.info("Retrying...")
+            else:
+                logging.error("Max number of try exceeding, skipping...")
+    
+    if not os.path.isdir(dest): 
+        logging.fatal("EPuck monitor not installed!")
+    else:
+        logging.info("EPuck monitor installed!")
+
+# VSCode configuration
+def step5():
     if os_name == "Windows":
         make_path = settings["install_path"] + "/EPuck2_Utils/gnutools/make"
         dfu_util = settings["install_path"] + "/EPuck2_Utils/dfu-util.exe"
@@ -212,7 +261,13 @@ def step4():
     "version": "{version}"
 }}
     '''
-
+    if os_name == "Darwin":
+        monitor_cmd = "${'install_path'}/EPuckMonitor.app/Contents/MacOS/EPuckMonitor"
+    elif os_name == "Windows":
+        monitor_cmd = "${'install_path'}//Monitor//EPuckMonitor.exe"
+    elif os_name == "Linux":
+        monitor_cmd = "cd ${'install_path'}/Monitor && ./EPuckMonitor"
+        
     json_tasks = f'''
 {{
     "version": "2.0.0",
@@ -244,7 +299,7 @@ def step4():
         {{
             "label": "User:Run EPuckMonitor",
             "type": "shell",
-            "command": "python {settings["install_path"]}EPuck2_Utils/Utils/monitor.py",
+            "command": "{monitor_cmd}",
             "group": {{
                 "kind": "build",
                 "isDefault": true
@@ -302,8 +357,7 @@ def step4():
     os_cli(exe + "--install-extension forbeslindesay.forbeslindesay-taskrunner --force")
     os_cli(exe + "--install-extension tomoki1207.pdf --force")
     os_cli(exe + "--install-extension mhutchie.git-graph --force")
-    #TODO: verification step (extensions successfully installed)
-
+    
     if not os.path.exists(data_dir + "/user-data/User/"):
         os.makedirs(data_dir + "/user-data/User/")
     os.chdir(data_dir + "/user-data/User/")
@@ -340,7 +394,7 @@ def step4():
     else:
         logging.info("VSCode tasks.json created!")
 
-def step5():
+def step6():
     os.chdir(settings["workplace_path"])
     logging.warning(f"Setting up the Workplace in {settings['workplace_path']}")
     
@@ -362,7 +416,7 @@ def step5():
     else:
         logging.info("Lib sucessfully cloned!")
 
-def step6():
+def step7():
     logging.warning("shortcut creation selected, proceeding")
     
     if os_name == "Windows":

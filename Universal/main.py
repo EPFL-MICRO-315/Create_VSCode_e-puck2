@@ -9,8 +9,8 @@ from utils import *
 import sys
 
 os_name = platform.system()
-fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'tools', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url' ]
-fields_steps = [ 'vscode', 'vscode_settings', 'arm', 'tools', 'gcm', 'workplace', 'shortcut' ]
+fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'monitor', 'tools', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url', 'monitor_url' ]
+fields_steps = [ 'vscode', 'vscode_settings', 'arm', 'monitor', 'tools', 'gcm', 'workplace', 'shortcut' ]
 intro_id = 0
 setup_id = 1
 advanced_setup_id = 2
@@ -202,6 +202,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         vscode          = QtWidgets.QCheckBox("(re)install VSCode ?")
         vscode_settings = QtWidgets.QCheckBox("(re) VSCode settings?")
         arm             = QtWidgets.QCheckBox("(re)install ARM toolchain ?")
+        monitor         = QtWidgets.QCheckBox("(re)install EPuck2 monitor ?")
         tools           = QtWidgets.QCheckBox("(re)install required tools (git, dfu-utils, various gnu tools) ?")
         gcm             = QtWidgets.QCheckBox("(re)install GCM (Github Credential Manager) ?")
         workplace       = QtWidgets.QCheckBox("(re)install workplace ?")
@@ -211,6 +212,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         vscode.setChecked(True)
         vscode_settings.setChecked(True)
         arm.setChecked(True)
+        monitor.setChecked(True)
         gcm.setChecked(True)
         workplace.setChecked(True)
         shortcut.setChecked(True)
@@ -220,6 +222,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         checkBoxL.addWidget(vscode)
         checkBoxL.addWidget(vscode_settings)
         checkBoxL.addWidget(arm)
+        checkBoxL.addWidget(monitor)
         checkBoxL.addWidget(tools)
         checkBoxL.addWidget(gcm)
         checkBoxL.addWidget(workplace)
@@ -235,10 +238,13 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         arm_urlEdit = QtWidgets.QLineEdit()
         gcm_urlDescription = QtWidgets.QLabel("GCM (Github Credential Manager) download command:")
         gcm_urlEdit = QtWidgets.QLineEdit()
+        monitor_urlDescription = QtWidgets.QLabel("EPuck 2 monitor download URL:")
+        monitor_urlEdit = QtWidgets.QLineEdit()
         
         self.registerField('vscode',          vscode)
         self.registerField('vscode_settings', vscode_settings)
         self.registerField('arm',             arm)
+        self.registerField('monitor',         monitor)
         self.registerField('tools',           tools)
         self.registerField('gcm',             gcm)
         self.registerField('workplace',       workplace)
@@ -246,19 +252,23 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         self.registerField('clear_cache',     clear_cache)
         self.registerField('vscode_url',      vscode_urlEdit)
         self.registerField('arm_url',         arm_urlEdit)
+        self.registerField('monitor_url',     monitor_urlEdit)
 
         if os_name == "Darwin":
             vscode_urlEdit.setText("https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2")
-            gcm_urlEdit.setText("Leave empty")
+            gcm_urlEdit.setText("")
+            monitor_urlEdit.setText("https://projects.gctronic.com/epuck2/monitor_mac.zip")
         elif os_name == "Windows":
             vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/win32-x64-archive/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip")
             gcm_urlEdit.setText("https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe")
+            monitor_urlEdit.setText("https://projects.gctronic.com/epuck2/monitor_win.zip")
         elif os_name == "Linux":
             vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/linux-x64/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2")
             gcm_urlEdit.setText("https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.4.1/gcm-linux_amd64.2.4.1.deb")
+            monitor_urlEdit.setText("https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz")
 
         urlBoxL = QtWidgets.QVBoxLayout()
         urlBoxL.addWidget(vscode_urlDescription)
@@ -303,7 +313,8 @@ class InstallPage(QtWidgets.QWizardPage):
         self.setTitle("Installation in progress") 
 
         self.label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
-                                      "Please be patient (it could take a few of minutes depending on your connection)")
+                                      "Please be patient (it could take a few of minutes depending on your connection)\n\n"
+                                      "Check the terminal as it might ask for user password to gain more privileges during intallation!")
         self.label.setWordWrap(True)
         
         self.progress = QtWidgets.QProgressBar()
@@ -415,15 +426,18 @@ class Installer(QObject):
         if(installer.settings["arm"]):
             self.progress.emit()
             installer.step3()
-        if(installer.settings["vscode_settings"]):
+        if(installer.settings["monitor"]):
             self.progress.emit()
             installer.step4()
-        if(installer.settings["workplace"]):
+        if(installer.settings["vscode_settings"]):
             self.progress.emit()
             installer.step5()
-        if(installer.settings["shortcut"]):
+        if(installer.settings["workplace"]):
             self.progress.emit()
             installer.step6()
+        if(installer.settings["shortcut"]):
+            self.progress.emit()
+            installer.step7()
         self.finished.emit()
 
 class Uninstaller(QObject):

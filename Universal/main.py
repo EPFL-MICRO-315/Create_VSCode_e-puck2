@@ -6,6 +6,7 @@ import platform
 import installer
 import uninstaller
 from utils import *
+import sys
 
 os_name = platform.system()
 fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'tools', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url' ]
@@ -55,37 +56,16 @@ class IntroPage(QtWidgets.QWizardPage):
                 "it also includes the ARM toolchain (compiler and debugger).")
         label.setWordWrap(True)
 
-
-        actionBox = QtWidgets.QGroupBox("What do you want to do:")
-        installButton = QtWidgets.QRadioButton('Install')
-        uninstallButton = QtWidgets.QRadioButton('Uninstall')
-        
-        actionBoxL = QtWidgets.QGridLayout()
-        actionBoxL.addWidget(installButton)
-        actionBoxL.addWidget(uninstallButton)
-        actionBox.setLayout(actionBoxL)
-
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(label)
-        layout.addWidget(actionBox)
         self.setLayout(layout)
-
-        self.registerField('install_bool', installButton)
-        self.registerField('uninstall_bool', uninstallButton)
-        self.setCommitPage(True)
-        self.setButtonText(QtWidgets.QWizard.CommitButton, "Continue")
-
-    def validatePage(self):
-        if not (self.field('install_bool') or self.field('uninstall_bool')):
-            return False
-        return True
 
 class SetupPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super(SetupPage, self).__init__(parent)
 
     def initializePage(self):
-        if self.field('install_bool'):
+        if sys.argv[1] == "install":
             if os_name == "Darwin":
                 installPath = os.popen("echo $HOME/Applications/").read().rstrip()
                 workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
@@ -148,7 +128,7 @@ class SetupPage(QtWidgets.QWizardPage):
             layout.addWidget(workplacePathBox)
             self.setLayout(layout)
             
-        elif self.field('uninstall_bool'):
+        elif sys.argv[1] == "uninstall":
             if os_name == "Darwin":
                 installPath = os.popen("echo $HOME/Applications/").read().rstrip()
             elif os_name == "Windows":
@@ -190,9 +170,9 @@ class SetupPage(QtWidgets.QWizardPage):
             self.setLayout(layout)
 
     def validatePage(self):
-        if self.field('install_bool'):
+        if sys.argv[1] == "install":
             return True
-        elif self.field('uninstall_bool'):
+        elif sys.argv[1] == "uninstall":
             if os.path.isdir(self.field('install_path') + "/EPuck2_VSCode"):
                 self.validateLabel.setText("")
                 return True
@@ -201,9 +181,9 @@ class SetupPage(QtWidgets.QWizardPage):
             return False
         
     def nextId(self):
-        if self.field('install_bool'):
+        if sys.argv[1] == "install":
             return advanced_setup_id
-        elif self.field('uninstall_bool'):
+        elif sys.argv[1] == "uninstall":
             return proceed_id
 
 class AdvancedSetupPage(QtWidgets.QWizardPage):
@@ -342,10 +322,10 @@ class InstallPage(QtWidgets.QWizardPage):
         
         self.thread = QThread()
 
-        if self.field('install_bool'):
+        if sys.argv[1] == "install":
             self.worker = Installer()
             self.progress.setRange(0, sum(installer.settings[k] for k in fields_steps))
-        elif self.field('uninstall_bool'):
+        elif sys.argv[1] == "uninstall":
             self.worker = Uninstaller()
             self.progress.setRange(0, 4)
         
@@ -465,7 +445,12 @@ class QtHandler(logging.Handler, QObject):
         self.signal.emit(record)
 
 if __name__ == '__main__':
-    import sys
+    if(len(sys.argv) == 1):
+        print("error: no argument provided (install or uninstall)")
+        sys.exit()
+    if((sys.argv[1] != "install") and (sys.argv[1] != "uninstall")):
+        print("error: invalid argument provided (install or uninstall)")
+        sys.exit()
 
     log_file = "install-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".log"
 
@@ -477,7 +462,7 @@ if __name__ == '__main__':
     logging.basicConfig(encoding='utf-8', level=logging.INFO, handlers=handlers)
     addLoggingLevel("PROGRESS", 25)
     logging.warning("Log saved at: " + log_file)
-    
+    print(len(sys.argv))
     app = QtWidgets.QApplication(sys.argv)
     wizard = ClassWizard()
     wizard.show()

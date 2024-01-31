@@ -46,11 +46,12 @@ function install() {
 	pip install requests
 
 	echo -e "${GREEN}Launching the installer${NC}"
-	python Universal/main.py
+	python Universal/main.py install
 }
 
 function uninstall() {
-	echo -e "${GREEN}Uninstalling of VSCode-Epuck2 not yet implemented${NC}"
+	echo -e "${GREEN}Launching wizard${NC}"
+	python Universal/main.py uninstall
 
 	echo -e "${GREEN}Do you want to uninstall pyenv? (yes/no)${NC}"
     read response
@@ -75,9 +76,6 @@ case "$1" in
     install)
         install
         ;;
-	debug)
-		python Universal/main.py
-		;;
     help)
 		echo -e "This installer script is made for MacOS"
 		echo -e "It should works on most MacOS version, it was tested on Ventura" #TODO: add version

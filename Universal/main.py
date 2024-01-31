@@ -20,13 +20,19 @@ class ClassWizard(QtWidgets.QWizard):
         self.addPage(ProceedPage())
         self.addPage(InstallPage())
         
-        self.setMinimumSize(800, 600)
-        px = QtGui.QPixmap('Universal/e-puck2.png')
-        px = px.scaled(250, 250, QtCore.Qt.KeepAspectRatio);
-        self.setPixmap(QtWidgets.QWizard.WatermarkPixmap, px)
-        
         self.setWindowTitle("VSCode EPuck2 Setup")
-        self.WizardStyle = QtWidgets.QWizard.ClassicStyle
+        self.setMinimumSize(800, 600)
+
+        if os_name == "Darwin":
+            px = QtGui.QPixmap('Universal/e-puck2-macos.png')
+            px = px.scaled(500, 500, QtCore.Qt.KeepAspectRatio)
+            self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, px)
+            self.setWizardStyle(QtWidgets.QWizard.MacStyle)
+        else:
+            px = QtGui.QPixmap('Universal/e-puck2.png')
+            px = px.scaled(250, 250, QtCore.Qt.KeepAspectRatio)
+            self.setPixmap(QtWidgets.QWizard.WatermarkPixmap, px)
+            self.setWizardStyle(QtWidgets.QWizard.MacStyle)
         
     def accept(self):
         super(ClassWizard, self).accept()

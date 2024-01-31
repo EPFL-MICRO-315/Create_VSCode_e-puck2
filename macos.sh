@@ -29,9 +29,8 @@ pyenv local 3.11.2
 
 echo "Installing packages required for installation"
 pip install --upgrade pip
-pip install colorama
-pip install termcolor
-pip install "kivy[base]"
+pip install requests
+pip install PyQt5
 
 echo "Launching the installer"
 python Universal/main.py

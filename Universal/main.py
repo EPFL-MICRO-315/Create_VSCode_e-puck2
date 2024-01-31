@@ -277,9 +277,9 @@ class InstallPage(QtWidgets.QWizardPage):
             elif log_level == "ERROR":
                 color = "darkred"
             elif log_level == "WARNING":
-                color = "darkyellow"
+                color = "yellow"
             elif log_level == "PROGRESS":
-                color = "darkblue"
+                color = "steelblue"
             else:
                 text = log_content
                 color = "white"

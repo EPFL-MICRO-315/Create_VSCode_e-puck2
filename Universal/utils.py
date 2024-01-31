@@ -5,6 +5,9 @@ import requests
 import tarfile
 import shutil
 import logging
+import platform
+
+os_name = platform.system()
 
 def downloadTo(url, filename, max_try=5):
     """
@@ -97,3 +100,9 @@ def addLoggingLevel(levelName, levelNum, methodName=None):
     setattr(logging, levelName, levelNum)
     setattr(logging.getLoggerClass(), methodName, logForLevel)
     setattr(logging, methodName, logToRoot)
+
+def rmdir(dir):
+    if not os_name == "Windows":
+        shutil.rmtree(dir)
+    else:
+        os_cli(f"rmdir /s {dir}")

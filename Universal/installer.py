@@ -256,7 +256,7 @@ def step4():
         {{
             "label": "User:Clone Lib",
             "type": "shell",
-            "command": "rm -rf {settings["workplace_path"]}Lib && git clone https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git {settings["workplace_path"]}Lib",
+            "command": "rm -rf {settings["workplace_path"]}EPuck2_Workplace/Lib && git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git {settings["workplace_path"]}EPuck2_Workplace/Lib",
             "group": {{
                 "kind": "build",
                 "isDefault": true
@@ -265,7 +265,8 @@ def step4():
                 "echo": false,
             }}
         }}
-    }}
+    ]
+}}
 '''
 
     os.chdir(settings["install_path"])
@@ -287,7 +288,7 @@ def step4():
     
     if os.path.isdir(data_dir):
         logging.warning(f"VSCode data_dir detected in {settings['install_path']}, deleting...")
-        shutil.rmtree(data_dir)
+        rmdir(data_dir)
     os.mkdir(data_dir)
 
     if not os.path.isdir(data_dir): 
@@ -344,22 +345,22 @@ def step5():
     logging.warning(f"Setting up the Workplace in {settings['workplace_path']}")
     
     if os.path.isdir("EPuck2_Workplace"):
-        if not os_name == "Windows":
-            shutil.rmtree("EPuck2_Workplace")
-        else:
-            os_cli("rmdir /s EPuck2_Workplace")
+        logging.warning(f"EPuck2_Workplace detected in {settings['workplace_path']}, deleting...")
+        rmdir("EPuck2_Workplace")
+
     os.mkdir("EPuck2_Workplace/")
     os.chdir("EPuck2_Workplace/")
+    logging.info(f"Cloning the lib in {settings['workplace_path']}")
     os_cli("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
 
     folder = "Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly/"
     if os.path.isfile(folder + "package.json"):
         os.rename(folder + "package.json", folder + "package.json-renamed-because-conflict-task-tp-4")
 
-    if not os.path.isfile(settings["workplace_path"] + "Lib/README.md"): #check if Lib was correctly cloned 
-        logging.error("VSCode tasks.json not created!")
+    if not os.path.isfile(settings["workplace_path"] + "EPuck2_Workplace/Lib/README.md"): #check if Lib was correctly cloned 
+        logging.error("Lib not correctly cloned!")
     else:
-        logging.info("VSCode tasks.json created!")
+        logging.info("Lib sucessfully cloned!")
 
 def step6():
     logging.warning("shortcut creation selected, proceeding")

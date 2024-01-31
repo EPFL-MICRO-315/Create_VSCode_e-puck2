@@ -16,7 +16,6 @@ setup_id = 1
 advanced_setup_id = 2
 proceed_id = 3
 install_id = 4
-action = ""
 
 class ClassWizard(QtWidgets.QWizard):
     def __init__(self, parent=None):
@@ -66,7 +65,7 @@ class SetupPage(QtWidgets.QWizardPage):
         super(SetupPage, self).__init__(parent)
 
     def initializePage(self):
-        if action == "install":
+        if sys.argv[1] == "install":
             if os_name == "Darwin":
                 installPath = os.popen("echo $HOME/Applications/").read().rstrip()
                 workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
@@ -129,7 +128,7 @@ class SetupPage(QtWidgets.QWizardPage):
             layout.addWidget(workplacePathBox)
             self.setLayout(layout)
             
-        elif action == "uninstall":
+        elif sys.argv[1] == "uninstall":
             if os_name == "Darwin":
                 installPath = os.popen("echo $HOME/Applications/").read().rstrip()
             elif os_name == "Windows":
@@ -171,9 +170,9 @@ class SetupPage(QtWidgets.QWizardPage):
             self.setLayout(layout)
 
     def validatePage(self):
-        if action == "install":
+        if sys.argv[1] == "install":
             return True
-        elif action == "uninstall":
+        elif sys.argv[1] == "uninstall":
             if os_name == "Darwin":
                 folder = self.field('install_path') + "/EPuck2_VSCode.app"
             else:
@@ -186,9 +185,9 @@ class SetupPage(QtWidgets.QWizardPage):
             return False
         
     def nextId(self):
-        if action == "install":
+        if sys.argv[1] == "install":
             return advanced_setup_id
-        elif action == "uninstall":
+        elif sys.argv[1] == "uninstall":
             return proceed_id
 
 class AdvancedSetupPage(QtWidgets.QWizardPage):
@@ -247,7 +246,6 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         self.registerField('clear_cache',     clear_cache)
         self.registerField('vscode_url',      vscode_urlEdit)
         self.registerField('arm_url',         arm_urlEdit)
-        self.registerField('gcm_url',         gcm_urlEdit)
 
         if os_name == "Darwin":
             vscode_urlEdit.setText("https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal")
@@ -268,6 +266,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         urlBoxL.addWidget(arm_urlDescription)
         urlBoxL.addWidget(arm_urlEdit)
         if os_name != "Darwin":
+            self.registerField('gcm_url',         gcm_urlEdit)
             urlBoxL.addWidget(gcm_urlDescription)
             urlBoxL.addWidget(gcm_urlEdit)
         urlBox.setLayout(urlBoxL)
@@ -328,10 +327,10 @@ class InstallPage(QtWidgets.QWizardPage):
         
         self.thread = QThread()
 
-        if action == "install":
+        if sys.argv[1] == "install":
             self.worker = Installer()
             self.progress.setRange(0, sum(installer.settings[k] for k in fields_steps))
-        elif action == "uninstall":
+        elif sys.argv[1] == "uninstall":
             self.worker = Uninstaller()
             self.progress.setRange(0, 4)
         
@@ -458,8 +457,6 @@ if __name__ == '__main__':
         print("error: invalid argument provided (install or uninstall)")
         sys.exit()
 
-    action
-    action = sys.argv[1]
     log_file = "install-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".log"
 
     file_handler = logging.FileHandler(filename=log_file)

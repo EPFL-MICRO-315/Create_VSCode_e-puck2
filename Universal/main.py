@@ -271,19 +271,32 @@ class InstallPage(QtWidgets.QWizardPage):
 
         # Set the text color based on the log level
         weight = "bold"
-        if log_level == "CRITICAL":
-            color = "red"
-        elif log_level == "ERROR":
-            color = "darkred"
-        elif log_level == "WARNING":
-            color = "darkorange"
-        elif log_level == "PROGRESS":
-            color = "darkblue"
+        if os_name == "Darwin":
+            if log_level == "CRITICAL":
+                color = "red"
+            elif log_level == "ERROR":
+                color = "darkred"
+            elif log_level == "WARNING":
+                color = "darkyellow"
+            elif log_level == "PROGRESS":
+                color = "darkblue"
+            else:
+                text = log_content
+                color = "white"
+                weight = "normal"
         else:
-            text = log_content
-            color = "black"
-            weight = "normal"
-        
+            if log_level == "CRITICAL":
+                color = "red"
+            elif log_level == "ERROR":
+                color = "darkred"
+            elif log_level == "WARNING":
+                color = "darkorange"
+            elif log_level == "PROGRESS":
+                color = "darkblue"
+            else:
+                text = log_content
+                color = "black"
+                weight = "normal"
         html = '<div style="font-weight: {}; color: {}">{}</div>'.format(weight, color, text+"\n")
 
         self.console.append(html)

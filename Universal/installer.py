@@ -176,14 +176,14 @@ def step3():
 
 # EPuck2 Monitor installation
 def step4():
-    os.chdir(settings["install_path"])
-    dest = "EPuck2_Utils/Monitor"         
+    os.chdir(settings["install_path"] + "EPuck2_Utils/")
+    dest = "Monitor/"         
     
     if os_name == "Windows":
         src = "monitor_win.zip"
     elif os_name == "Darwin":
         src = "monitor_mac.zip"
-        dest = "EPuck2_Utils/EPuckMonitor.app"
+        dest = "EPuckMonitor.app"
     elif os_name == "Linux":
         src = "monitor_linux64bit.tar.gz"
         
@@ -198,7 +198,8 @@ def step4():
             if os_name == "Darwin":
                 with zipfile.ZipFile(src, "r") as file:
                     file.extractall(dest)
-                shutil.move(dest + "/EPuckMonitor.app", dest)
+                shutil.move(dest + "/EPuckMonitor.app", "tmp")
+                shutil.move("tmp", "EPuckMonitor.app")
             elif os_name == "Linux":
                 with tarfile.open(src) as file:
                     file.extractall()

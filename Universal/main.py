@@ -128,7 +128,7 @@ class SetupPage(QtWidgets.QWizardPage):
             layout.addWidget(workplacePathBox)
             self.setLayout(layout)
             
-        elif sys.argv[1] == "uninstall":
+        else:
             if os_name == "Darwin":
                 installPath = os.popen("echo $HOME/Applications/").read().rstrip()
             elif os_name == "Windows":
@@ -172,7 +172,7 @@ class SetupPage(QtWidgets.QWizardPage):
     def validatePage(self):
         if sys.argv[1] == "install":
             return True
-        elif sys.argv[1] == "uninstall":
+        else:
             if os_name == "Darwin":
                 folder = self.field('install_path') + "/EPuck2_VSCode.app"
             else:
@@ -187,7 +187,7 @@ class SetupPage(QtWidgets.QWizardPage):
     def nextId(self):
         if sys.argv[1] == "install":
             return advanced_setup_id
-        elif sys.argv[1] == "uninstall":
+        else:
             return proceed_id
 
 class AdvancedSetupPage(QtWidgets.QWizardPage):
@@ -283,17 +283,19 @@ class ProceedPage(QtWidgets.QWizardPage):
 
         self.setTitle("Proceed ?")        
 
-        label = QtWidgets.QLabel("The wizard is ready to install the IDE.\n"
-                "Click on *next* to install\n"
-                "Click on *cancel* to abort")
+        label = QtWidgets.QLabel("The wizard is ready to proceed")
+                
         label.setWordWrap(True)
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(label)
         self.setLayout(layout)
         self.setCommitPage(True)
-        self.setButtonText(QtWidgets.QWizard.CommitButton, "Install")
 
+        if sys.argv[1] == "install":
+            self.setButtonText(QtWidgets.QWizard.CommitButton, "Install")
+        else:
+            self.setButtonText(QtWidgets.QWizard.CommitButton, "Uninstall")
 class InstallPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super(InstallPage, self).__init__(parent)
@@ -330,7 +332,7 @@ class InstallPage(QtWidgets.QWizardPage):
         if sys.argv[1] == "install":
             self.worker = Installer()
             self.progress.setRange(0, sum(installer.settings[k] for k in fields_steps))
-        elif sys.argv[1] == "uninstall":
+        else:
             self.worker = Uninstaller()
             self.progress.setRange(0, 4)
         
@@ -437,6 +439,7 @@ class Uninstaller(QObject):
         uninstaller.step3()
         self.progress.emit()
         uninstaller.step4()
+        self.finished.emit()
         
 class QtHandler(logging.Handler, QObject):
     signal = pyqtSignal(str)

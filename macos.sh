@@ -3,9 +3,9 @@
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 	
-line1='export PYENV_ROOT="$HOME/.pyenv"' #for .bashrc, .profile, .bash_profile
-line2='command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' #for .bashrc, .profile
-line3='eval "$(pyenv init -)"' #for .bashrc, .profile, .bash_profile
+line1='export PYENV_ROOT="$HOME/.pyenv"'
+line2='command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
+line3='eval "$(pyenv init -)"'
 
 function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
@@ -27,10 +27,10 @@ function install() {
 	fi
 
 	echo -e "${GREEN}Configuring pyenv, adding to path (.zshrc)${NC}"
-	if ! grep -q -e "$line1" -e "$line2" -e "$line3" ~/.bashrc; then
-		echo "$line1" >> ~/.bashrc
-		echo "$line2" >> ~/.bashrc
-		echo "$line3" >> ~/.bashrc
+	if ! grep -q -e "$line1" -e "$line2" -e "$line3" ~/.zshrc; then
+		echo "$line1" >> ~/.zshrc
+		echo "$line2" >> ~/.zshrc
+		echo "$line3" >> ~/.zshrc
 	fi
 	
 	echo -e "${GREEN}Reloading the shell${NC}"
@@ -60,9 +60,9 @@ function uninstall() {
         rm -rf ~/.pyenv
 
         # remove the lines from .zshrc
-        sed -i "/${line1//\//\\/}/d" ~/.zshrc
-        sed -i "/${line2//\//\\/}/d" ~/.zshrc
-        sed -i "/${line3//\//\\/}/d" ~/.zshrc
+        sed -i '' "/${line1//\//\\/}/d" ~/.zshrc
+        sed -i '' "/${line2//\//\\/}/d" ~/.zshrc
+        sed -i '' "/${line3//\//\\/}/d" ~/.zshrc
     else
         echo -e "${GREEN}Skipping pyenv uninstallation${NC}"
     fi

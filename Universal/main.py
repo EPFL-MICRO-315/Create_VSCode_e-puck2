@@ -16,6 +16,7 @@ setup_id = 1
 advanced_setup_id = 2
 proceed_id = 3
 install_id = 4
+action = ""
 
 class ClassWizard(QtWidgets.QWizard):
     def __init__(self, parent=None):
@@ -35,7 +36,7 @@ class ClassWizard(QtWidgets.QWizard):
             px = px.scaled(500, 500, QtCore.Qt.KeepAspectRatio)
             self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, px)
             self.setWizardStyle(QtWidgets.QWizard.MacStyle)
-        else:
+        else:                                                                                                                                 
             px = QtGui.QPixmap('Universal/e-puck2.png')
             px = px.scaled(250, 250, QtCore.Qt.KeepAspectRatio)
             self.setPixmap(QtWidgets.QWizard.WatermarkPixmap, px)
@@ -65,7 +66,7 @@ class SetupPage(QtWidgets.QWizardPage):
         super(SetupPage, self).__init__(parent)
 
     def initializePage(self):
-        if sys.argv[1] == "install":
+        if action == "install":
             if os_name == "Darwin":
                 installPath = os.popen("echo $HOME/Applications/").read().rstrip()
                 workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
@@ -128,7 +129,7 @@ class SetupPage(QtWidgets.QWizardPage):
             layout.addWidget(workplacePathBox)
             self.setLayout(layout)
             
-        elif sys.argv[1] == "uninstall":
+        elif action == "uninstall":
             if os_name == "Darwin":
                 installPath = os.popen("echo $HOME/Applications/").read().rstrip()
             elif os_name == "Windows":
@@ -170,9 +171,9 @@ class SetupPage(QtWidgets.QWizardPage):
             self.setLayout(layout)
 
     def validatePage(self):
-        if sys.argv[1] == "install":
+        if action == "install":
             return True
-        elif sys.argv[1] == "uninstall":
+        elif action == "uninstall":
             if os_name == "Darwin":
                 folder = self.field('install_path') + "/EPuck2_VSCode.app"
             else:
@@ -185,9 +186,9 @@ class SetupPage(QtWidgets.QWizardPage):
             return False
         
     def nextId(self):
-        if sys.argv[1] == "install":
+        if action == "install":
             return advanced_setup_id
-        elif sys.argv[1] == "uninstall":
+        elif action == "uninstall":
             return proceed_id
 
 class AdvancedSetupPage(QtWidgets.QWizardPage):
@@ -327,10 +328,10 @@ class InstallPage(QtWidgets.QWizardPage):
         
         self.thread = QThread()
 
-        if sys.argv[1] == "install":
+        if action == "install":
             self.worker = Installer()
             self.progress.setRange(0, sum(installer.settings[k] for k in fields_steps))
-        elif sys.argv[1] == "uninstall":
+        elif action == "uninstall":
             self.worker = Uninstaller()
             self.progress.setRange(0, 4)
         
@@ -457,6 +458,8 @@ if __name__ == '__main__':
         print("error: invalid argument provided (install or uninstall)")
         sys.exit()
 
+    action
+    action = sys.argv[1]
     log_file = "install-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".log"
 
     file_handler = logging.FileHandler(filename=log_file)

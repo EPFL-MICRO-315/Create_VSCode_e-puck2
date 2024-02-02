@@ -86,7 +86,8 @@ if errorlevel 1 (
     echo:  ... done
   )
   echo SavePSPolicy >> %EPuck2_LogFile%
-  echo:
+)
+echo:
 
 :ModifyPSPolicy
 type %EPuck2_LogFile% 2>nul | findstr ModifyPSPolicy >nul

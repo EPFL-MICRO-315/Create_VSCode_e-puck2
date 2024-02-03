@@ -67,7 +67,7 @@ def step1():
     elif os_name == "Windows":
         downloadTo(settings["gcm_url"], "git_setup.exe")
         logging.warning("Please install git from the external dialog that opens right now")
-        subprocess.run("git_setup.exe")
+        subprocess.run("git_setup.exe /SILENT")
         if settings["clear_cache"]:
             os.remove("git_setup.exe")
     elif os_name == "Linux":

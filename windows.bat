@@ -184,7 +184,7 @@ echo "Launching the final installer"
 pause
 cd %EPuck2_InstallerPath%
 echo ON
-python Universal/main.py
+python Universal/main.py install
 
 :EverythingDone
 echo:

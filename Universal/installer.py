@@ -176,7 +176,7 @@ def step3():
 
 # EPuck2 Monitor installation
 def step4():
-    os.chdir(settings["install_path"] + "EPuck2_Utils/")
+    os.chdir(settings["install_path"] + "/EPuck2_Utils/")
     dest = "Monitor/"         
     
     if os_name == "Windows":

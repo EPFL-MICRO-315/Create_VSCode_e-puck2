@@ -220,16 +220,16 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         clear_cache.setChecked(False)
 
         checkBoxL = QtWidgets.QVBoxLayout()
-        checkBoxL.addWidget(vscode)
-        checkBoxL.addWidget(vscode_settings)
-        checkBoxL.addWidget(arm)
-        checkBoxL.addWidget(monitor)
         checkBoxL.addWidget(tools)
         checkBoxL.addWidget(gcm)
+        checkBoxL.addWidget(vscode)
+        checkBoxL.addWidget(arm)
+        checkBoxL.addWidget(monitor)
+        checkBoxL.addWidget(vscode_settings)
         checkBoxL.addWidget(workplace)
         checkBoxL.addWidget(shortcut)
-        checkBoxL.addWidget(clear_cache) 
         checkBoxL.addStretch(1)
+        checkBoxL.addWidget(clear_cache) 
         checkBox.setLayout(checkBoxL);
     
         urlBox = QtWidgets.QGroupBox("Download URLs")

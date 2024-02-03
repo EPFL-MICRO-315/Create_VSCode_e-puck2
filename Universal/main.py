@@ -198,7 +198,7 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         self.setSubTitle("Specify in more details what component you want the wizard to setup\n"
                          "Do not modify unless you know what you are doing!")
         
-        checkBox = QtWidgets.QGroupBox("Components selection")
+        checkBox1 = QtWidgets.QGroupBox("Components selection")
         vscode          = QtWidgets.QCheckBox("(re)install VSCode ?")
         vscode_settings = QtWidgets.QCheckBox("(re) VSCode settings?")
         arm             = QtWidgets.QCheckBox("(re)install ARM toolchain ?")
@@ -207,7 +207,6 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         gcm             = QtWidgets.QCheckBox("(re)install GCM (Github Credential Manager) ?")
         workplace       = QtWidgets.QCheckBox("(re)install workplace ?")
         shortcut        = QtWidgets.QCheckBox("(re)create shortcut ?")
-        clear_cache     = QtWidgets.QCheckBox("Clear cache after installation ?")
 
         vscode.setChecked(True)
         vscode_settings.setChecked(True)
@@ -217,21 +216,26 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         gcm.setChecked(True)
         workplace.setChecked(True)
         shortcut.setChecked(True)
+
+        checkBoxL1 = QtWidgets.QVBoxLayout()
+        checkBoxL1.addWidget(tools)
+        checkBoxL1.addWidget(gcm)
+        checkBoxL1.addWidget(vscode)
+        checkBoxL1.addWidget(arm)
+        checkBoxL1.addWidget(monitor)
+        checkBoxL1.addWidget(vscode_settings)
+        checkBoxL1.addWidget(workplace)
+        checkBoxL1.addWidget(shortcut)
+        checkBox1.setLayout(checkBoxL1);
+    
+        checkBox2 = QtWidgets.QGroupBox("Clear cache after installation ?")
+        clear_cache     = QtWidgets.QCheckBox("Clears any unnecessary intermediate traces after installation")
         clear_cache.setChecked(False)
 
-        checkBoxL = QtWidgets.QVBoxLayout()
-        checkBoxL.addWidget(tools)
-        checkBoxL.addWidget(gcm)
-        checkBoxL.addWidget(vscode)
-        checkBoxL.addWidget(arm)
-        checkBoxL.addWidget(monitor)
-        checkBoxL.addWidget(vscode_settings)
-        checkBoxL.addWidget(workplace)
-        checkBoxL.addWidget(shortcut)
-        checkBoxL.addStretch(1)
-        checkBoxL.addWidget(clear_cache) 
-        checkBox.setLayout(checkBoxL);
-    
+        checkBoxL2 = QtWidgets.QVBoxLayout()
+        checkBoxL2.addWidget(clear_cache) 
+        checkBox2.setLayout(checkBoxL2);
+
         urlBox = QtWidgets.QGroupBox("Download URLs")
         vscode_urlDescription = QtWidgets.QLabel("VSCode download URL:")
         vscode_urlEdit = QtWidgets.QLineEdit()
@@ -285,7 +289,8 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         urlBox.setLayout(urlBoxL)
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(checkBox)
+        layout.addWidget(checkBox1)
+        layout.addWidget(checkBox2)
         layout.addWidget(urlBox)
         
         self.setLayout(layout)

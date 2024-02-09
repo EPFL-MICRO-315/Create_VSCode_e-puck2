@@ -26,8 +26,8 @@ function install() {
 	then
 		echo -e "${GREEN}brew not found, installing${NC}"
 		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-		(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> $HOME/.zprofile
-		eval "$(/opt/homebrew/bin/brew shellenv)"
+		(echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> $HOME/.zprofile
+		eval "$(/usr/local/bin/brew shellenv)"
 	fi	
 	echo -e "${GREEN}updating brew${NC}"
 	brew update

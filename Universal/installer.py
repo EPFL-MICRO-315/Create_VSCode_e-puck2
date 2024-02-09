@@ -64,7 +64,8 @@ def step1():
     os.chdir(settings["install_path"])
     logging.warning("Installation of git-credential-manager")
         
-    if os_name == "Darwin":    
+    if os_name == "Darwin":
+        logging.warning("Enter your password requested on terminal")
         os.system("brew install --cask git-credential-manager")
         os.system("git config --global credential.credentialStore keychain")
     elif os_name == "Windows":

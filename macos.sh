@@ -1,10 +1,11 @@
-#!/bin/zsh
+#!/bin/bash
 
 #####################################################
 ##              BEGINNING OF SCRIPT               ##
 #####################################################
 
 InstallerPath=$(dirname "$0")
+
 # If the script is runned from its folder, the folder name will be "." and all "cd" inside the script will be the reference "."
 if [ "$InstallerPath" == "." ]; then
     InstallerPath=$(pwd)
@@ -41,7 +42,7 @@ function install() {
 	fi
 
 	echo -e "${GREEN}Configuring pyenv and pyenv-virtualenv, adding to path (.zshrc)${NC}"
-	if ! grep -q -e "$line1" -e "$line2" -e "$line3" ~/.zshrc; then
+	if ! grep -q -e "$line1" -e "$line2" -e "$line3" -e "$line4" ~/.zshrc; then
 		echo "$line1" >> ~/.zshrc
 		echo "$line2" >> ~/.zshrc
 		echo "$line3" >> ~/.zshrc

@@ -42,6 +42,10 @@ def init_folders():
         os.makedirs(settings["install_path"] + "/EPuck2_Utils/")
     if not os.path.exists(settings["workplace_path"]):
         os.makedirs(settings["workplace_path"])
+        os.chdir(settings["workplace_path"])
+        os.system("pyenv local e-puck2")
+	
+
      
 # Tools installation
 def step0():

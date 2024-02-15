@@ -42,11 +42,11 @@ def init_folders():
         os.makedirs(settings["install_path"] + "/EPuck2_Utils/")
     if not os.path.exists(settings["workplace_path"]):
         os.makedirs(settings["workplace_path"])
-        os.chdir(settings["workplace_path"])
+    if not os.path.exists(settings["workplace_path"] + "/EPuck2_Workplace/"):
+        os.makedirs(settings["workplace_path"] + "/EPuck2_Workplace/")
+        os.chdir(settings["workplace_path"] + "/EPuck2_Workplace/")
         os.system("pyenv local e-puck2")
-	
-
-     
+    
 # Tools installation
 def step0():
     os.chdir(settings["install_path"])
@@ -407,21 +407,21 @@ def step5():
         logging.info("VSCode tasks.json created!")
 
 def step6():
-    os.chdir(settings["workplace_path"])
-    logging.warning(f"Setting up the Workplace in {settings['workplace_path']}")
+    os.chdir(settings["workplace_path"] + "/EPuck2_Workplace")
+    logging.warning(f"Setting up the Workplace Lib in {settings['workplace_path']}/EPuck2_Workplace")
     
-    if os.path.isdir("EPuck2_Workplace"):
-        logging.warning(f"EPuck2_Workplace detected in {settings['workplace_path']}, deleting...")
-        rmdir("EPuck2_Workplace")
+    if os.path.isdir("Lib"):
+        logging.warning(f"{settings['workplace_path']}/EPuck2_Workplace/Lib is already existing. Nothing else the Lib folder will be touched.")
+        input("Before removing Lib: Press any key to continue ...")
+        rmdir("Lib")
+        input("After removing Lib: Press any key to continue ...")
 
-    os.mkdir("EPuck2_Workplace/")
-    os.chdir("EPuck2_Workplace/")
-    logging.info(f"Cloning the lib in {settings['workplace_path']}")
+    logging.info(f"Cloning the lib in {settings['workplace_path']}/EPuck2_Workplace")
     os_cli("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
 
     folder = "Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly/"
     if os.path.isfile(folder + "package.json"):
-        os.rename(folder + "package.json", folder + "package.json-renamed-because-conflict-task-tp-4")
+        os.rename(folder + "package.json", folder + "package.json-RenamedToAvoidBadTasksInVSCode")
 
     if not os.path.isfile(settings["workplace_path"] + "EPuck2_Workplace/Lib/README.md"): #check if Lib was correctly cloned 
         logging.error("Lib not correctly cloned!")

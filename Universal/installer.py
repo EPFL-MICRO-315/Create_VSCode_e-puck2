@@ -426,14 +426,15 @@ def step6():
     logging.info(f"Cloning the lib in {folder}")
     os_cli("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
 
-    folder = "Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly/"
-    if os.path.isfile(folder + "package.json"):
-        os.rename(folder + "package.json", folder + "package.json-RenamedToAvoidBadTasksInVSCode")
-
     if not os.path.isfile(folder+"/Lib/README.md"): #check if Lib was correctly cloned 
         logging.error("Lib not correctly cloned!")
     else:
-        logging.info("Lib sucessfully cloned!")
+        folder = "Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly/"
+        if os.path.isfile(folder + "package.json"):
+            os.rename(folder + "package.json", folder + "package.json-RenamedToAvoidBadTasksInVSCode")
+            logging.info("Lib sucessfully cloned!")
+        else:
+            logging.warning("Lib must be checked: package.json file not in Aseba")
 
 def step7():
     logging.warning("shortcut creation selected, proceeding")

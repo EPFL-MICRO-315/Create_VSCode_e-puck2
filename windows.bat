@@ -18,21 +18,21 @@ REM Test with using powershell script instead batch.
 REM powershell -ExecutionPolicy ByPass %EPuck2_InstallerPath%/windows.ps1
 REM goto End
 
-:TestClean
-type %EPuck2_LogFile% 2>nul | findstr Clean >nul
-if errorlevel 1 (
-  echo:   *******************************************************************************
-  echo:   *                                                                             *
-  echo:   *  Everything will be cleaned in order to be able to install later correctly  *
-  echo:   *                                                                             *
-  echo:   *  Press any key to start...                                                  *
-  echo:   *                                                                             *
-  echo:   *******************************************************************************
-  pause > nul
-  
-  echo InstallStarted >> %EPuck2_LogFile%
-  cls
-)
+@REM :Uninstall
+@REM type %EPuck2_LogFile% 2>nul | findstr Uninstall >nul
+@REM if errorlevel 1 (
+@REM   echo:   ***********************************************************************************
+@REM   echo:   *                                                                                 *
+@REM   echo:   *  Everything will be uninstalled in order to be able to install later correctly  *
+@REM   echo:   *                                                                                 *
+@REM   echo:   *  Press any key to start...                                                      *
+@REM   echo:   *                                                                                 *
+@REM   echo:   ***********************************************************************************
+@REM   pause > nul
+@REM 
+@REM   echo UninstallStarted >> %EPuck2_LogFile%
+@REM   cls
+@REM )
 
 :InstallStarted
 type %EPuck2_LogFile% 2>nul | findstr InstallStarted >nul

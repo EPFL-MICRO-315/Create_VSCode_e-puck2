@@ -9,7 +9,7 @@ Dependencies:
 License:
 """
 
-import os
+import os, stat
 from os.path import expanduser
 import sys
 import time
@@ -18,7 +18,13 @@ import shutil
 import logging
 from utils import *
 
+def remove_readonly(func, path, _):
+    "Clear the readonly bit and reattempt the removal"
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
 origin = os.getcwd()
+
 os_name = platform.system()
 if os_name == "Darwin":
     import zipfile
@@ -74,7 +80,7 @@ def step1():
         os.system("git config --global credential.credentialStore keychain")
     elif os_name == "Windows":
         downloadTo(settings["gcm_url"], "git_setup.exe")
-        logging.warning("Please install git from the external dialog that opens right now")
+        logging.warning("Please check git installation in the external dialog that opens right now")
         subprocess.run("git_setup.exe /SILENT")
         if settings["clear_cache"]:
             os.remove("git_setup.exe")
@@ -105,7 +111,7 @@ def step2():
         try:
             if os.path.isdir(dest): 
                 logging.warning(f"Visual Studio Code installation in {settings['install_path']} detected, deleting...")
-                shutil.rmtree(dest)
+                shutil.rmtree(dest, onerror=remove_readonly)
 
             if os_name == "Linux":
                 with tarfile.open(src) as file:
@@ -152,7 +158,7 @@ def step3():
         try:
             if os.path.isdir(dest): 
                 logging.warning(f"arm_gcc_toolchain installation in {settings['install_path']} detected, deleting...")
-                shutil.rmtree(dest)
+                shutil.rmtree(dest, onerror=remove_readonly)
 
             if os_name == "Windows":
                 with zipfile.ZipFile(src, "r") as file:
@@ -201,7 +207,7 @@ def step4():
         try:
             if os.path.isdir(dest): 
                 logging.warning(f"EPuck 2 monitor installation in {settings['install_path']}/Epuck2_Utils/ detected, deleting...")
-                shutil.rmtree(dest)
+                shutil.rmtree(dest, onerror=remove_readonly)
 
             if os_name == "Darwin":
                 with zipfile.ZipFile(src, "r") as file:
@@ -239,7 +245,7 @@ def step4():
 # VSCode configuration
 def step5():
     if os_name == "Windows":
-        make_path = {settings["install_path"].replace(b1, b2)} + "/EPuck2_Utils/gnutools/make"
+        make_path = settings["install_path"].replace(b1, b2) + "/EPuck2_Utils/gnutools/make"
         dfu_util = {settings["install_path"].replace(b1, b2)} + "/EPuck2_Utils/dfu-util.exe"
     else:
         make_path = "make"
@@ -355,7 +361,7 @@ def step5():
     
     if os.path.isdir(data_dir):
         logging.warning(f"VSCode data_dir detected in {settings['install_path']}, deleting...")
-        rmdir(data_dir)
+        shutil.rmtree(data_dir, onerror=remove_readonly)
     os.mkdir(data_dir)
 
     if not os.path.isdir(data_dir): 
@@ -407,23 +413,24 @@ def step5():
         logging.info("VSCode tasks.json created!")
 
 def step6():
-    os.chdir(settings["workplace_path"] + "/EPuck2_Workplace")
-    logging.warning(f"Setting up the Workplace Lib in {settings['workplace_path']}/EPuck2_Workplace")
+    folder = settings["workplace_path"].replace(b1, b2) + "/EPuck2_Workplace"
+    os.chdir(folder)
+    logging.warning(f"Setting up the Workplace Lib in {folder}")
     
     if os.path.isdir("Lib"):
-        logging.warning(f"{settings['workplace_path']}/EPuck2_Workplace/Lib is already existing. Nothing else the Lib folder will be touched.")
-        input("Before removing Lib: Press any key to continue ...")
-        rmdir("Lib")
-        input("After removing Lib: Press any key to continue ...")
+        logging.warning(f"{folder}/Lib is already existing. Nothing else the Lib subfolder will be touched.")
+        # input(f"Before removing {folder}/Lib: Press any key to continue ...")
+        shutil.rmtree("Lib", onerror=remove_readonly)
+        # input(f"After removing {folder}/Lib: Press any key to continue ...")
 
-    logging.info(f"Cloning the lib in {settings['workplace_path']}/EPuck2_Workplace")
+    logging.info(f"Cloning the lib in {folder}")
     os_cli("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
 
     folder = "Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly/"
     if os.path.isfile(folder + "package.json"):
         os.rename(folder + "package.json", folder + "package.json-RenamedToAvoidBadTasksInVSCode")
 
-    if not os.path.isfile(settings["workplace_path"] + "EPuck2_Workplace/Lib/README.md"): #check if Lib was correctly cloned 
+    if not os.path.isfile(folder+"/Lib/README.md"): #check if Lib was correctly cloned 
         logging.error("Lib not correctly cloned!")
     else:
         logging.info("Lib sucessfully cloned!")

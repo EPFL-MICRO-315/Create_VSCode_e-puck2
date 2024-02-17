@@ -9,7 +9,7 @@ Dependencies:
 License:
 """
 
-import os
+import os, stat
 from os.path import expanduser
 import sys
 import time
@@ -17,6 +17,11 @@ import platform
 import shutil
 import logging
 from utils import *
+
+def remove_readonly(func, path, _):
+    "Clear the readonly bit and reattempt the removal"
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
 
 os_name = platform.system()
 if os_name == "Windows":
@@ -48,7 +53,7 @@ def step2():
     
     util_dir = settings["install_path"] + "EPuck2_Utils"
     logging.warning(f"Deleting Utils: {util_dir}")
-    rmdir(util_dir)
+    shutil.rmtree(util_dir, onerror=remove_readonly)
     
 
 # VSCode
@@ -68,9 +73,9 @@ def step3():
         bin_dir += "EPuck2_VSCode/bin/"
     
     logging.warning(f"Deleting VSCode data_dir: {data_dir}")
-    rmdir(data_dir)
+    shutil.rmtree(data_dir, onerror=remove_readonly)
     logging.warning(f"Deleting VSCode bin_dir: {bin_dir}")
-    rmdir(bin_dir)
+    shutil.rmtree(bin_dir, onerror=remove_readonly)
     
 # Shortcut
 def step4():

@@ -151,10 +151,6 @@ class SetupPage(QtWidgets.QWizardPage):
             layout.addWidget(workplacePathBox)
             self.setLayout(layout)
             
-            
-            self.setButtonText(QtWidgets.QWizard.CustomButton1, "Custom button")
-            self.parent.setOption(QtWidgets.QWizard.HaveCustomButton1, True)
-            
         else:
             if os_name == "Darwin":
                 installPath = os.popen("echo $HOME/Applications/").read().rstrip()

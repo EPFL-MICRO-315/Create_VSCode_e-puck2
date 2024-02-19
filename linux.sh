@@ -14,7 +14,7 @@ function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
 
 	if [ "$os" = "fedora" ]; then
-		sudo dnf install -y git gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel
+		sudo dnf install -y git make gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel
 	elif [ "$os" = "ubuntu" ]; then
 		sudo apt-get update
 		sudo apt-get install -y $PACKAGES
@@ -54,7 +54,6 @@ function install() {
 	source ~/.bash_profile
 
 	echo -e "${GREEN}Installing python 3.11.2${NC}"
-	#LDFLAGS="-L/nix/store/j0pi1a69r7zzwxl92c21w1l2syyfnchp-zlib-1.3/lib" pyenv install -s 3.11.2
 	pyenv install -s 3.11.2
 	pyenv local 3.11.2
 
@@ -104,7 +103,7 @@ function uninstall() {
 	fi
 }
 
-echo -e "${GREEN}The script should be run within the Create_VSCode_e-puck2 directory!${NC}"
+echo -e "${GREEN}The script should be run within the Create_VSCode_e-puck2-RefTag directory!${NC}"
 if [ "$os" = "fedora" ]; then
 	echo -e "${GREEN}Running on Fedora${NC}"
 elif [ "$os" = "ubuntu" ]; then

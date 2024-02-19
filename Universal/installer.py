@@ -16,6 +16,7 @@ import time
 import platform
 import shutil
 import logging
+import distro
 from utils import *
 
 def remove_readonly(func, path, _):
@@ -65,8 +66,12 @@ def step0():
         os_copy(origin + "/Universal/gnutools", "EPuck2_Utils/gnutools")
     elif os_name == "Linux":
         logging.info("Installation of make, dfu-util and git")
-        os_cli("sudo apt-get -y install make dfu-util git")
-        os_cli("sudo adduser $USER dialout")
+        if distro.id() == "ubuntu":
+            os_cli("sudo apt-get -y install dfu-util")
+            os_cli("sudo adduser $USER dialout")
+        elif distro.id() == "fedora":
+            os_cli("sudo dnf -y install dfu-util")
+            os_cli("sudo usermod -aG dialout $USER")
     os_copy(origin + "/Universal/Utils", "EPuck2_Utils/Utils")
     
 # Github Credential Manager installation
@@ -89,7 +94,7 @@ def step1():
         os_cli("sudo dpkg -i gcm.deb")
         os_cli("git-credential-manager configure")
         os_cli("git config --global credential.credentialStore secretservice") # might need to logout and login again
-
+        os_cli("git config pull.rebase false")
         if settings["clear_cache"]:
             os.remove("gcm.deb")
 

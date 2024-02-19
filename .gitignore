@@ -1,0 +1,6 @@
+**/my.ini
+**/__pycache__/
+install-pyenv-win.ps1
+.python-version
+**/android.txt
+*.log

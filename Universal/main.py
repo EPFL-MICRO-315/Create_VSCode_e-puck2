@@ -76,26 +76,43 @@ class SetupPage(QtWidgets.QWizardPage):
                 installPath = os.popen("echo $HOME/.local/bin/").read().rstrip()
                 workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
             
-            pathWarning = QtWidgets.QLabel("")
-            
+            installPathWarning = QtWidgets.QLabel("")
             installPathEdit = QtWidgets.QLineEdit(installPath)
+            def checkForSpaceInstallPath():
+                if ' ' in installPathEdit.text():
+                    installPathWarning.setText("Warning!: path containing space, choose another path")
+                else:
+                    installPathWarning.setText("")
+
+            installPathEdit.textChanged.connect(checkForSpaceInstallPath)
             def installPath_dialog():
                 nonlocal installPath
                 installPath = installPathEdit.text()
                 tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", installPath)
                 if tmp != "":
                     installPath = tmp
+                if ' ' in tmp:
+                    installPathWarning.setText("Warning!: path containing space, choose another path")
+                else:
+                    installPathWarning.setText("")
                 installPathEdit.setText(installPath)
 
+            workplacePathWarning = QtWidgets.QLabel("")
             workplacePathEdit = QtWidgets.QLineEdit(workplacePath)
+            def checkForSpaceWorkplacePath():
+                if ' ' in workplacePathEdit.text():
+                    workplacePathWarning.setText("Warning!: path containing space, choose another path")
+                else:
+                    workplacePathWarning.setText("")
+
+            workplacePathEdit.textChanged.connect(checkForSpaceWorkplacePath)
             def workplacePath_dialog():
                 nonlocal workplacePath
                 workplacePath = workplacePathEdit.text()
                 tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", workplacePath)
                 if tmp != "":
                     workplacePath = tmp
-                if ' ' in tmp:
-                    pathWarning.setText("Warning!: path containing space, choose another path")
+                checkForSpaceWorkplacePath()
                 workplacePathEdit.setText(workplacePath)
 
             installPathBox = QtWidgets.QGroupBox("IDE (VSCode, tools, ...) Path:")
@@ -107,6 +124,7 @@ class SetupPage(QtWidgets.QWizardPage):
             installPathBoxL.addWidget(installPathDescription, 0, 0, 1, 2)
             installPathBoxL.addWidget(installPathEdit)
             installPathBoxL.addWidget(installPathButton)        
+            installPathBoxL.addWidget(installPathWarning, 2, 0, 1, 2)        
             installPathBox.setLayout(installPathBoxL);
             
             workplacePathBox = QtWidgets.QGroupBox("Workplace Path:")
@@ -117,7 +135,8 @@ class SetupPage(QtWidgets.QWizardPage):
             workplacePathBoxL = QtWidgets.QGridLayout()
             workplacePathBoxL.addWidget(workplacePathDescription, 0, 0, 1, 2)
             workplacePathBoxL.addWidget(workplacePathEdit, 1, 0)
-            workplacePathBoxL.addWidget(workplacePathButton, 1, 1)       
+            workplacePathBoxL.addWidget(workplacePathButton, 1, 1)    
+            installPathBoxL.addWidget(workplacePathWarning, 2, 0, 1, 2)   
             workplacePathBox.setLayout(workplacePathBoxL);
 
             # registerField functions are used to let other pages accessing the specfied variable with user defined key
@@ -131,6 +150,10 @@ class SetupPage(QtWidgets.QWizardPage):
             layout.addWidget(installPathBox)
             layout.addWidget(workplacePathBox)
             self.setLayout(layout)
+            
+            
+            self.setButtonText(QtWidgets.QWizard.CustomButton1, "Custom button")
+            self.parent.setOption(QtWidgets.QWizard.HaveCustomButton1, True)
             
         else:
             if os_name == "Darwin":
@@ -173,6 +196,15 @@ class SetupPage(QtWidgets.QWizardPage):
             layout.addWidget(self.validateLabel)
             self.setLayout(layout)
 
+            self.advanced = False
+            def adv(self):
+                self.advanced = True
+                
+            self.setButtonText(QtWidgets.QWizard.CustomButton1, "Advanced...")
+            self.button(QtWidgets.QWizard.CustomButton1).clicked.connect(adv)
+            self.setOption(QtWidgets.QWizard.HaveCustomButton1, True)
+            # I want to have a advanced settings button
+    
     def validatePage(self):
         if sys.argv[1] == "install":
             if (' ' in self.field('install_path')) or (' ' in self.field('workplace_path')):
@@ -190,6 +222,11 @@ class SetupPage(QtWidgets.QWizardPage):
             logging.error("The specified path does not contain the IDE")
             return False
         
+    def isComplete(self):
+        if (' ' in self.field('install_path')) or (' ' in self.field('workplace_path')):
+            return False
+        return True
+    
     def nextId(self):
         if sys.argv[1] == "install":
             return advanced_setup_id

@@ -105,7 +105,6 @@ function uninstall() {
 }
 
 echo -e "${GREEN}The script should be run within the Create_VSCode_e-puck2 directory!${NC}"
-echo $os
 if [ "$os" = "fedora" ]; then
 	echo -e "${GREEN}Running on Fedora${NC}"
 elif [ "$os" = "ubuntu" ]; then

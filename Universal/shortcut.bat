@@ -21,19 +21,13 @@ if %errorlevel% NEQ 0 (
 del %SCRIPT%
 ::see https://superuser.com/questions/455364/how-to-create-a-shortcut-using-a-batch-script for more info
 
-echo.
-echo Create shortcut under Desktop ? [y/n]
-set /p ans="Enter y for Yes or n for No: "
-if /I %ans% EQU y copy "%origin_path%\%program%" "%USERPROFILE%\Desktop\%program%"
+copy "%origin_path%\%program%" "%USERPROFILE%\Desktop\%program%"
 if %errorlevel% NEQ 0 (
     echo fatal error %errorlevel% during shortcut copying to Desktop
     goto quitRoutine
 )
 
-echo.
-echo Create shortcut under Start Menu ? [y/n]
-set /p ans="Enter y for Yes or n for No: "
-if /I %ans% EQU y copy "%origin_path%\%program%" "%AppData%\Microsoft\Windows\Start Menu\Programs\%program%"
+copy "%origin_path%\%program%" "%AppData%\Microsoft\Windows\Start Menu\Programs\%program%"
 if %errorlevel% NEQ 0 (
     echo fatal error %errorlevel% during shortcut copying to Start Menu
     goto quitRoutine

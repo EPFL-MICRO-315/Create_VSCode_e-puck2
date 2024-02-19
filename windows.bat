@@ -14,43 +14,6 @@ set EPuck2_LogFile=%EPuck2_InstallerPath%\Install.log
 echo Installer path = %EPuck2_InstallerPath% >> %EPuck2_LogFile%
 echo:
 
-REM Test with using powershell script instead batch.
-REM powershell -ExecutionPolicy ByPass %EPuck2_InstallerPath%/windows.ps1
-REM goto End
-
-@REM :Uninstall
-@REM type %EPuck2_LogFile% 2>nul | findstr Uninstall >nul
-@REM if errorlevel 1 (
-@REM   echo:   ***********************************************************************************
-@REM   echo:   *                                                                                 *
-@REM   echo:   *  Everything will be uninstalled in order to be able to install later correctly  *
-@REM   echo:   *                                                                                 *
-@REM   echo:   *  Press any key to start...                                                      *
-@REM   echo:   *                                                                                 *
-@REM   echo:   ***********************************************************************************
-@REM   pause > nul
-@REM 
-@REM   echo UninstallStarted >> %EPuck2_LogFile%
-@REM   cls
-@REM )
-
-:InstallStarted
-type %EPuck2_LogFile% 2>nul | findstr InstallStarted >nul
-if errorlevel 1 (
-  echo:   ******************************************************************************************************
-  echo:   *                                                                                                    *
-  echo:   *  For technical reason this batch must be executed many time until this message will be displayed:  *
-  echo:   *                                                                                                    *
-  echo:   *     "The installation must be complete. It is no longer necessary to run this script again !!"     *
-  echo:   *                                                                                                    *
-  echo:   *  Press any key to start...                                                                         *
-  echo:   *                                                                                                    *
-  echo:   ******************************************************************************************************
-  pause > nul
-  echo InstallStarted >> %EPuck2_LogFile%
-  cls
-)
-
 if %EPuck2_Debug% EQU ON (
   echo Administrative permissions required. Test that batch is well started as Administrator ...    
 )
@@ -117,29 +80,7 @@ if errorlevel 1 (
   echo:
 )
 
-:CheckPyEnv
-type %EPuck2_LogFile% 2>nul | findstr CheckPyEnv >nul
-if errorlevel 1 (
-  echo Check if PyEnv-win is already installed ...
-  if "%PYENV%" EQU "" (
-    echo:    ... Not already installed then download ...
-    cmd /Q /C Powershell.exe -ExecutionPolicy ByPass -Command "Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1' -OutFile '%EPuck2_InstallerPath%/install-pyenv-win.ps1'" >nul 2>>%EPuck2_LogFile%
-    echo:    ... And install ...
-    cmd /Q /C Powershell.exe -ExecutionPolicy ByPass -Command "%EPuck2_InstallerPath%/install-pyenv-win.ps1" >nul 2>>%EPuck2_LogFile%
-    type %USERPROFILE%\.pyenv\.version >%EPuck2_InstallerPath%\pyenvVersion.txt
-    setlocal EnableDelayedExpansion
-    SET /P pyenvVersion=<%EPuck2_InstallerPath%\pyenvVersion.txt
-    echo:  ... fresh install of PyEnv !pyenvVersion!
-    ) else (
-    type %PYENV%\..\.version >%EPuck2_InstallerPath%\pyenvVersion.txt
-    setlocal EnableDelayedExpansion
-    SET /P pyenvVersion=<%EPuck2_InstallerPath%\pyenvVersion.txt
-    echo:  ... PyEnv !pyenvVersion! was already installed
-  )
-  setlocal DisableDelayedExpansion
-  echo CheckPyEnv >> %EPuck2_LogFile%
-  echo:
-)
+powershell -ExecutionPolicy ByPass %EPuck2_InstallerPath%/DoNotLaunchDirectly.ps1
 
 :RestorePSPolicy
 @echo off
@@ -151,61 +92,7 @@ if errorlevel 1 (
   del %EPuck2_InstallerPath%\PowerShellPoliciesBackup.reg > nul 2>>%EPuck2_LogFile%
   echo:  ... done
   echo RestorePSPolicy >> %EPuck2_LogFile%
-  echo:
-  echo:   *************************************************************
-  echo:   *                                                           *
-  echo:   *  IMPORTANT                                                *
-  echo:   *                                                           *
-  echo:   *  Run again the script in order to take in account the     *
-  echo:   *  Pyenv install and continue the rest of the installation  *
-  echo:   *                                                           *
-  echo:   *************************************************************
-  echo:
-  goto end
 )
-
-:InstallSoftwares
-type %EPuck2_LogFile% 2>nul | findstr InstallSoftwares >nul
-if errorlevel 1 (
-  echo Installing python 3.11.2
-  pyenv install 3.11.2 2>>%EPuck2_LogFile%
-  echo: Rename this python 3.11.2 to e-puck2 ...
-  rename %PYENV%\versions\3.11.2 e-puck2 >nul 2>>%EPuck2_LogFile%
-  echo:   ... rename done
-  cd %EPuck2_InstallerPath%
-  pyenv local e-puck2
-  echo: Installing packages required for installation
-  python -m ensurepip --upgrade 2>>%EPuck2_LogFile%
-  python -m pip install --upgrade pip 2>>%EPuck2_LogFile%
-  python -m pip install PyQT5 termcolor requests 2>>%EPuck2_LogFile%
-
-  echo InstallSoftwares >> %EPuck2_LogFile%
-  echo:
-  echo:   *****************************************************************
-  echo:   *                                                               *
-  echo:   *  IMPORTANT                                                    *
-  echo:   *                                                               *
-  echo:   *  Run again the script in order to take in account this        *
-  echo:   *  Softwares install and continue the rest of the installation  *
-  echo:   *                                                               *
-  echo:   *****************************************************************
-  echo:
-  REM It seems that next goto doesn't work but I don't understand why
-  REM That's why I add the same "end" code
-  echo End of the batch. Press any key in order to exit it
-  pause > nul
-  goto end
-)
-
-echo "Launching the final installer"
-pause
-cd %EPuck2_InstallerPath%
-echo ON
-python Universal/main.py install
-
-:EverythingDone
-echo:
-echo The installation must be complete. It is no longer necessary to run this script again !!
 
 :end
 echo:

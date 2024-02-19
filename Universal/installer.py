@@ -94,7 +94,7 @@ def step1():
         os_cli("sudo dpkg -i gcm.deb")
         os_cli("git-credential-manager configure")
         os_cli("git config --global credential.credentialStore secretservice") # might need to logout and login again
-        os_cli("git config pull.rebase false")
+        os_cli("git config --global pull.rebase false")
         if settings["clear_cache"]:
             os.remove("gcm.deb")
 

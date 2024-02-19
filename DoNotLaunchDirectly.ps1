@@ -5,7 +5,7 @@
 Function Exit-Error() {
     $Temp = "
 
-!!!!   " + $Message + "   !!!!
+    !!!!   " + $Message + "   !!!!
 "
     Add-Content -Path $EPuck2_LogFile -Value $Temp
     Write-Host $Temp
@@ -15,7 +15,7 @@ Function Exit-Error() {
 Function Display-Starting() {
     $Temp = "
 
-   "+ $Message + "  >>>>>>>>>>>>>>>>>>>>>>>>" +"
+    "+ $Message + "  >>>>>>" +"
 "
     Add-Content -Path $EPuck2_LogFile -Value $Temp
     Write-Host $Temp
@@ -24,7 +24,7 @@ Function Display-Starting() {
 Function Display-End() {
     $Temp = "
 
-   >>>>>>  " + $Message + "
+    >>>>>>  " + $Message + "
 "
     Add-Content -Path $EPuck2_LogFile -Value $Temp
     Write-Host $Temp
@@ -45,17 +45,17 @@ Display-Starting
 ################################################
 $Section = "Install or update PyEnv"
 if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
-    $Message = ">>>>>>>>>>>>>>>>>>>>" + $Section + ": starting"
+    $Message = $Section + ": starting"
     Display-Starting
 
     # Download anyway Pyenv installer because it will check and install the last version if necessary
     Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile $EPuck2_InstallerPath"/install-pyenv-win.ps1" >$null 2>>$EPuck2_LogFile
     IF ($?) {
-        Add-Content -Path $EPuck2_LogFile -Value "   ... PyEnv installer downloaded anyway in order to check if update is necessary"
+        Add-Content -Path $EPuck2_LogFile -Value "        ... PyEnv installer downloaded anyway in order to check if update is necessary"
     }
     ELSE {
-        Write-Host "Download problem of PyEnv installer: Check " + $EPuck2_LogFile + " and ask support!"
-        EXIT 1
+        $Message = "Download problem of PyEnv installer: Check " + $EPuck2_LogFile + " and ask support!"
+        Exit-Error
     }
 
     # Equivalent to "Reload session" in order to take in account the possible previous Pyenv install
@@ -77,7 +77,7 @@ if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
     $env:PYENV_HOME = [Environment]::GetEnvironmentVariable('PYENV_HOME', 'User')
     $env:PYENV_ROOT = [Environment]::GetEnvironmentVariable('PYENV_ROOT', 'User')
 
-    $Message = "   ... PyEnv " + (Get-Content -Path ($env:PYENV + "../.version")) + " will be used."
+    $Message = "        ... PyEnv " + (Get-Content -Path ($env:PYENV + "../.version")) + " will be used."
     IF ($?) {
         Write-Host $Message
         Add-Content -Path $EPuck2_LogFile -Value $Message

@@ -8,11 +8,18 @@ line2='command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' #for 
 line4='[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' #for .bash_profile
 line3='eval "$(pyenv init -)"' #for .bashrc, .profile, .bash_profile
 PACKAGES="git make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev libmtdev-dev libglib2.0-dev libnss3-dev libatk1.0-dev libatk-bridge2.0-dev libgtk-3-dev libasound-dev python3-tk libxcb-xinerama0"
+os=$(eval grep "^ID=" /etc/os-release | cut -d"=" -f2)
 
 function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
-	sudo apt-get update
-	sudo apt-get install -y $PACKAGES
+
+	if [ "$os" = "fedora" ]; then
+		sudo dnf install -y git gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel
+	elif [ "$os" = "ubuntu" ]; then
+		sudo apt-get update
+		sudo apt-get install -y $PACKAGES
+	fi
+
 
 	if ! command -v pyenv &> /dev/null
 	then
@@ -84,18 +91,29 @@ function uninstall() {
     else
         echo -e "${GREEN}Skipping pyenv uninstallation${NC}"
     fi
-
-	for package in $PACKAGES; do
-    if apt-cache rdepends $package | grep -q "^ "; then
-        echo "$package is a dependency of another package, not removing"
-    else
-        echo "${GREEN}Removing $package${NC}"
-        sudo apt-get remove -y $package
-    fi
-	done
+	
+	if [ "$os" = "ubuntu" ]; then
+		for package in $PACKAGES; do
+		if apt-cache rdepends $package | grep -q "^ "; then
+			echo "$package is a dependency of another package, not removing"
+		else
+			echo "${GREEN}Removing $package${NC}"
+			sudo apt-get remove -y $package
+		fi
+		done
+	fi
 }
 
 echo -e "${GREEN}The script should be run within the Create_VSCode_e-puck2 directory!${NC}"
+echo $os
+if [ "$os" = "fedora" ]; then
+	echo -e "${GREEN}Running on Fedora${NC}"
+elif [ "$os" = "ubuntu" ]; then
+	echo -e "${GREEN}Running on Ubuntu${NC}"
+else
+	echo -e "${GREEN}Running on Unknown distribution, hazardeous!${NC}"
+fi
+
 case "$1" in
     uninstall)
         uninstall

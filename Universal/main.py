@@ -76,6 +76,8 @@ class SetupPage(QtWidgets.QWizardPage):
                 installPath = os.popen("echo $HOME/.local/bin/").read().rstrip()
                 workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
             
+            pathWarning = QtWidgets.QLabel("")
+            
             installPathEdit = QtWidgets.QLineEdit(installPath)
             def installPath_dialog():
                 nonlocal installPath
@@ -92,6 +94,8 @@ class SetupPage(QtWidgets.QWizardPage):
                 tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", workplacePath)
                 if tmp != "":
                     workplacePath = tmp
+                if ' ' in tmp:
+                    pathWarning.setText("Warning!: path containing space, choose another path")
                 workplacePathEdit.setText(workplacePath)
 
             installPathBox = QtWidgets.QGroupBox("IDE (VSCode, tools, ...) Path:")
@@ -171,6 +175,8 @@ class SetupPage(QtWidgets.QWizardPage):
 
     def validatePage(self):
         if sys.argv[1] == "install":
+            if (' ' in self.field('install_path')) or (' ' in self.field('workplace_path')):
+                return False
             return True
         else:
             if os_name == "Darwin":

@@ -195,15 +195,6 @@ class SetupPage(QtWidgets.QWizardPage):
             layout.addWidget(installPathBox)
             layout.addWidget(self.validateLabel)
             self.setLayout(layout)
-
-            self.advanced = False
-            def adv(self):
-                self.advanced = True
-                
-            self.setButtonText(QtWidgets.QWizard.CustomButton1, "Advanced...")
-            self.button(QtWidgets.QWizard.CustomButton1).clicked.connect(adv)
-            self.setOption(QtWidgets.QWizard.HaveCustomButton1, True)
-            # I want to have a advanced settings button
     
     def validatePage(self):
         if sys.argv[1] == "install":

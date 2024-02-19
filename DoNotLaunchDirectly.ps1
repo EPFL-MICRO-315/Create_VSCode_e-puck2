@@ -192,7 +192,7 @@ if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
         Exit-Error
     }
 
-    python -m pip install PyQT5 termcolor requests | Tee-Object -Append $EPuck2_LogFile
+    python -m pip install PyQT5 termcolor requests distro | Tee-Object -Append $EPuck2_LogFile
     IF (-not $?) {
         $Message = $Section + " problem (pip install): Check " + $EPuck2_LogFile + " and ask support"
         Exit-Error

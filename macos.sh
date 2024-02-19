@@ -61,7 +61,7 @@ function install() {
 	echo -e "${GREEN}Installing packages required for installation${NC}"
 	python -m ensurepip --upgrade
 	python -m pip install --upgrade pip
-	python -m pip install PyQT5 termcolor requests
+	python -m pip install PyQT5 termcolor requests distro
 
 	echo -e "${GREEN}Launching the installer${NC}"
 	python Universal/main.py install

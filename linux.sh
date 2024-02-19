@@ -60,7 +60,7 @@ function install() {
 	echo -e "${GREEN}Installing packages required for installation${NC}"
 	pip install --upgrade pip
 	pip install PyQt5
-	pip install requests
+	pip install requests distro
 	echo -e "${GREEN}Launching the installer${NC}"
 	python Universal/main.py install
 }

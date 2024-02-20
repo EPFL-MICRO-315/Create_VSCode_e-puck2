@@ -334,7 +334,7 @@ def step5():
         {{
             "label": "User:Clone Lib",
             "type": "shell",
-            "command": "rm -rf {settings["workplace_path"].replace(b1, b2)}EPuck2_Workplace/Lib && git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git {settings["workplace_path"].replace(b1, b2)}EPuck2_Workplace/Lib",
+            "command": "rm -rf {settings["workplace_path"].replace(b1, b2)}/EPuck2_Workplace/Lib && git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git {settings["workplace_path"].replace(b1, b2)}/EPuck2_Workplace/Lib",
             "group": {{
                 "kind": "build",
                 "isDefault": true
@@ -453,8 +453,8 @@ def step7():
 Type=Application
 Terminal=false
 Name=Visual Studio Code EPuck2
-Exec={settings["install_path"].replace(b1, b2)}EPuck2_VSCode/code
-Icon={settings["install_path"].replace(b1, b2)}EPuck2_VSCode/resources/app/resources/linux/code.png
+Exec={settings["install_path"].replace(b1, b2)}/EPuck2_VSCode/code
+Icon={settings["install_path"].replace(b1, b2)}/EPuck2_VSCode/resources/app/resources/linux/code.png
 Catergories=Development;IDE;
         '''
         os.chdir(os.popen("echo $HOME/.local/share/applications").read().rstrip())

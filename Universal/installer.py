@@ -430,7 +430,11 @@ def step6():
         # input(f"After removing {folder}/Lib: Press any key to continue ...")
 
     logging.info(f"Cloning the lib in {folder}")
-    os_cli("\"C:\\Program Files\\Git\\cmd\git.exe\" clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
+    if os_name == "Windows":
+        os_cli("\"C:\\Program Files\\Git\\cmd\git.exe\" clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
+    else:
+        os_cli("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
+        
     if not os.path.isfile(folder+"/Lib/README.md"): #check if Lib was correctly cloned 
         logging.error("Lib not correctly cloned!")
     else:

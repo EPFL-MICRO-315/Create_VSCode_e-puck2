@@ -87,7 +87,7 @@ def step1():
         downloadTo(settings["gcm_url"], "git_setup.exe")
         logging.warning("Please check git installation in the external dialog that opens right now")
         subprocess.run("git_setup.exe /SILENT")
-        os.system("set PATH=%PATH%;C:\\Program Files\\Git\\cmd")
+        os.system("set PATH=%PATH%;C:\\Program Files\\Git\\cmd & git --version")
         if settings["clear_cache"]:
             os.remove("git_setup.exe")
     elif os_name == "Linux":
@@ -430,8 +430,7 @@ def step6():
         # input(f"After removing {folder}/Lib: Press any key to continue ...")
 
     logging.info(f"Cloning the lib in {folder}")
-    os_cli("git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
-
+    os_cli("set PATH=%PATH%;C:\\Program Files\\Git\\cmd & git clone --recurse-submodules https://github.com/EPFL-MICRO-315/Lib_VSCode_e-puck2.git Lib")
     if not os.path.isfile(folder+"/Lib/README.md"): #check if Lib was correctly cloned 
         logging.error("Lib not correctly cloned!")
     else:

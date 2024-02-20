@@ -73,7 +73,7 @@ class SetupPage(QtWidgets.QWizardPage):
             installPathWarning = QtWidgets.QLabel("")
             installPathEdit = QtWidgets.QLineEdit(installPath)
             def checkForSpaceInstallPath():
-                if ' ' in installPathEdit.text():
+                if (' ' in installPathEdit.text()) or (not installPathEdit.text().isascii()):
                     installPathWarning.setText("Warning!: path containing space, choose another path")
                 else:
                     installPathWarning.setText("")
@@ -86,7 +86,7 @@ class SetupPage(QtWidgets.QWizardPage):
                 if tmp != "":
                     installPath = tmp
                 if ' ' in tmp:
-                    installPathWarning.setText("Warning!: path containing space, choose another path")
+                    installPathWarning.setText("Warning!: path containing space or punctuation, choose another path")
                 else:
                     installPathWarning.setText("")
                 installPathEdit.setText(installPath)
@@ -94,8 +94,8 @@ class SetupPage(QtWidgets.QWizardPage):
             workplacePathWarning = QtWidgets.QLabel("")
             workplacePathEdit = QtWidgets.QLineEdit(workplacePath)
             def checkForSpaceWorkplacePath():
-                if ' ' in workplacePathEdit.text():
-                    workplacePathWarning.setText("Warning!: path containing space, choose another path")
+                if (' ' in workplacePathEdit.text()) or (not workplacePathEdit.text().isascii()):
+                    workplacePathWarning.setText("Warning!: path containing space or punctuation, choose another path")
                 else:
                     workplacePathWarning.setText("")
 
@@ -130,7 +130,7 @@ class SetupPage(QtWidgets.QWizardPage):
             workplacePathBoxL.addWidget(workplacePathDescription, 0, 0, 1, 2)
             workplacePathBoxL.addWidget(workplacePathEdit, 1, 0)
             workplacePathBoxL.addWidget(workplacePathButton, 1, 1)    
-            installPathBoxL.addWidget(workplacePathWarning, 2, 0, 1, 2)   
+            workplacePathBoxL.addWidget(workplacePathWarning, 2, 0, 1, 2)   
             workplacePathBox.setLayout(workplacePathBoxL);
 
             # registerField functions are used to let other pages accessing the specfied variable with user defined key
@@ -188,7 +188,8 @@ class SetupPage(QtWidgets.QWizardPage):
     
     def validatePage(self):
         if sys.argv[1] == "install":
-            if (' ' in self.field('install_path')) or (' ' in self.field('workplace_path')):
+            if (' ' in self.field('install_path')) or (' ' in self.field('workplace_path')) or \
+               (not self.workplacePathEdit.text().isascii()) or (not self.installPathEdit.text().isascii()):
                 return False
             return True
         else:

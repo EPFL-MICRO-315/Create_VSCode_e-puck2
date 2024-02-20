@@ -80,6 +80,7 @@ if errorlevel 1 (
   echo:
 )
 
+powershell Unblock-File %EPuck2_InstallerPath%/DoNotLaunchDirectly.ps1
 powershell -ExecutionPolicy ByPass %EPuck2_InstallerPath%/DoNotLaunchDirectly.ps1
 
 :RestorePSPolicy

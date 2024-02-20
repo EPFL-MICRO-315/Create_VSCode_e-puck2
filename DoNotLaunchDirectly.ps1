@@ -40,13 +40,17 @@ $EPuck2_LogFile = $EPuck2_InstallerPath + "/Install.log"
 $Message = "Installer started in " + $EPuck2_InstallerPath
 Display-Starting
 
-################################################
-# Section: Install or update checking of PyEnv #
-################################################
+####################################
+# Section: Install or update PyEnv #
+####################################
 $Section = "Install or update PyEnv"
 if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
     $Message = $Section + ": starting"
     Display-Starting
+
+    # Test if PyEnv is Get-Command pyenv -errorAction SilentlyContinue | Out-Null
+    Get-Command pyenv -errorAction SilentlyContinue | Out-Null
+    $PyEnv_AlreadInstalled = $?
 
     # Download anyway Pyenv installer because it will check and install the last version if necessary
     Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile $EPuck2_InstallerPath"/install-pyenv-win.ps1" >$null 2>>$EPuck2_LogFile
@@ -58,24 +62,20 @@ if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
         Exit-Error
     }
 
-    # Equivalent to "Reload session" in order to take in account the possible previous Pyenv install
-    # Only these variables could be changed by Pyenv install
-    Add-Content -Path $EPuck2_LogFile -Value "   ... Environment variables that can be modified by Pyenv have been reloaded"
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","User") + [System.Environment]::GetEnvironmentVariable("Path","Machine") 
-    $env:PYENV = [Environment]::GetEnvironmentVariable('PYENV', 'User')
-    $env:PYENV_HOME = [Environment]::GetEnvironmentVariable('PYENV_HOME', 'User')
-    $env:PYENV_ROOT = [Environment]::GetEnvironmentVariable('PYENV_ROOT', 'User')
-
     # Let the script test if PyEnv is already installed and update/install if necessary
     & .\install-pyenv-win.ps1 *>>$EPuck2_LogFile
 
-    # Equivalent to "Reload session" in order to take in account the possible Pyenv install
-    # Only these variables could be changed by Pyenv install
-    Add-Content -Path $EPuck2_LogFile -Value "   ... Environment variables that can be modified by Pyenv have been reloaded"
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","User") + [System.Environment]::GetEnvironmentVariable("Path","Machine") 
-    $env:PYENV = [Environment]::GetEnvironmentVariable('PYENV', 'User')
-    $env:PYENV_HOME = [Environment]::GetEnvironmentVariable('PYENV_HOME', 'User')
-    $env:PYENV_ROOT = [Environment]::GetEnvironmentVariable('PYENV_ROOT', 'User')
+    # Only if PyEnv was not perviously installed
+    IF (-not $PyEnv_AlreadInstalled) {
+        # Equivalent to "Reload session" in order to take in account the possible previous Pyenv install
+        # Only these variables could be changed by Pyenv install
+        Add-Content -Path $EPuck2_LogFile -Value "   ... As PyEnv is freshly installed then environment variables"
+        Add-Content -Path $EPuck2_LogFile -Value "       that can be added by PyEnv have been reloaded"
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","User") + [System.Environment]::GetEnvironmentVariable("Path","Machine") 
+        $env:PYENV = [Environment]::GetEnvironmentVariable('PYENV', 'User')
+        $env:PYENV_HOME = [Environment]::GetEnvironmentVariable('PYENV_HOME', 'User')
+        $env:PYENV_ROOT = [Environment]::GetEnvironmentVariable('PYENV_ROOT', 'User')
+    }
 
     $Message = "        ... PyEnv " + (Get-Content -Path ($env:PYENV + "../.version")) + " will be used."
     IF ($?) {

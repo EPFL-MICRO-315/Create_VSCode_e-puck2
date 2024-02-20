@@ -34,6 +34,5 @@ if %errorlevel% NEQ 0 (
 )
 del "%program%"
 
-pause
 :quitRoutine
 exit

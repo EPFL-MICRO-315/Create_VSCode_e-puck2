@@ -28,14 +28,8 @@ class ClassWizard(QtWidgets.QWizard):
         self.setPage(install_id, InstallPage())
         
         self.setWindowTitle("VSCode EPuck2 Setup")
-        self.setMinimumSize(1000, 800)
-
-        # if os_name == "Darwin":
-        #     px = QtGui.QPixmap('Universal/e-puck2-macos.png')
-        #     px = px.scaled(500, 500, QtCore.Qt.KeepAspectRatio)
-        #     self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, px)
-        #     self.setWizardStyle(QtWidgets.QWizard.MacStyle)
-        # else:                                                                                                                                 
+        self.setMinimumSize(800, 550)
+                                                                                                                             
         px = QtGui.QPixmap('Universal/e-puck2.png')
         px = px.scaled(250, 250, QtCore.Qt.KeepAspectRatio)
         self.setPixmap(QtWidgets.QWizard.WatermarkPixmap, px)

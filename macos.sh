@@ -37,16 +37,15 @@ function install() {
 		echo -e "${GREEN}pyenv not found, installing${NC}" 
 		brew install pyenv
 		brew install pyenv-virtualenv
+		echo -e "${GREEN}Configuring pyenv and pyenv-virtualenv, adding to path (.zshrc)${NC}"
+		if ! grep -q -e "$line1" -e "$line2" -e "$line3" -e "$line4" ~/.zshrc; then
+			echo "$line1" >> ~/.zshrc
+			echo "$line2" >> ~/.zshrc
+			echo "$line3" >> ~/.zshrc
+			echo "$line4" >> ~/.zshrc
+		fi
 	else
 		echo -e "${GREEN}pyenv already installed${NC}"
-	fi
-
-	echo -e "${GREEN}Configuring pyenv and pyenv-virtualenv, adding to path (.zshrc)${NC}"
-	if ! grep -q -e "$line1" -e "$line2" -e "$line3" -e "$line4" ~/.zshrc; then
-		echo "$line1" >> ~/.zshrc
-		echo "$line2" >> ~/.zshrc
-		echo "$line3" >> ~/.zshrc
-		echo "$line4" >> ~/.zshrc
 	fi
 	
 	echo -e "${GREEN}Reloading the shell${NC}"

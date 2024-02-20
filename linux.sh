@@ -25,27 +25,27 @@ function install() {
 	then
 		echo -e "${GREEN}pyenv not found, installing${NC}" 
 		curl https://pyenv.run | bash
+
+		echo -e "${GREEN}Configuring pyenv, adding to path (.bashrc, .profile, .bash_profile)${NC}"
+		if ! grep -q -e "$line1" -e "$line2" -e "$line3" ~/.bashrc; then
+			echo "$line1" >> ~/.bashrc
+			echo "$line2" >> ~/.bashrc
+			echo "$line3" >> ~/.bashrc
+		fi
+
+		if ! grep -q -e "$line1" -e "$line2" -e "$line3" ~/.profile; then
+			echo "$line1" >> ~/.profile
+			echo "$line2" >> ~/.profile
+			echo "$line3" >> ~/.profile
+		fi
+
+		if ! grep -q -e "$line1" -e "$line4" -e "$line3" ~/.bash_profile; then
+			echo "$line1" >> ~/.bash_profile
+			echo "$line4" >> ~/.bash_profile
+			echo "$line3" >> ~/.bash_profile
+		fi
 	else
 		echo -e "${GREEN}pyenv already installed${NC}"
-	fi
-
-	echo -e "${GREEN}Configuring pyenv, adding to path (.bashrc, .profile, .bash_profile)${NC}"
-	if ! grep -q -e "$line1" -e "$line2" -e "$line3" ~/.bashrc; then
-		echo "$line1" >> ~/.bashrc
-		echo "$line2" >> ~/.bashrc
-		echo "$line3" >> ~/.bashrc
-	fi
-
-	if ! grep -q -e "$line1" -e "$line2" -e "$line3" ~/.profile; then
-		echo "$line1" >> ~/.profile
-		echo "$line2" >> ~/.profile
-		echo "$line3" >> ~/.profile
-	fi
-
-	if ! grep -q -e "$line1" -e "$line4" -e "$line3" ~/.bash_profile; then
-		echo "$line1" >> ~/.bash_profile
-		echo "$line4" >> ~/.bash_profile
-		echo "$line3" >> ~/.bash_profile
 	fi
 
 	echo -e "${GREEN}Reloading the shell${NC}"

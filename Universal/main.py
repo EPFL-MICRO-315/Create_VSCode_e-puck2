@@ -189,7 +189,7 @@ class SetupPage(QtWidgets.QWizardPage):
     def validatePage(self):
         if sys.argv[1] == "install":
             if (' ' in self.field('install_path')) or (' ' in self.field('workplace_path')) or \
-               (not self.workplacePathEdit.text().isascii()) or (not self.installPathEdit.text().isascii()):
+               (not self.field('install_path').isascii()) or (not self.field('workplace_path').isascii()):
                 return False
             return True
         else:

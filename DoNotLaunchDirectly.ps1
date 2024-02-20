@@ -114,9 +114,10 @@ if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
     $Message = $Section + ": starting"
     Display-Starting
 
-    # Under Windows PyEnv doesn't have virtualenv fucntionality
-    # Then rename folder 3.11.2 in e-puck2, simulating an specific environment
+    # Under Windows, PyEnv doesn't have virtualenv fucntionality
+    # Rename folder 3.11.2 to e-puck2, simulating a specific environment
     $Temp = $env:PYENV + "versions"
+    Remove-Item -Recurse -Force $Temp/e-puck2 *>>$EPuck2_LogFile
     ren $Temp/3.11.2 $Temp/e-puck2 *>>$EPuck2_LogFile
     IF (-not $?) {
         $Message = $Section + " problem (Rename): Check " + $EPuck2_LogFile + " and ask support"

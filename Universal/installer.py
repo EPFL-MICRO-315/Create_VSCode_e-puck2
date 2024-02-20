@@ -252,7 +252,7 @@ def step4():
 def step5():
     if os_name == "Windows":
         make_path = settings["install_path"].replace(b1, b2) + "/EPuck2_Utils/gnutools/make"
-        dfu_util = settings["install_path"].replace(b1, b2) + "/EPuck2_Utils/dfu-util.exe"
+        dfu_util = settings["install_path"].replace(b1, b2) + "/EPuck2_Utils/Utils/dfu-util.exe"
     else:
         make_path = "make"
         dfu_util = "dfu-util"

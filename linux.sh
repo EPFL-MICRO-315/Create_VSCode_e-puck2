@@ -55,7 +55,9 @@ function install() {
 
 	echo -e "${GREEN}Installing python 3.11.2${NC}"
 	pyenv install -s 3.11.2
-	pyenv local 3.11.2
+	pyenv virtualenv 3.11.2 e-puck2
+	cd $InstallerPath
+	pyenv local e-puck2
 
 	echo -e "${GREEN}Installing packages required for installation${NC}"
 	pip install --upgrade pip

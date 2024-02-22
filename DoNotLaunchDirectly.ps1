@@ -117,13 +117,13 @@ if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0
     # Test if e-puck2 env already exists
     if (Test-Path -Path $env:PYENV/versions/e-puck2) {
         if ((Read-Host -Prompt "e-puck2 Python environment already exist. Are you sure you want to replace it ? (Y/N)") -eq 'y') {
-            $EPuck2_InstallEnv = True
+            $EPuck2_InstallEnv = $true
             Remove-Item -Path $env:PYENV/versions/e-puck2 -Recurse
         } else {
-            $EPuck2_InstallEnv = False
+            $EPuck2_InstallEnv = $false
         }
     } else {
-        $EPuck2_InstallEnv = True
+        $EPuck2_InstallEnv = $true
     }
 
     if ($EPuck2_InstallEnv) {
@@ -134,7 +134,7 @@ if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0
         Exit-Error
     }
     $Temp = pyenv versions
-    if ((Select-string -InputObject $Temp -Pattern "e-puck2").Length -eq 0))) {
+    if ((Select-string -InputObject $Temp -Pattern "e-puck2").Length -eq 0) {
         $Message = $Section + " problem (Not e-puck2 env): Check " + $EPuck2_LogFile + " and ask support"
         Exit-Error
     }

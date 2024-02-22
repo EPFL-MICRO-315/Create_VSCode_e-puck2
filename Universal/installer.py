@@ -445,6 +445,11 @@ def step6():
         else:
             logging.warning("Lib must be checked: package.json file not in Aseba")
 
+    os_cli("pyenv install 3.11.2")
+    os_cli("cd ~/.pyenv/versions && mv 3.11.2 e-puck2")
+    os.chdir(folder)
+    os_cli("pyenv local e-puck2")
+    
 def step7():
     logging.warning("shortcut creation selected, proceeding")
     

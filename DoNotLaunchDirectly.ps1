@@ -44,7 +44,7 @@ Display-Starting
 # Section: Install or update PyEnv #
 ####################################
 $Section = "Install or update PyEnv"
-if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
+if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0) {
     $Message = $Section + ": starting"
     Display-Starting
 
@@ -91,7 +91,7 @@ if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
 # Section: Install Python 3.11.2 #
 ##################################
 $Section = "Install Python 3.11.2"
-if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
+if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0) {
     $Message = $Section + ": starting"
     Display-Starting
 
@@ -106,26 +106,36 @@ if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
     Display-End
 }
 
-#################################
-# Section: Rename Python 3.11.2 #
-#################################
-$Section = "Rename Python 3.11.2"
-if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
+#######################################
+# Section: Create e-puck2 environment #
+#######################################
+$Section = "Create e-puck2 environment"
+if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0) {
     $Message = $Section + ": starting"
     Display-Starting
 
-    # Under Windows, PyEnv doesn't have virtualenv fucntionality
-    # Rename folder 3.11.2 to e-puck2, simulating a specific environment
-    $Temp = $env:PYENV + "versions"
-    Remove-Item -Recurse -Force $Temp/e-puck2 *>>$EPuck2_LogFile
-    ren $Temp/3.11.2 $Temp/e-puck2 *>>$EPuck2_LogFile
+    # Test if e-puck2 env already exists
+    if (Test-Path -Path $env:PYENV/versions/e-puck2) {
+        if ((Read-Host -Prompt "e-puck2 Python environment already exist. Are you sure you want to replace it ? (Y/N)") -eq 'y') {
+            $EPuck2_InstallEnv = $true
+            Remove-Item -Path $env:PYENV/versions/e-puck2 -Recurse
+        } else {
+            $EPuck2_InstallEnv = $false
+        }
+    } else {
+        $EPuck2_InstallEnv = $true
+    }
+
+    if ($EPuck2_InstallEnv) {
+        pyenv duplicate 3.11.2 e-puck2
+    }
     IF (-not $?) {
-        $Message = $Section + " problem (Rename): Check " + $EPuck2_LogFile + " and ask support"
+        $Message = $Section + " problem (Duplicate): Check " + $EPuck2_LogFile + " and ask support"
         Exit-Error
     }
     $Temp = pyenv versions
-    if (-not ($Temp -match "e-puck2")) {
-        $Message = $Section + " problem (PyEnv): Check " + $EPuck2_LogFile + " and ask support"
+    if ((Select-string -InputObject $Temp -Pattern "e-puck2").Length -eq 0) {
+        $Message = $Section + " problem (Not e-puck2 env): Check " + $EPuck2_LogFile + " and ask support"
         Exit-Error
     }
     $Message = $Section + ": done"
@@ -136,8 +146,7 @@ if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
 # Section: Set local PyEnv on e-puck2 #
 #######################################
 $Section = "Set local PyEnv on e-puck2"
-$Criteria = $Section + ": done"
-if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
+if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0) {
     $Message = $Section + ": starting"
     Display-Starting
 
@@ -173,8 +182,7 @@ if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
 # Section: Install required Python Packages #
 #############################################
 $Section = "Install required Python packages"
-$Criteria = $Section + ": done"
-if (-not ((Get-Content -Path $EPuck2_LogFile) -ccontains $Criteria)) {
+if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0) {
     $Message = $Section + ": starting"
     Display-Starting
 

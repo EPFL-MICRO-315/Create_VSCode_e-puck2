@@ -207,7 +207,8 @@ class SetupPage(QtWidgets.QWizardPage):
     def isComplete(self):
         if (' ' in self.field('install_path')) or (' ' in self.field('workplace_path')):
             return False
-        return True
+        else:
+            return True
     
     def nextId(self):
         if sys.argv[1] == "install":

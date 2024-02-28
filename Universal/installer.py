@@ -281,7 +281,7 @@ def step5():
     "terminal.integrated.defaultProfile.windows": "Git Bash",
     "cortex-debug.armToolchainPath.osx": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
     "cortex-debug.armToolchainPath.windows": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
-    "cortex-debug.armToolchainPath,linux": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
+    "cortex-debug.armToolchainPath.linux": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin",
     "version": "{version}"
 }}
     '''

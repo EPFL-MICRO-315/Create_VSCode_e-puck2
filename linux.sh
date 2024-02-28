@@ -15,7 +15,7 @@ function install() {
 
 	if [ "$os" = "fedora" ]; then
 		sudo dnf install -y git make gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel dpkg
-	elif [ "$os" = "ubuntu" ]; then
+	elif [[ "$os" = "ubuntu" || "$os" = "pop" ]]; then
 		sudo apt-get update
 		sudo apt-get install -y $PACKAGES
 	fi
@@ -56,7 +56,6 @@ function install() {
 	echo -e "${GREEN}Installing python 3.11.2${NC}"
 	pyenv install -s 3.11.2
 	pyenv virtualenv 3.11.2 e-puck2
-	cd $InstallerPath
 	pyenv local e-puck2
 
 	echo -e "${GREEN}Installing packages required for installation${NC}"
@@ -93,7 +92,7 @@ function uninstall() {
         echo -e "${GREEN}Skipping pyenv uninstallation${NC}"
     fi
 	
-	if [ "$os" = "ubuntu" ]; then
+	if [[ "$os" = "ubuntu" || "$os" = "pop" ]]; then
 		for package in $PACKAGES; do
 		if apt-cache rdepends $package | grep -q "^ "; then
 			echo "$package is a dependency of another package, not removing"
@@ -108,8 +107,8 @@ function uninstall() {
 echo -e "${GREEN}The script should be run within the Create_VSCode_e-puck2-RefTag directory!${NC}"
 if [ "$os" = "fedora" ]; then
 	echo -e "${GREEN}Running on Fedora${NC}"
-elif [ "$os" = "ubuntu" ]; then
-	echo -e "${GREEN}Running on Ubuntu${NC}"
+elif [[ "$os" = "ubuntu" || "$os" = "pop" ]]; then
+	echo -e "${GREEN}Running on Ubuntu based distro${NC}"
 else
 	echo -e "${GREEN}Running on Unknown distribution, hazardeous!${NC}"
 fi
@@ -122,8 +121,8 @@ case "$1" in
         install
         ;;
     help)
-		echo -e "This installer script is made for Ubuntu"
-		echo -e "It should works on most debian based distributions as well"
+		echo -e "This installer script is tested on Fedora, Ubuntu and Pop!_OS."
+		echo -e "It should works on most debian based distributions as well (you might need to edit line 18 of the linux.sh script)"
 		echo -e "In case the script is not working on your host (e.g: Nixos, Archlinux), we invite you to use Distrobox"
 		echo -e "\nUse 'install' or 'uninstall'"
 		;;

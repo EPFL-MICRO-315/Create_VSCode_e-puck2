@@ -34,65 +34,57 @@ if /I %errorLevel% == 0 (
 
 echo:
 
-:SavePSPolicy
-type %EPuck2_LogFile% 2>nul | findstr SavePSPolicy >nul
+:BackupPSPolicy
+echo Backup actual PowerShell policy ...
+echo Backup actual PowerShell policy ... >> %EPuck2_LogFile%
+reg query hklm\Software\Policies\Microsoft\Windows\PowerShell_Backup  >nul 2>&1
 if errorlevel 1 (
-  echo Save actual PowerShell policy ...
-  IF Exist %EPuck2_InstallerPath%\PowerShellPoliciesBackup.reg (
-    if %EPuck2_Debug% EQU ON (
-      echo:    ... a backup already exist.
-    )
-    echo:    A backup of PowerShell policy already exist. >> %EPuck2_LogFile%
-    echo Certainly the batch %~nx0 has already been executed but aborted.
-    echo The previous backup will be use for restoration.
-    pause
+  reg copy hklm\Software\Policies\Microsoft\Windows\PowerShell hklm\Software\Policies\Microsoft\Windows\PowerShell_Backup /f >nul 2>&1
+  if errorlevel 1 (
+    reg add hklm\Software\Policies\Microsoft\Windows\PowerShell_Backup /v Info /d "PowerShell policy was not configured before install of VSCode_e-puck2" /f >nul 2>&1
+    echo:    ... PowerShell policy was not configured
+    echo:    ... PowerShell policy was not configured >> %EPuck2_LogFile%
   ) else (
-    reg export hklm\Software\Policies\Microsoft\Windows\PowerShell %EPuck2_InstallerPath%\PowerShellPoliciesBackup.reg /y >nul 2>>%EPuck2_LogFile%
-    if errorlevel 1 (
-      if %EPuck2_Debug% EQU ON (
-        echo:    ... PowerShell policy was not configured
-      ) else (
-      echo:    PowerShell policy was not configured. >> %EPuck2_LogFile%
-      )
-      REM create an empty reg file to manage batch abortion
-      echo Windows Registry Editor Version 5.00 > %EPuck2_InstallerPath%\PowerShellPoliciesBackup.reg
-    ) else (
-      if %EPuck2_Debug% EQU ON (
-        echo:    ... PowerShell Policy saved in file
-      ) else (
-      echo:    PowerShell policy saved in file. >> %EPuck2_LogFile%
-      )
-    )
-    echo:  ... done
+    reg add hklm\Software\Policies\Microsoft\Windows\PowerShell_Backup /v Info /d "Backup of PowerShell policy before install of VSCode_e-puck2" /f >nul 2>&1
+    echo:    ... done
+    echo:    ... done >> %EPuck2_LogFile%
   )
-  echo SavePSPolicy >> %EPuck2_LogFile%
+) else (
+  echo:    ... already done
+  echo:    ... already done >> %EPuck2_LogFile%
 )
 echo:
 
 :ModifyPSPolicy
-type %EPuck2_LogFile% 2>nul | findstr ModifyPSPolicy >nul
-if errorlevel 1 (
-  echo Modify PowerShell policy in order to run scripts ...
-  reg add hklm\Software\Policies\Microsoft\Windows\PowerShell /v EnableScripts /t REG_DWORD /d 00000001 /f >nul 2>>%EPuck2_LogFile%
-  reg add hklm\Software\Policies\Microsoft\Windows\PowerShell /v ExecutionPolicy /t REG_sZ /d Unrestricted /f >nul 2>>%EPuck2_LogFile%
-  echo:  ... done
-  echo ModifyPSPolicy >> %EPuck2_LogFile%
-  echo:
+echo Modify PowerShell policy in order to run scripts ...
+echo Modify PowerShell policy in order to run scripts ...  >> %EPuck2_LogFile%
+reg add hklm\Software\Policies\Microsoft\Windows\PowerShell /v EnableScripts /t REG_DWORD /d 00000001 /f >nul 2>>%EPuck2_LogFile%
+reg add hklm\Software\Policies\Microsoft\Windows\PowerShell /v ExecutionPolicy /t REG_sZ /d Unrestricted /f >nul 2>>%EPuck2_LogFile%
+echo:    ... done
+echo:    ... done >> %EPuck2_LogFile%
+echo:
 )
 
 powershell Unblock-File %EPuck2_InstallerPath%/DoNotLaunchDirectly.ps1
 powershell -ExecutionPolicy ByPass %EPuck2_InstallerPath%/DoNotLaunchDirectly.ps1
 
 :RestorePSPolicy
-@echo off
-type %EPuck2_LogFile% 2>nul | findstr RestorePSPolicy >nul
+echo Restore previously saved PowerShell policy ...
+echo Restore previously saved PowerShell policy ... >>%EPuck2_LogFile%
+reg delete hklm\Software\Policies\Microsoft\Windows\PowerShell /f > nul 2>>%EPuck2_LogFile%
+powershell -Command "if (((Get-ItemProperty HKLM:\Software\Policies\Microsoft\Windows\PowerShell_Backup).Info) -match 'PowerShell.*VSCode_e-puck2') { exit 1 }"
 if errorlevel 1 (
-  echo Restore previously saved PowerShell policy ...
-  reg delete hklm\Software\Policies\Microsoft\Windows\PowerShell /f > nul 2>>%EPuck2_LogFile%
-  reg import %EPuck2_InstallerPath%\PowerShellPoliciesBackup.reg > nul 2>>%EPuck2_LogFile%
-  del %EPuck2_InstallerPath%\PowerShellPoliciesBackup.reg > nul 2>>%EPuck2_LogFile%
-  echo:  ... done
-  echo RestorePSPolicy >> %EPuck2_LogFile%
+  powershell -Command "if ((Get-ItemProperty HKLM:\Software\Policies\Microsoft\Windows\PowerShell_Backup).Info -match 'Backup of PowerShell policy before install of VSCode_e-puck2') { exit 1 }"
+  if errorlevel 1 (
+    reg copy hklm\Software\Policies\Microsoft\Windows\PowerShell_Backup hklm\Software\Policies\Microsoft\Windows\PowerShell /f >nul 2>&1
+    reg delete hklm\Software\Policies\Microsoft\Windows\PowerShell /v Info /f >nul 2>&1
+  )
+  reg delete hklm\Software\Policies\Microsoft\Windows\PowerShell_Backup /f >nul 2>&1
+  echo:    ... done
+  echo:    ... done >> %EPuck2_LogFile%
+) else (
+  echo:    ... Error : This situation should not happen - Ask Daniel Burnier, please!!
+  echo:    ... Error : This situation should not happen - Ask Daniel Burnier, please!! >> %EPuck2_LogFile%
 )
 
 :end

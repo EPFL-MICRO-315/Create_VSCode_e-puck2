@@ -71,6 +71,7 @@ class SetupPage(QtWidgets.QWizardPage):
                 workplacePath = os.popen("echo $HOME/Documents/").read().rstrip()
             
             installPathWarning = QtWidgets.QLabel("")
+            installPathWarning.setStyleSheet("QLabel { color : red; }")
             installPathEdit = QtWidgets.QLineEdit(installPath)
             def checkForSpaceInstallPath():
                 if (' ' in installPathEdit.text()) or (not installPathEdit.text().isascii()):
@@ -90,6 +91,7 @@ class SetupPage(QtWidgets.QWizardPage):
                 installPathEdit.setText(installPath)
 
             workplacePathWarning = QtWidgets.QLabel("")
+            workplacePathWarning.setStyleSheet("QLabel { color : red; }")
             workplacePathEdit = QtWidgets.QLineEdit(workplacePath)
             def checkForSpaceWorkplacePath():
                 if (' ' in workplacePathEdit.text()) or (not workplacePathEdit.text().isascii()):
@@ -153,6 +155,7 @@ class SetupPage(QtWidgets.QWizardPage):
                 installPath = os.popen("echo $HOME/.local/bin/").read().rstrip()
             
             installPathWarning = QtWidgets.QLabel("")
+            installPathWarning.setStyleSheet("QLabel { color : red; }")
             installPathEdit = QtWidgets.QLineEdit(installPath)
             def checkForSpaceInstallPath():
                 if (' ' in installPathEdit.text()) or (not installPathEdit.text().isascii()):

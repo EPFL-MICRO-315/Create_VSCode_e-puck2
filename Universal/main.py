@@ -77,6 +77,7 @@ class SetupPage(QtWidgets.QWizardPage):
                     installPathWarning.setText("Warning!: path containing space, choose another path")
                 else:
                     installPathWarning.setText("")
+                self.completeChanged.emit()
 
             installPathEdit.textChanged.connect(checkForSpaceInstallPath)
             def installPath_dialog():
@@ -85,10 +86,7 @@ class SetupPage(QtWidgets.QWizardPage):
                 tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", installPath)
                 if tmp != "":
                     installPath = tmp
-                if ' ' in tmp:
-                    installPathWarning.setText("Warning!: path containing space or punctuation, choose another path")
-                else:
-                    installPathWarning.setText("")
+                checkForSpaceInstallPath()
                 installPathEdit.setText(installPath)
 
             workplacePathWarning = QtWidgets.QLabel("")
@@ -98,6 +96,7 @@ class SetupPage(QtWidgets.QWizardPage):
                     workplacePathWarning.setText("Warning!: path containing space or punctuation, choose another path")
                 else:
                     workplacePathWarning.setText("")
+                self.completeChanged.emit()
 
             workplacePathEdit.textChanged.connect(checkForSpaceWorkplacePath)
             def workplacePath_dialog():
@@ -117,7 +116,7 @@ class SetupPage(QtWidgets.QWizardPage):
             installPathBoxL = QtWidgets.QGridLayout()
             installPathBoxL.addWidget(installPathDescription, 0, 0, 1, 2)
             installPathBoxL.addWidget(installPathEdit)
-            installPathBoxL.addWidget(installPathButton)        
+            installPathBoxL.addWidget(installPathButton)
             installPathBoxL.addWidget(installPathWarning, 2, 0, 1, 2)        
             installPathBox.setLayout(installPathBoxL);
             
@@ -153,13 +152,23 @@ class SetupPage(QtWidgets.QWizardPage):
             elif os_name == "Linux":
                 installPath = os.popen("echo $HOME/.local/bin/").read().rstrip()
             
+            installPathWarning = QtWidgets.QLabel("")
             installPathEdit = QtWidgets.QLineEdit(installPath)
+            def checkForSpaceInstallPath():
+                if (' ' in installPathEdit.text()) or (not installPathEdit.text().isascii()):
+                    installPathWarning.setText("Warning!: path containing space, choose another path")
+                else:
+                    installPathWarning.setText("")
+                self.completeChanged.emit()
+            
+            installPathEdit.textChanged.connect(checkForSpaceInstallPath)
             def installPath_dialog():
                 nonlocal installPath
                 installPath = installPathEdit.text()
                 tmp = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Directory", installPath)
                 if tmp != "":
                     installPath = tmp
+                checkForSpaceInstallPath()
                 installPathEdit.setText(installPath)
 
             installPathBox = QtWidgets.QGroupBox("IDE (VSCode, tools, ...) Path:")
@@ -170,7 +179,8 @@ class SetupPage(QtWidgets.QWizardPage):
             installPathBoxL = QtWidgets.QGridLayout()
             installPathBoxL.addWidget(installPathDescription, 0, 0, 1, 2)
             installPathBoxL.addWidget(installPathEdit)
-            installPathBoxL.addWidget(installPathButton)        
+            installPathBoxL.addWidget(installPathButton)
+            installPathBoxL.addWidget(installPathWarning, 2, 0, 1, 2)      
             installPathBox.setLayout(installPathBoxL);
 
             self.validateLabel = QtWidgets.QLabel("")
@@ -185,8 +195,8 @@ class SetupPage(QtWidgets.QWizardPage):
             layout.addWidget(installPathBox)
             layout.addWidget(self.validateLabel)
             self.setLayout(layout)
-    
-    def validatePage(self):
+
+    def isComplete(self):
         if sys.argv[1] == "install":
             if (' ' in self.field('install_path')) or (' ' in self.field('workplace_path')) or \
                (not self.field('install_path').isascii()) or (not self.field('workplace_path').isascii()):
@@ -203,12 +213,6 @@ class SetupPage(QtWidgets.QWizardPage):
             self.validateLabel.setText("The specified path does not contain the IDE")
             logging.error("The specified path does not contain the IDE")
             return False
-        
-    def isComplete(self):
-        if (' ' in self.field('install_path')) or (' ' in self.field('workplace_path')):
-            return False
-        else:
-            return True
     
     def nextId(self):
         if sys.argv[1] == "install":

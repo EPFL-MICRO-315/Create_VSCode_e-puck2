@@ -56,6 +56,7 @@ function install() {
 	echo -e "${GREEN}Installing python 3.11.2${NC}"
 	pyenv install -s 3.11.2
 	pyenv virtualenv 3.11.2 e-puck2
+	cd $InstallerPath
 	pyenv local e-puck2
 
 	echo -e "${GREEN}Installing packages required for installation${NC}"
@@ -104,7 +105,15 @@ function uninstall() {
 	fi
 }
 
-echo -e "${GREEN}The script should be run within the Create_VSCode_e-puck2-RefTag directory!${NC}"
+echo -e "${GREEN}The script will be run within the Create_VSCode_e-puck2-RefTag directory!${NC}"
+InstallerPath=$(dirname "$0")
+# If the script is runned from its folder, the folder name will be "." and all "cd" inside the script will be the reference "."
+if [ "$InstallerPath" == "." ]; then
+    InstallerPath=$(pwd)
+fi
+
+cd $InstallerPath
+
 if [ "$os" = "fedora" ]; then
 	echo -e "${GREEN}Running on Fedora${NC}"
 elif [[ "$os" = "ubuntu" || "$os" = "pop" ]]; then

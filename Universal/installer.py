@@ -440,10 +440,13 @@ def step6():
     else:
         folder = "Lib/e-puck2_main-processor/aseba/clients/studio/plugins/ThymioBlockly/blockly/"
         if os.path.isfile(folder + "package.json"):
-            os.rename(folder + "package.json", folder + "package.json-RenamedToAvoidBadTasksInVSCode")
+            os.rename(folder + "package.json", folder + "package.json.renamed4epuck2")
             logging.info("Lib sucessfully cloned!")
         else:
-            logging.warning("Lib must be checked: package.json file not in Aseba")
+            if os.path.isfile(folder + "package.json.renamed4epuck2"):
+                logging.info("Lib sucessfully cloned!")
+            else:
+                logging.warning("Lib must be checked: package.json or package.json.renamed4epuck2 file not in Aseba")
  
 def step7():
     logging.warning("shortcut creation selected, proceeding")

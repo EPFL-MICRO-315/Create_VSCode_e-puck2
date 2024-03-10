@@ -71,13 +71,24 @@ powershell -ExecutionPolicy ByPass %EPuck2_InstallerPath%/DoNotLaunchDirectly.ps
 :RestorePSPolicy
 echo Restore previously saved PowerShell policy ...
 echo Restore previously saved PowerShell policy ... >>%EPuck2_LogFile%
-reg delete hklm\Software\Policies\Microsoft\Windows\PowerShell /f > nul 2>>%EPuck2_LogFile%
+
+@REM Warning: If the previous Powershell policy was "EnableScripts    REG_DWORD    0x0" then any powershell cmd can't be used
+@REM That's why the actual unrestricted PowerShell policy must be deleted ONLY after a powershell command is necessary, in the 2 checks below!!
+@REM THEN DON'T MODIFY these next code lines without knowing what you are doing!!
+
+@REM Check that backup of Powershell policy was well managed before: That must be allways the case but ...
 powershell -Command "if (((Get-ItemProperty HKLM:\Software\Policies\Microsoft\Windows\PowerShell_Backup).Info) -match 'PowerShell.*VSCode_e-puck2') { exit 1 }"
 if errorlevel 1 (
+  @REM Check if a previous Powershell policy existed before
   powershell -Command "if ((Get-ItemProperty HKLM:\Software\Policies\Microsoft\Windows\PowerShell_Backup).Info -match 'Backup of PowerShell policy before install of VSCode_e-puck2') { exit 1 }"
   if errorlevel 1 (
+    @REM There was a Powershell policy previously
+    reg delete hklm\Software\Policies\Microsoft\Windows\PowerShell /f > nul 2>>%EPuck2_LogFile%
     reg copy hklm\Software\Policies\Microsoft\Windows\PowerShell_Backup hklm\Software\Policies\Microsoft\Windows\PowerShell /f >nul 2>&1
     reg delete hklm\Software\Policies\Microsoft\Windows\PowerShell /v Info /f >nul 2>&1
+  ) else (
+    @REM There was no Powershell policy previously
+    reg delete hklm\Software\Policies\Microsoft\Windows\PowerShell /f > nul 2>>%EPuck2_LogFile%
   )
   reg delete hklm\Software\Policies\Microsoft\Windows\PowerShell_Backup /f >nul 2>&1
   echo:    ... done

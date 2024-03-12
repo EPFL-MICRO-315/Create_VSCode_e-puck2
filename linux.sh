@@ -7,6 +7,7 @@ line1='export PYENV_ROOT="$HOME/.pyenv"' #for .bashrc, .profile, .bash_profile
 line2='command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' #for .bashrc, .profile
 line4='[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' #for .bash_profile
 line3='eval "$(pyenv init -)"' #for .bashrc, .profile, .bash_profile
+line5='eval "$(pyenv virtualenv-init -)"'
 PACKAGES="git make build-essential libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev wget curl llvm libncurses5-dev python3-tk liblzma-dev libmtdev-dev libglib2.0-dev libnss3-dev libatk1.0-dev libatk-bridge2.0-dev libgtk-3-dev libasound-dev python3-tk libxcb-xinerama0"
 os=$(eval grep "^ID=" /etc/os-release | cut -d"=" -f2)
 
@@ -31,18 +32,21 @@ function install() {
 			echo "$line1" >> ~/.bashrc
 			echo "$line2" >> ~/.bashrc
 			echo "$line3" >> ~/.bashrc
+			echo "$line5" >> ~/.bashrc
 		fi
 
 		if ! grep -q -e "$line1" -e "$line2" -e "$line3" ~/.profile; then
 			echo "$line1" >> ~/.profile
 			echo "$line2" >> ~/.profile
 			echo "$line3" >> ~/.profile
+			echo "$line5" >> ~/.profile
 		fi
 
 		if ! grep -q -e "$line1" -e "$line4" -e "$line3" ~/.bash_profile; then
 			echo "$line1" >> ~/.bash_profile
 			echo "$line4" >> ~/.bash_profile
 			echo "$line3" >> ~/.bash_profile
+			echo "$line5" >> ~/.bash_profile
 		fi
 	else
 		echo -e "${GREEN}pyenv already installed${NC}"
@@ -81,14 +85,17 @@ function uninstall() {
         sed -i "/${line1//\//\\/}/d" ~/.bashrc
         sed -i "/${line2//\//\\/}/d" ~/.bashrc
         sed -i "/${line3//\//\\/}/d" ~/.bashrc
+        sed -i "/${line5//\//\\/}/d" ~/.bashrc
 
         sed -i "/${line1//\//\\/}/d" ~/.profile
         sed -i "/${line2//\//\\/}/d" ~/.profile
         sed -i "/${line3//\//\\/}/d" ~/.profile
+        sed -i "/${line5//\//\\/}/d" ~/.profile
 
 		sed -i "/${line1//\//\\/}/d" ~/.bash_profile
         sed -i "/${line4//\//\\/}/d" ~/.bash_profile
         sed -i "/${line3//\//\\/}/d" ~/.bash_profile
+        sed -i "/${line5//\//\\/}/d" ~/.profile
     else
         echo -e "${GREEN}Skipping pyenv uninstallation${NC}"
     fi

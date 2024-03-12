@@ -48,12 +48,12 @@ if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0
     $Message = $Section + ": starting"
     Display-Starting
 
-    # Test if PyEnv is Get-Command pyenv -errorAction SilentlyContinue | Out-Null
-    Get-Command pyenv -errorAction SilentlyContinue | Out-Null
+    # Test if PyEnv is Get-Command pyenv -errorAction SilentlyContinue > $null
+    Get-Command pyenv -errorAction SilentlyContinue > $null
     $PyEnv_AlreadInstalled = $?
 
     # Download anyway Pyenv installer because it will check and install the last version if necessary
-    Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile $EPuck2_InstallerPath"/install-pyenv-win.ps1" >$null 2>>$EPuck2_LogFile
+    Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile $EPuck2_InstallerPath"/install-pyenv-win.ps1" > $null 2>>$EPuck2_LogFile
     IF ($?) {
         Add-Content -Path $EPuck2_LogFile -Value "        ... PyEnv installer downloaded anyway in order to check if update is necessary"
     }

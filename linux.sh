@@ -15,7 +15,7 @@ function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
 
 	if [ "$os" = "fedora" ]; then
-		sudo dnf install -y git make gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel dpkg
+		sudo dnf install -y git make gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel dpkg tk-devel
 	elif [[ "$os" = "ubuntu" || "$os" = "pop" ]]; then
 		sudo apt-get update
 		sudo apt-get install -y $PACKAGES

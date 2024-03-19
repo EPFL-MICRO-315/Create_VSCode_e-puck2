@@ -262,6 +262,7 @@ def step5():
     "window.title": "${{dirty}}${{activeEditorShort}}${{separator}}${{rootName}}${{separator}}${{profileName}}${{separator}}Visual Studio Code E-Puck2",
     "extensions.autoCheckUpdates": false,
     "extensions.autoUpdate": false,
+    "extensions.ignoreRecommendations": true,
     "editor.parameterHints.enabled": false,
     "gcc_arm_path": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain",
     "gcc_arm_path_compiler": "{settings["install_path"].replace(b1, b2)}/EPuck2_Utils/arm_gcc_toolchain/bin/arm-none-eabi-gcc",

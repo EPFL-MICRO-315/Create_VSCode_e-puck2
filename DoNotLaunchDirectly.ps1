@@ -102,9 +102,10 @@ if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0
         
         mkdir "$env:USERPROFILE\.pyenv\pyenv-win\versions\system"
         if (Test-Path -Path "C:\Windows\System32\mklink.exe") {
-            mklink "$env:USERPROFILE\.pyenv\pyenv-win\versions\system\python.exe" "$PySys"
+            New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.pyenv\pyenv-win\versions\system\python.exe" -Target "$PySys"
+        }
         } elseif (Test-Path -Path "C:\Windows\System32\copy.exe") {
-            copy "$PySys" "$env:USERPROFILE\.pyenv\pyenv-win\versions\system\python.exe"
+            Copy-Item -Path "$PySys" -Destination "$env:USERPROFILE\.pyenv\pyenv-win\versions\system\python.exe"
         } else {
             $Message = "Unable to copy or mklink system python to pyenv"
             Exit-Error 

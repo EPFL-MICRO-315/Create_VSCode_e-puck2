@@ -100,8 +100,8 @@ if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0
     } else {
         $Message = "System Python not found in " + $PySys + ", adding it to pyenv"
         
-        New-Item -ItemType Directory -Path "$env:USERPROFILE\.pyenv\pyenv-win\versions\system"
-        New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.pyenv\pyenv-win\versions\system\python.exe" -Target "$PySys"
+        New-Item -ItemType Directory -Path "$env:USERPROFILE\.pyenv\pyenv-win\versions\system" > $null
+        New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.pyenv\pyenv-win\versions\system\python.exe" -Target "$PySys" > $null
     }
 
     $Message = $Section + ": done"

@@ -87,6 +87,35 @@ if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0
     Display-End
 }
 
+#######################################
+# Section: Add System Python to Pyenv #
+#######################################
+$Section = "Add Python System to Pyenv"
+if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0) {
+    where python
+    $PySys = ?
+    if (-not $?) {
+        $Message = "System Python not found, continuing"
+        Display-End
+    } else {
+        $Message = "System Python not found in " + $PySys + ", adding it to pyenv"
+        
+        mkdir %USERPROFILE%\.pyenv\pyenv-win\versions\system
+        if (Test-Path -Path "C:\Windows\System32\mklink.exe") {
+            mklink %USERPROFILE%\.pyenv\pyenv-win\versions\system\python.exe $PySys
+        } elseif (Test-Path -Path "C:\Windows\System32\copy.exe") {
+            copy $PySys %USERPROFILE%\.pyenv\pyenv-win\versions\system\python.exe
+        } else {
+            $Message = "Unable to copy or mklink system python to pyenv"
+            Exit-Error 
+        }
+    }
+
+    $Message = $Section + ": done"
+    Display-End
+}
+
+
 ##################################
 # Section: Install Python 3.11.2 #
 ##################################

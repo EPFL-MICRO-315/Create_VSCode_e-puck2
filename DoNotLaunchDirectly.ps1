@@ -92,9 +92,8 @@ if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0
 #######################################
 $Section = "Add Python System to Pyenv"
 if ((Select-string -Path $EPuck2_LogFile -Pattern $Section": done").Length -eq 0) {
-    where python
-    $PySys = ?
-    if (-not $?) {
+    $PySys = (where python)[0]
+    if (-not $PySys) {
         $Message = "System Python not found, continuing"
         Display-End
     } else {

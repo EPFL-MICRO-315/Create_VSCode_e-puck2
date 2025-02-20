@@ -379,7 +379,7 @@ def step5():
     os.chdir(bin_dir)
     os_cli(exe + "--install-extension marus25.cortex-debug@1.4.4 --force")
     os_cli(exe + "--install-extension ms-vscode.cpptools --force")
-    os_cli(exe + "--install-extension forbeslindesay.forbeslindesay-taskrunner --force")
+    os_cli(exe + "--install-extension " + origin + "/Universal/Utils/VSCodeExtensions/forbeslindesay.forbeslindesay-taskrunner-1.0.0.vsix --force")
     os_cli(exe + "--install-extension tomoki1207.pdf --force")
     os_cli(exe + "--install-extension mhutchie.git-graph --force")
     

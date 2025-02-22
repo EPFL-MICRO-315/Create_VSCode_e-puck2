@@ -22,15 +22,36 @@ line4='eval "$(pyenv virtualenv-init -)"'
 function install() {
 	echo -e "${GREEN}Installing required packages${NC}"
 
-	if ! command -v brew &> /dev/null
-	then
-		echo -e "${GREEN}brew not found, installing${NC}"
+	# Detect the system architecture (arm64 for Apple Silicon, otherwise assume Intel)
+	ARCH=$(uname -m)
+	if [[ "$ARCH" == "arm64" ]]; then
+		BREW_BIN="/opt/homebrew/bin/brew"
+		BREW_SHELLENV='eval "$(/opt/homebrew/bin/brew shellenv)"'
+	else
+		BREW_BIN="/usr/local/bin/brew"
+		BREW_SHELLENV='eval "$(/usr/local/bin/brew shellenv)"'
+	fi
+
+	# If brew is not installed, install it and update the current shell environment
+	if ! command -v brew &> /dev/null; then
+		echo -e "${GREEN}brew not found, installing...${NC}"
 		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-		(echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> $HOME/.zprofile
-		eval "$(/usr/local/bin/brew shellenv)"
-	fi	
-	echo -e "${GREEN}updating brew${NC}"
-	brew update
+		
+		# Append the appropriate brew shellenv command to the user's shell profile
+		# Adjust the file if you use bash (e.g. ~/.bash_profile) instead of zsh.
+		if [[ "$ARCH" == "arm64" ]]; then
+			(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> "$HOME/.zprofile"
+		else
+			(echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> "$HOME/.zprofile"
+		fi
+
+		# Update the PATH for the current shell session
+		eval "$BREW_SHELLENV"
+	fi
+
+	echo -e "${GREEN}Updating brew...${NC}"
+	# Use the full path to brew to ensure it's recognized
+	"$BREW_BIN" update
 
 	if ! command -v pyenv &> /dev/null
 	then

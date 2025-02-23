@@ -84,14 +84,14 @@ def step1():
         os.system("brew install --cask git-credential-manager")
         os.system("git config --global credential.credentialStore keychain")
     elif os_name == "Windows":
-        downloadTo(settings["gcm_url"], "git_setup.exe")
+        downloadTo(settings["gcm_url"], "git_setup.exe", force_download=force_download)
         logging.warning("Please check git installation in the external dialog that opens right now")
         subprocess.run("git_setup.exe /SILENT")
         os.system("\"C:\\Program Files\\Git\\cmd\\git.exe\" --version")
         if settings["clear_cache"]:
             os.remove("git_setup.exe")
     elif os_name == "Linux":
-        downloadTo(settings["gcm_url"], "gcm.deb")
+        downloadTo(settings["gcm_url"], "gcm.deb", force_download=force_download)
         os_cli("sudo dpkg -i gcm.deb")
         os_cli("git-credential-manager configure")
         os_cli("git config --global credential.credentialStore secretservice") # might need to logout and login again
@@ -112,7 +112,7 @@ def step2():
         dest = "EPuck2_VSCode.app"
 
     for attempt in range(2):
-        downloadTo(settings["vscode_url"], src)
+        downloadTo(settings["vscode_url"], src, force_download=force_download)
         
         try:
             if os.path.isdir(dest): 
@@ -159,7 +159,7 @@ def step3():
         src = "arm_gcc_toolchain.zip"
 
     for attempt in range(2):
-        downloadTo(settings["arm_url"], src)
+        downloadTo(settings["arm_url"], src, force_download=force_download)
         
         try:
             if os.path.isdir(dest): 
@@ -208,7 +208,7 @@ def step4():
         src = "monitor_linux64bit.tar.gz"
         
     for attempt in range(2):
-        downloadTo(settings["monitor_url"], src)
+        downloadTo(settings["monitor_url"], src, force_download=force_download)
         
         try:
             if os.path.isdir(dest): 

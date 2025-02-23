@@ -9,7 +9,7 @@ import platform
 
 os_name = platform.system()
 
-def downloadTo(url, filename, max_try=5):
+def downloadTo(url, filename, force_download=False, max_try=5):
     """
     download a file locate at the url, save it under the filename
 
@@ -19,14 +19,19 @@ def downloadTo(url, filename, max_try=5):
     @type filename: string
     @param filename: relative or absolute path
 
+    @type force_download: boolean
+    @param force_download: allows to force the download even if the file already exists
+
     @type max_try: int
     @param max_try: max number of times the function will try downloading the file
     """
 
-    if os.path.isfile(filename):
-        logging.info(f"{filename} already exists, not redownloading, delete manualy if file corrupted")
+    if os.path.isfile(filename) and not force_download:
+        logging.info(f"{filename} already exists and force_download is set to False.\nSet force_download to True or delete manualy if file corrupted or wrong.")
         return
     else:    
+        if os.path.isfile(filename):
+            os.remove(filename)
         logging.info('downloading "{}" from "{}"'.format(filename, url))
         for attempt in range(max_try):
             with open(filename, "wb") as file:

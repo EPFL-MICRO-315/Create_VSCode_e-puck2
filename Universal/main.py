@@ -365,7 +365,7 @@ class InstallPage(QtWidgets.QWizardPage):
 
         self.label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
                                       "Please be patient (it could take a few of minutes depending on your connection)\n\n"
-                                      "Check the terminal as it might ask for user password to gain more privileges during intallation!")
+                                      "Check the terminal as it might ask for user password to gain more privileges during installation!")
         self.label.setWordWrap(True)
         
         self.progress = QtWidgets.QProgressBar()

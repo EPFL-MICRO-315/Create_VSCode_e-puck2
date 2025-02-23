@@ -293,17 +293,17 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         self.registerField('monitor_url',     monitor_urlEdit)
 
         if os_name == "Darwin":
-            vscode_urlEdit.setText("https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal")
+            vscode_urlEdit.setText("https://update.code.visualstudio.com/1.96.4/darwin-universal/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2")
             gcm_urlEdit.setText("")
             monitor_urlEdit.setText("https://projects.gctronic.com/epuck2/monitor_mac.zip")
         elif os_name == "Windows":
-            vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/win32-x64-archive/stable")
+            vscode_urlEdit.setText("https://update.code.visualstudio.com/1.96.4/win32-x64-archive/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip")
             gcm_urlEdit.setText("https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe")
             monitor_urlEdit.setText("https://projects.gctronic.com/epuck2/monitor_win.zip")
         elif os_name == "Linux":
-            vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/linux-x64/stable")
+            vscode_urlEdit.setText("https://update.code.visualstudio.com/1.96.4/linux-x64/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2")
             gcm_urlEdit.setText("https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.4.1/gcm-linux_amd64.2.4.1.deb")
             monitor_urlEdit.setText("https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz")

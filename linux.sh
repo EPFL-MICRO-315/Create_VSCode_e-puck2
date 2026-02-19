@@ -19,6 +19,8 @@ function install() {
 	elif [[ "$os" = "ubuntu" || "$os" = "pop" ]]; then
 		sudo apt-get update
 		sudo apt-get install -y $PACKAGES
+	elif [ "$os" = "arch" ]; then
+      sudo pacman -S -y git make gcc zlib bzip2 readline sqlite openssl dpkg tk
 	fi
 
 
@@ -125,6 +127,8 @@ if [ "$os" = "fedora" ]; then
 	echo -e "${GREEN}Running on Fedora${NC}"
 elif [[ "$os" = "ubuntu" || "$os" = "pop" ]]; then
 	echo -e "${GREEN}Running on Ubuntu based distro${NC}"
+elif [ "$os" = "arch" ]; then
+    echo -e "${GREEN}Running on Arch Linux based distro${NC}"
 else
 	echo -e "${GREEN}Running on Unknown distribution, hazardeous!${NC}"
 fi

@@ -38,7 +38,7 @@ def step1():
         os.system("brew uninstall --cask git-credential-manager")
         os.system("git config --global --unset credential.credentialStore keychain")
     elif os_name == "Windows":
-        downloadTo(settings["gcm_url"], "git_setup.exe")
+        downloadTo(settings["gcm_url"], "git_setup.exe", force_download=settings["force_download"])
         logging.warning("Please uninstall git from the external dialog that opens right now")
         subprocess.run("git_setup.exe")
         if settings["clear_cache"]:

@@ -9,7 +9,7 @@ from utils import *
 import sys
 
 os_name = platform.system()
-fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'monitor', 'tools', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'vscode_url', 'arm_url', 'gcm_url', 'monitor_url' ]
+fields = [ 'install_path', 'workplace_path', 'vscode', 'vscode_settings', 'arm', 'monitor', 'tools', 'gcm', 'workplace', 'shortcut', 'clear_cache', 'force_download', 'vscode_url', 'arm_url', 'gcm_url', 'monitor_url' ]
 fields_steps = [ 'vscode', 'vscode_settings', 'arm', 'monitor', 'tools', 'gcm', 'workplace', 'shortcut' ]
 intro_id = 0
 setup_id = 1
@@ -231,7 +231,15 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         self.setSubTitle("Specify in more details what component you want the wizard to setup\n"
                          "Do not modify unless you know what you are doing!")
         
-        checkBox1 = QtWidgets.QGroupBox("Components selection")
+        groupBoxForceDownload = QtWidgets.QGroupBox("Force download during installation ?")
+        force_download = QtWidgets.QCheckBox("Force download internet files to be sure to have the right version")
+        force_download.setChecked(False)
+
+        layoutForceDownload = QtWidgets.QVBoxLayout()
+        layoutForceDownload.addWidget(force_download) 
+        groupBoxForceDownload.setLayout(layoutForceDownload);
+
+        groupBoxFeatures = QtWidgets.QGroupBox("Components selection")
         vscode          = QtWidgets.QCheckBox("(re)install VSCode ?")
         vscode_settings = QtWidgets.QCheckBox("(re) VSCode settings?")
         arm             = QtWidgets.QCheckBox("(re)install ARM toolchain ?")
@@ -250,24 +258,24 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         workplace.setChecked(True)
         shortcut.setChecked(True)
 
-        checkBoxL1 = QtWidgets.QVBoxLayout()
-        checkBoxL1.addWidget(tools)
-        checkBoxL1.addWidget(gcm)
-        checkBoxL1.addWidget(vscode)
-        checkBoxL1.addWidget(arm)
-        checkBoxL1.addWidget(monitor)
-        checkBoxL1.addWidget(vscode_settings)
-        checkBoxL1.addWidget(workplace)
-        checkBoxL1.addWidget(shortcut)
-        checkBox1.setLayout(checkBoxL1);
+        layoutFeatures = QtWidgets.QVBoxLayout()
+        layoutFeatures.addWidget(tools)
+        layoutFeatures.addWidget(gcm)
+        layoutFeatures.addWidget(vscode)
+        layoutFeatures.addWidget(arm)
+        layoutFeatures.addWidget(monitor)
+        layoutFeatures.addWidget(vscode_settings)
+        layoutFeatures.addWidget(workplace)
+        layoutFeatures.addWidget(shortcut)
+        groupBoxFeatures.setLayout(layoutFeatures);
     
-        checkBox2 = QtWidgets.QGroupBox("Clear cache after installation ?")
+        groupBoxClearCache = QtWidgets.QGroupBox("Clear cache after installation ?")
         clear_cache     = QtWidgets.QCheckBox("Clears any unnecessary intermediate traces after installation")
         clear_cache.setChecked(False)
 
-        checkBoxL2 = QtWidgets.QVBoxLayout()
-        checkBoxL2.addWidget(clear_cache) 
-        checkBox2.setLayout(checkBoxL2);
+        layoutClearCache = QtWidgets.QVBoxLayout()
+        layoutClearCache.addWidget(clear_cache) 
+        groupBoxClearCache.setLayout(layoutClearCache);
 
         urlBox = QtWidgets.QGroupBox("Download URLs")
         vscode_urlDescription = QtWidgets.QLabel("VSCode download URL:")
@@ -288,22 +296,23 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         self.registerField('workplace',       workplace)
         self.registerField('shortcut',        shortcut)
         self.registerField('clear_cache',     clear_cache)
+        self.registerField('force_download',  force_download)
         self.registerField('vscode_url',      vscode_urlEdit)
         self.registerField('arm_url',         arm_urlEdit)
         self.registerField('monitor_url',     monitor_urlEdit)
 
         if os_name == "Darwin":
-            vscode_urlEdit.setText("https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal")
+            vscode_urlEdit.setText("https://update.code.visualstudio.com/1.96.4/darwin-universal/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2")
             gcm_urlEdit.setText("")
             monitor_urlEdit.setText("https://projects.gctronic.com/epuck2/monitor_mac.zip")
         elif os_name == "Windows":
-            vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/win32-x64-archive/stable")
+            vscode_urlEdit.setText("https://update.code.visualstudio.com/1.96.4/win32-x64-archive/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.zip")
             gcm_urlEdit.setText("https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe")
             monitor_urlEdit.setText("https://projects.gctronic.com/epuck2/monitor_win.zip")
         elif os_name == "Linux":
-            vscode_urlEdit.setText("https://update.code.visualstudio.com/latest/linux-x64/stable")
+            vscode_urlEdit.setText("https://update.code.visualstudio.com/1.96.4/linux-x64/stable")
             arm_urlEdit.setText("https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2")
             gcm_urlEdit.setText("https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.4.1/gcm-linux_amd64.2.4.1.deb")
             monitor_urlEdit.setText("https://projects.gctronic.com/epuck2/monitor_linux64bit.tar.gz")
@@ -322,8 +331,9 @@ class AdvancedSetupPage(QtWidgets.QWizardPage):
         urlBox.setLayout(urlBoxL)
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(checkBox1)
-        layout.addWidget(checkBox2)
+        layout.addWidget(groupBoxForceDownload)
+        layout.addWidget(groupBoxFeatures)
+        layout.addWidget(groupBoxClearCache)
         layout.addWidget(urlBox)
         
         self.setLayout(layout)
@@ -355,7 +365,7 @@ class InstallPage(QtWidgets.QWizardPage):
 
         self.label = QtWidgets.QLabel("The wizard is installing the IDE.\n"
                                       "Please be patient (it could take a few of minutes depending on your connection)\n\n"
-                                      "Check the terminal as it might ask for user password to gain more privileges during intallation!")
+                                      "Check the terminal as it might ask for user password to gain more privileges during installation!")
         self.label.setWordWrap(True)
         
         self.progress = QtWidgets.QProgressBar()
